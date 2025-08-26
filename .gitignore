@@ -1,0 +1,5 @@
+.idea
+coverage
+temp
+
+node_modules
