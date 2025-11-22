@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, sequence } from './combinators';
+import { choice, create, map, sequence } from './combinators';
 import { failure, success } from './results';
 import { Result } from './types';
 
@@ -148,6 +148,67 @@ describe('combinators', () => {
             expect(result).toBeNull();
 
             assertType<Result<unknown>>(result);
+        });
+    });
+
+    describe('map', () => {
+        it('should transform parser result with single transform', () => {
+            const parser1 = create<'42'>(() => success('42', 'abc'));
+
+            const parser = map(parser1, parseInt);
+            const result = parser('42abc');
+            expect(result).toEqual([42, 'abc']);
+
+            assertType<Result<number>>(result);
+        });
+
+        it('should chain multiple transforms', () => {
+            const parser1 = create<'24'>(() => success('24', 'abc'));
+
+            const parser = map(
+                parser1,
+                parseInt,
+                (n: number) => n * 2,
+                (n: number) => n.toString(),
+            );
+            const result = parser('21abc');
+            expect(result).toEqual(['48', 'abc']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should fail if underlying parser fails', () => {
+            const parser1 = create<string>(() => failure());
+
+            const parser = map(parser1, (s) => s.toUpperCase());
+            const result = parser('goodbye');
+            expect(result).toBeNull();
+        });
+
+        it('should handle complex transformations', () => {
+            const parser1 = create(() =>
+                success(['count', '=', '5'] as const, ';'),
+            );
+
+            const parser = map(
+                parser1 as never,
+                ([key, , value]: ['count', '=', '5']) => ({
+                    [key]: parseInt(value),
+                }),
+            );
+            const result = parser('count=5;');
+            expect(result).toEqual([{ count: 5 }, ';']);
+
+            // :O, surprising!
+            assertType<Result<{ count: number }>>(result);
+        });
+
+        it('should maintain original input consumption', () => {
+            const parser1 = create<'test'>(() => success('test', 'ing'));
+
+            const parser = map(parser1, (s) => s.length);
+            const result = parser('testing');
+            expect(result).toEqual([4, 'ing']);
         });
     });
 });
