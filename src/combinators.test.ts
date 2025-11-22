@@ -1,7 +1,7 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, map, sequence } from './combinators';
+import { choice, create, lazy, map, sequence } from './combinators';
 import { failure, success } from './results';
-import { Result } from './types';
+import { Parser, Result } from './types';
 
 describe('combinators', () => {
     describe('sequence', () => {
@@ -83,6 +83,75 @@ describe('combinators', () => {
             expect(result).toEqual([['text', 42], '']);
 
             assertType<Result<[string, number]>>(result);
+        });
+    });
+
+    describe('lazy', () => {
+        it('should defer parser creation', () => {
+            const parser1 = create<'A'>((input) =>
+                success('A', input.slice(1)),
+            );
+
+            let called = false;
+            const parser = lazy(() => {
+                called = true;
+                return parser1;
+            });
+
+            expect(called).toBe(false);
+            const result = parser('ABC');
+            expect(called).toBe(true);
+            expect(result).toEqual(['A', 'BC']);
+        });
+
+        it('should enable recursive parsers', () => {
+            const charParser = (expected: string) =>
+                create<string>((input) => {
+                    if (input.length > 0 && input[0] === expected) {
+                        return success(expected, input.slice(1));
+                    }
+                    return failure();
+                });
+
+            const paren: Parser<string> = lazy<string>(() => {
+                const baseCase = charParser('x');
+
+                const recursiveCase = create<string>((input) => {
+                    if (input.length === 0 || input[0] !== '(') {
+                        return failure();
+                    }
+
+                    const innerResult = paren(input.slice(1));
+                    if (!innerResult) {
+                        return failure();
+                    }
+
+                    const [innerValue, afterInner] = innerResult;
+                    if (afterInner.length === 0 || afterInner[0] !== ')') {
+                        return failure();
+                    }
+
+                    return success(innerValue, afterInner.slice(1));
+                });
+
+                // Try recursive case first, then base case
+                return create<string>((input) => {
+                    const recursiveResult = recursiveCase(input);
+                    if (recursiveResult) return recursiveResult;
+                    return baseCase(input);
+                });
+            });
+
+            expect(paren('x')).toEqual(['x', '']);
+            expect(paren('(x)')).toEqual(['x', '']);
+            expect(paren('((x))')).toEqual(['x', '']);
+            expect(paren('(((x)))')).toEqual(['x', '']);
+        });
+
+        it('should handle parser that fails', () => {
+            const parser1 = create(() => failure());
+            const result = parser1('goodbye');
+            expect(result).toBeNull();
         });
     });
 
