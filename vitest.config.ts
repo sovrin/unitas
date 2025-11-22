@@ -7,7 +7,11 @@ export default defineConfig({
         coverage: {
             reporter: ['text', 'html', 'lcov'],
             provider: 'istanbul',
-            exclude: ['test/**'],
         },
+        typecheck: {
+            enabled: true,
+            include: ['src/**/*.test.ts'],
+        },
+        include: ['src/**/*.test.ts'],
     },
 });
