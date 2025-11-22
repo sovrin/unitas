@@ -30,3 +30,16 @@ export const create = <T>(parserFn: Parser<T>): Parser<T> => {
 export const lazy = <T>(thunk: () => Parser<T>) => {
     return create<T>((input) => thunk()(input));
 };
+
+export const choice = <T>(...parsers: Parser<T>[]) => {
+    return create<T>((input) => {
+        for (const parser of parsers) {
+            const result = parser(input);
+            if (result) {
+                return result;
+            }
+        }
+
+        return failure();
+    });
+};

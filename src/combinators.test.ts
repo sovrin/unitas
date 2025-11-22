@@ -1,46 +1,46 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { create, sequence } from './combinators';
+import { choice, create, sequence } from './combinators';
 import { failure, success } from './results';
 import { Result } from './types';
 
 describe('combinators', () => {
     describe('sequence', () => {
         it('should call parsers in order and collect results', () => {
-            const parser1 = create<string>((input) =>
+            const parser1 = create<'A'>((input) =>
                 success('A', input.slice(1)),
             );
-            const parser2 = create<string>((input) =>
+            const parser2 = create<'B'>((input) =>
                 success('B', input.slice(1)),
             );
-            const parser3 = create<string>((input) =>
+            const parser3 = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
 
             const parser = sequence(parser1, parser2, parser3);
-            const result = parser('xxxxx');
-            expect(result).toEqual([['A', 'B', 'C'], 'xx']);
+            const result = parser('ABCDE');
+            expect(result).toEqual([['A', 'B', 'C'], 'DE']);
 
-            assertType<Result<[string, string, string] | null>>(result);
+            assertType<Result<['A', 'B', 'C'] | null>>(result);
         });
 
         it('should thread remaining input through parsers', () => {
-            const parser1 = create<string>((input) =>
-                success('first', input.slice(2)),
+            const parser1 = create<'A'>((input) =>
+                success('A', input.slice(1)),
             );
-            const parser2 = create<string>((input) =>
-                success('second', input.slice(3)),
+            const parser2 = create<'B'>((input) =>
+                success('B', input.slice(1)),
             );
 
             const parser = sequence(parser1, parser2);
-            const result = parser('12345678');
-            expect(result).toEqual([['first', 'second'], '678']);
+            const result = parser('ABC');
+            expect(result).toEqual([['A', 'B'], 'C']);
 
-            assertType<Result<[string, string] | null>>(result);
+            assertType<Result<['A', 'B'] | null>>(result);
         });
 
         it('should fail if first parser fails', () => {
-            const parser1 = create<string>(() => failure());
-            const parser2 = create<string>((input) =>
+            const parser1 = create(() => failure());
+            const parser2 = create<'B'>((input) =>
                 success('B', input.slice(1)),
             );
 
@@ -48,15 +48,15 @@ describe('combinators', () => {
             const result = parser('xxx');
             expect(result).toBeNull();
 
-            assertType<Result<[string | null, string] | null>>(result);
+            assertType<Result<[unknown, 'B']>>(result);
         });
 
         it('should fail if middle parser fails', () => {
-            const parser1 = create<string>((input) =>
+            const parser1 = create<'A'>((input) =>
                 success('A', input.slice(1)),
             );
-            const parser2 = create<null>(() => failure());
-            const parser3 = create<string>((input) =>
+            const parser2 = create(() => failure());
+            const parser3 = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
 
@@ -64,7 +64,7 @@ describe('combinators', () => {
             const result = parser('xxx');
             expect(result).toBeNull();
 
-            assertType<Result<[string, null, string] | null>>(result);
+            assertType<Result<['A', unknown, 'C']>>(result);
         });
 
         it('should handle empty sequence', () => {
@@ -76,18 +76,78 @@ describe('combinators', () => {
         });
 
         it('should preserve parser result types', () => {
-            const strParser = create<string>((input) =>
-                success('text', input.slice(1)),
-            );
-            const numParser = create<number>((input) =>
-                success(42, input.slice(1)),
-            );
-
+            const strParser = create<'text'>(() => success('text', ''));
+            const numParser = create<42>(() => success(42, ''));
             const parser = sequence(strParser, numParser);
             const result = parser('xx');
             expect(result).toEqual([['text', 42], '']);
 
-            assertType<Result<[string, number] | null>>(result);
+            assertType<Result<[string, number]>>(result);
+        });
+    });
+
+    describe('choice', () => {
+        it('should try parsers in order and return first success', () => {
+            const parserA = create<'A'>(() => failure());
+            const parserB = create<'B'>((input) =>
+                success('B', input.slice(1)),
+            );
+            const parserC = create<'C'>((input) =>
+                success('C', input.slice(1)),
+            );
+
+            const parser = choice(parserA, parserB, parserC);
+            const result = parser('ABC');
+            expect(result).toEqual(['B', 'BC']);
+
+            assertType<Result<'A' | 'B' | 'C'>>(result);
+        });
+
+        it('should try all parsers if earlier ones fail', () => {
+            const parserA = create<'A'>(() => failure());
+            const parserB = create<'B'>(() => failure());
+            const parserC = create<'C'>((input) =>
+                success('C', input.slice(1)),
+            );
+
+            const parser = choice(parserA, parserB, parserC);
+            const result = parser('C D');
+            expect(result).toEqual(['C', ' D']);
+
+            assertType<Result<'A' | 'B' | 'C'>>(result);
+        });
+
+        it('should fail if all parsers fail', () => {
+            const parser = choice(
+                () => failure(),
+                () => failure(),
+                () => failure(),
+            );
+
+            const result = parser('D');
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
+        });
+
+        it('should handle single parser', () => {
+            const parser1 = create<'A'>((input) =>
+                success('A', input.slice(1)),
+            );
+
+            const parser = choice(parser1);
+            const result = parser('ABCD');
+            expect(result).toEqual(['A', 'BCD']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should handle empty choices', () => {
+            const parser = choice();
+            const result = parser('anything');
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
         });
     });
 });
