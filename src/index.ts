@@ -1,14 +1,7 @@
-export * from './combinators';
-export * from './control';
-export * from './core';
-export * from './functional';
-export * from './lexical';
-export * from './lookahead';
-export * from './numbers';
-export * from './operators';
-export * from './repetition';
-export * from './separators';
-export * from './sequencing';
-export * from './terminals';
-export * from './text';
-export * from './types';
+
+
+/**
+ * User: Oleg Kamlowski <oleg.kamlowski@thomann.io>
+ * Date: 22.11.25
+ * Time: 12:06
+ */

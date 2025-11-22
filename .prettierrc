@@ -1,15 +1,5 @@
 {
-  "arrowParens": "always",
-  "bracketSameLine": true,
-  "bracketSpacing": true,
-  "experimentalOperatorPosition": "start",
-  "experimentalTernaries": true,
-  "parser": "typescript",
-  "printWidth": 120,
-  "quoteProps": "as-needed",
-  "semi": true,
-  "singleQuote": true,
+  "printWidth": 80,
   "tabWidth": 4,
-  "trailingComma": "all",
-  "useTabs": false
+  "singleQuote": true
 }
