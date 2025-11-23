@@ -274,3 +274,19 @@ export const optionalWith = <T>(parser: Parser<T>, defaultValue: T) => {
             : success(defaultValue, input);
     });
 };
+
+export const left = <A, B>(parserA: Parser<A>, parserB: Parser<B>) => {
+    return create<A>(map(sequence(parserA, parserB), ([a]) => a));
+};
+
+export const right = <A, B>(parserA: Parser<A>, parserB: Parser<B>) => {
+    return create<B>(map(sequence(parserA, parserB), ([, b]) => b));
+};
+
+export const middle = <A, B, C>(
+    parserA: Parser<A>,
+    parserB: Parser<B>,
+    parserC: Parser<C>,
+) => {
+    return create<B>(map(sequence(parserA, parserB, parserC), ([, b]) => b));
+};
