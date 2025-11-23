@@ -347,20 +347,71 @@ describe('combinators', () => {
 
             assertType<Result<string[]>>(result);
         });
+    });
 
         it('should work with literal parsers', () => {
             const parser1 = create<'AB'>((input) => {
                 if (input.startsWith('AB')) {
                     return success('AB', input.slice(2));
+    describe('many1', () => {
+        it('should fail on zero occurrences', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
                 }
 
                 return failure();
             });
-            const parser = many(parser1);
-            const result = parser('ABABAB CD');
-            expect(result).toEqual([['AB', 'AB', 'AB'], ' CD']);
+            const parser = many1(parser1);
+            const result = parser('BCD');
+            expect(result).toBeNull();
 
-            assertType<Result<'AB'[]>>(result);
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse one occurrence', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many1(parser1);
+            const result = parser('ABCD');
+            expect(result).toEqual([['A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple occurrences', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many1(parser1);
+            const result = parser('AAABCD');
+            expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail on empty input', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many1(parser1);
+            const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
         });
     });
 });
