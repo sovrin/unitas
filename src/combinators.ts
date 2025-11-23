@@ -178,7 +178,42 @@ export const many1 = <T>(parser: Parser<T>) => {
     });
 };
 
-export const times = <T>(parser: Parser<T>, n: number) => {
+export const manyAtMost = <T>(parser: Parser<T>, n: number) => {
+    return create<T[]>((input) => {
+        const results: T[] = [];
+        let remaining = input;
+
+        for (let i = 0; i < n; i++) {
+            const result = parser(remaining);
+            if (!result) {
+                break;
+            }
+
+            results.push(result[0]);
+            remaining = result[1];
+        }
+
+        return success(results, remaining);
+    });
+};
+
+export const manyAtLeast = <T>(parser: Parser<T>, n: number) => {
+    return create<T[]>((input) => {
+        const required = exactly(parser, n)(input);
+        if (!required) {
+            return failure();
+        }
+
+        const additional = many(parser)(required[1]);
+        if (!additional) {
+            return failure();
+        }
+
+        return success([...required[0], ...additional[0]], additional[1]);
+    });
+};
+
+export const exactly = <T>(parser: Parser<T>, n: number) => {
     return create<T[]>((input) => {
         const results: T[] = [];
         let remaining = input;

@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, lazy, many, many1, map, sequence, times } from './combinators';
+import { choice, create, exactly, lazy, many, many1, manyAtLeast, manyAtMost, map, sequence } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
@@ -378,7 +378,7 @@ describe('combinators', () => {
             assertType<Result<'A'[]>>(result);
         });
 
-        describe('times', () => {
+        describe('exactly', () => {
             const parser1 = create<'A'>((input) => {
                 if (input.startsWith('A')) {
                     return success('A', input.slice(1));
@@ -388,7 +388,7 @@ describe('combinators', () => {
             });
 
             it('should parse exactly n occurrences', () => {
-                const parser = times(parser1, 3);
+                const parser = exactly(parser1, 3);
                 const result = parser('AAABCD');
                 expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
 
@@ -396,7 +396,7 @@ describe('combinators', () => {
             });
 
             it('should fail if fewer than n occurrences', () => {
-                const parser = times(parser1, 3);
+                const parser = exactly(parser1, 3);
                 const result = parser('AABCD');
                 expect(result).toBeNull();
 
@@ -404,7 +404,7 @@ describe('combinators', () => {
             });
 
             it('should parse exactly n and leave remainder', () => {
-                const parser = times(parser1, 2);
+                const parser = exactly(parser1, 2);
                 const result = parser('AAAAA');
                 expect(result).toEqual([['A', 'A'], 'AAA']);
 
@@ -412,7 +412,7 @@ describe('combinators', () => {
             });
 
             it('should handle count of zero', () => {
-                const parser = times(parser1, 0);
+                const parser = exactly(parser1, 0);
                 const result = parser('AAABCD');
                 expect(result).toEqual([[], 'AAABCD']);
 
@@ -420,12 +420,112 @@ describe('combinators', () => {
             });
 
             it('should fail on empty input when count > 0', () => {
-                const parser = times(parser1, 2);
+                const parser = exactly(parser1, 2);
                 const result = parser('');
                 expect(result).toBeNull();
 
                 assertType<Result<'A'[]>>(result);
             });
+        });
+
+        describe('manyAtMost', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+
+            it('should parse up to n occurrences', () => {
+                const parser = manyAtMost(parser1, 3);
+                const result = parser('AABCD');
+                expect(result).toEqual([['A', 'A'], 'BCD']);
+
+                assertType<Result<'A'[]>>(result);
+            });
+
+            it('should parse exactly n occurrences when available', () => {
+                const parser = manyAtMost(parser1, 3);
+                const result = parser('AAABCD');
+                expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
+
+                assertType<Result<'A'[]>>(result);
+            });
+
+            it('should not parse more than n occurrences', () => {
+                const parser = manyAtMost(parser1, 2);
+                const result = parser('AAAAAA');
+                expect(result).toEqual([['A', 'A'], 'AAAA']);
+
+                assertType<Result<'A'[]>>(result);
+            });
+
+            it('should parse zero occurrences', () => {
+                const parser = manyAtMost(parser1, 3);
+                const result = parser('BCD');
+                expect(result).toEqual([[], 'BCD']);
+
+                assertType<Result<'A'[]>>(result);
+            });
+
+            it('should handle limit of zero', () => {
+                const parser = manyAtMost(parser1, 0);
+                const result = parser('AAABCD');
+                expect(result).toEqual([[], 'AAABCD']);
+
+                assertType<Result<'A'[]>>(result);
+            });
+        });
+    });
+
+    describe('manyAtLeast', () => {
+        const parser1 = create<'A'>((input) => {
+            if (input.startsWith('A')) {
+                return success('A', input.slice(1));
+            }
+
+            return failure();
+        });
+
+        it('should parse at least n occurrences', () => {
+            const parser = manyAtLeast(parser1, 2);
+            const result = parser('AAABCD');
+            expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse exactly n occurrences', () => {
+            const parser = manyAtLeast(parser1, 2);
+            const result = parser('AABCD');
+            expect(result).toEqual([['A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail if fewer than n occurrences', () => {
+            const parser = manyAtLeast(parser1, 3);
+            const result = parser('AABCD');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle minimum of zero', () => {
+            const parser = manyAtLeast(parser1, 0);
+            const result = parser('BCD');
+            expect(result).toEqual([[], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse many more than minimum', () => {
+            const parser = manyAtLeast(parser1, 2);
+            const result = parser('AAAAAA');
+            expect(result).toEqual([['A', 'A', 'A', 'A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
         });
     });
 });
