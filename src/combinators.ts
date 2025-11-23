@@ -213,6 +213,21 @@ export const manyAtLeast = <T>(parser: Parser<T>, n: number) => {
     });
 };
 
+export const manyBetween = <T>(parser: Parser<T>, min: number, max: number) =>
+    create<T[]>((input) => {
+        const required = exactly(parser, min)(input);
+        if (!required) {
+            return failure();
+        }
+
+        const additional = manyAtMost(parser, max - min)(required[1]);
+        if (!additional) {
+            return failure();
+        }
+
+        return success([...required[0], ...additional[0]], additional[1]);
+    });
+
 export const exactly = <T>(parser: Parser<T>, n: number) => {
     return create<T[]>((input) => {
         const results: T[] = [];

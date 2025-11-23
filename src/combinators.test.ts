@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, exactly, lazy, many, many1, manyAtLeast, manyAtMost, map, sequence } from './combinators';
+import { choice, create, exactly, lazy, many, many1, manyAtLeast, manyAtMost, manyBetween, map, sequence } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
@@ -524,6 +524,64 @@ describe('combinators', () => {
             const parser = manyAtLeast(parser1, 2);
             const result = parser('AAAAAA');
             expect(result).toEqual([['A', 'A', 'A', 'A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('manyBetween', () => {
+        const parser1 = create<'A'>((input) => {
+            if (input.startsWith('A')) {
+                return success('A', input.slice(1));
+            }
+
+            return failure();
+        });
+
+        it('should parse within range', () => {
+            const parser = manyBetween(parser1, 2, 4);
+            const result = parser('AAABCD');
+            expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse minimum required', () => {
+            const parser = manyBetween(parser1, 2, 4);
+            const result = parser('AABCD');
+            expect(result).toEqual([['A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse maximum allowed', () => {
+            const parser = manyBetween(parser1, 2, 4);
+            const result = parser('AAAABCD');
+            expect(result).toEqual([['A', 'A', 'A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should not parse more than maximum', () => {
+            const parser = manyBetween(parser1, 1, 3);
+            const result = parser('AAAAAA');
+            expect(result).toEqual([['A', 'A', 'A'], 'AAA']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail if fewer than minimum', () => {
+            const parser = manyBetween(parser1, 3, 5);
+            const result = parser('AABCD');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle equal min and max', () => {
+            const parser = manyBetween(parser1, 3, 3);
+            const result = parser('AAABCD');
+            expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
 
             assertType<Result<'A'[]>>(result);
         });
