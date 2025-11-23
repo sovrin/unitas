@@ -246,3 +246,31 @@ export const exactly = <T>(parser: Parser<T>, n: number) => {
         return success(results, remaining);
     });
 };
+
+export const optional = <T>(parser: Parser<T>) => {
+    return create<T | null>((input) => {
+        const result = parser(input);
+
+        return result ? success(result[0], result[1]) : success(null, input);
+    });
+};
+
+export const optionalSkip = <T>(parser: Parser<T>) => {
+    return create<void>((input) => {
+        const result = parser(input);
+
+        return result
+            ? success(undefined, result[1])
+            : success(undefined, input);
+    });
+};
+
+export const optionalWith = <T>(parser: Parser<T>, defaultValue: T) => {
+    return create<T>((input) => {
+        const result = parser(input);
+
+        return result
+            ? success(result[0], result[1])
+            : success(defaultValue, input);
+    });
+};

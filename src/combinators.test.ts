@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, exactly, lazy, many, many1, manyAtLeast, manyAtMost, manyBetween, map, sequence } from './combinators';
+import { choice, create, exactly, lazy, many, many1, manyAtLeast, manyAtMost, manyBetween, map, optional, optionalSkip, optionalWith, sequence } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
@@ -584,6 +584,110 @@ describe('combinators', () => {
             expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
 
             assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('optional', () => {
+        const parser1 = create<'A'>((input) => {
+            if (input.startsWith('A')) {
+                return success('A', input.slice(1));
+            }
+
+            return failure();
+        });
+
+        it('should return parsed value when parser succeeds', () => {
+            const parser = optional(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual(['A', 'BC']);
+
+            assertType<Result<'A' | null>>(result);
+        });
+
+        it('should return null when parser fails', () => {
+            const parser1 = create<'A'>(() => failure());
+            const parser = optional(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual([null, 'ABC']);
+
+            assertType<Result<'A' | null>>(result);
+        });
+    });
+
+    describe('optionalWith', () => {
+        const parser1 = create<'A'>((input) => {
+            if (input.startsWith('A')) {
+                return success('A', input.slice(1));
+            }
+
+            return failure();
+        });
+
+        it('should return default value when parser fails', () => {
+            const parser = optionalWith(parser1, 'default');
+            const result = parser('BCD');
+            expect(result).toEqual(['default', 'BCD']);
+
+            assertType<Result<'A' | 'default'>>(result);
+        });
+
+        it('should not consume input when parser fails', () => {
+            const parser1 = create<'A'>(() => failure());
+            const parser = optionalWith(parser1, 'world');
+            const result = parser('goodbye');
+            expect(result).toEqual(['world', 'goodbye']);
+
+            assertType<Result<'A' | 'world'>>(result);
+        });
+
+        it('should handle empty input', () => {
+            const parser = optionalWith(parser1, 'empty');
+            const result = parser('');
+            expect(result).toEqual(['empty', '']);
+
+            assertType<Result<'A' | 'empty'>>(result);
+        });
+
+        it('should work with complex default values', () => {
+            const parser1 = create<string>(() => failure());
+            const parser = optionalWith<
+                { default: boolean; value: number } | string
+            >(parser1, {
+                default: true,
+                value: 42,
+            });
+            const result = parser('y');
+            expect(result).toEqual([{ default: true, value: 42 }, 'y']);
+
+            assertType<Result<{ default: boolean; value: number } | string>>(
+                result,
+            );
+        });
+    });
+
+    describe('optionalSkip', () => {
+        it('should consume input on success', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = optionalSkip(parser1);
+            const result = parser('ABCD');
+            expect(result).toEqual([undefined, 'BCD']);
+
+            assertType<Result<void>>(result);
+        });
+
+        it('should not consume input on failure', () => {
+            const parser1 = create(() => failure());
+            const parser = optionalSkip(parser1);
+            const result = parser('ABCD');
+            expect(result).toEqual([undefined, 'ABCD']);
+
+            assertType<Result<void>>(result);
         });
     });
 });
