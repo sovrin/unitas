@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, lazy, map, sequence } from './combinators';
+import { choice, create, lazy, many, map, sequence } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
@@ -278,6 +278,89 @@ describe('combinators', () => {
             const parser = map(parser1, (s) => s.length);
             const result = parser('testing');
             expect(result).toEqual([4, 'ing']);
+
+            assertType<Result<number>>(result);
+        });
+    });
+
+    describe('many', () => {
+        it('should parse zero occurrences', () => {
+            const parser1 = create(() => failure());
+
+            const parser = many(parser1);
+            const result = parser('BCD');
+            expect(result).toEqual([[], 'BCD']);
+
+            assertType<Result<unknown>>(result);
+        });
+
+        it('should parse one occurrence', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many(parser1);
+            const result = parser('ABCD');
+            expect(result).toEqual([['A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple occurrences', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many(parser1);
+            const result = parser('AAABCD');
+            expect(result).toEqual([['A', 'A', 'A'], 'BCD']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle empty input', () => {
+            const parser1 = create<'A'>((input) => {
+                if (input.startsWith('A')) {
+                    return success('A', input.slice(1));
+                }
+
+                return failure();
+            });
+            const parser = many(parser1);
+            const result = parser('');
+            expect(result).toEqual([[], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should prevent infinite loops with non-consuming parsers', () => {
+            const nonConsumingParser = () => ['', 'AB'] as [string, string];
+            const parser = many(nonConsumingParser);
+            const result = parser('AB');
+            expect(result).toEqual([[], 'AB']);
+
+            assertType<Result<string[]>>(result);
+        });
+
+        it('should work with literal parsers', () => {
+            const parser1 = create<'AB'>((input) => {
+                if (input.startsWith('AB')) {
+                    return success('AB', input.slice(2));
+                }
+
+                return failure();
+            });
+            const parser = many(parser1);
+            const result = parser('ABABAB CD');
+            expect(result).toEqual([['AB', 'AB', 'AB'], ' CD']);
+
+            assertType<Result<'AB'[]>>(result);
         });
     });
 });
