@@ -177,3 +177,22 @@ export const many1 = <T>(parser: Parser<T>) => {
             : failure();
     });
 };
+
+export const times = <T>(parser: Parser<T>, n: number) => {
+    return create<T[]>((input) => {
+        const results: T[] = [];
+        let remaining = input;
+
+        for (let i = 0; i < n; i++) {
+            const result = parser(remaining);
+            if (!result) {
+                return failure();
+            }
+
+            results.push(result[0]);
+            remaining = result[1];
+        }
+
+        return success(results, remaining);
+    });
+};
