@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { choice, create, lazy, many, map, sequence } from './combinators';
+import { choice, create, lazy, many, many1, map, sequence } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
@@ -15,7 +15,6 @@ describe('combinators', () => {
             const parser3 = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
-
             const parser = sequence(parser1, parser2, parser3);
             const result = parser('ABCDE');
             expect(result).toEqual([['A', 'B', 'C'], 'DE']);
@@ -30,7 +29,6 @@ describe('combinators', () => {
             const parser2 = create<'B'>((input) =>
                 success('B', input.slice(1)),
             );
-
             const parser = sequence(parser1, parser2);
             const result = parser('ABC');
             expect(result).toEqual([['A', 'B'], 'C']);
@@ -43,7 +41,6 @@ describe('combinators', () => {
             const parser2 = create<'B'>((input) =>
                 success('B', input.slice(1)),
             );
-
             const parser = sequence(parser1, parser2);
             const result = parser('xxx');
             expect(result).toBeNull();
@@ -59,7 +56,6 @@ describe('combinators', () => {
             const parser3 = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
-
             const parser = sequence(parser1, parser2, parser3);
             const result = parser('xxx');
             expect(result).toBeNull();
@@ -164,7 +160,6 @@ describe('combinators', () => {
             const parserC = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
-
             const parser = choice(parserA, parserB, parserC);
             const result = parser('ABC');
             expect(result).toEqual(['B', 'BC']);
@@ -178,7 +173,6 @@ describe('combinators', () => {
             const parserC = create<'C'>((input) =>
                 success('C', input.slice(1)),
             );
-
             const parser = choice(parserA, parserB, parserC);
             const result = parser('C D');
             expect(result).toEqual(['C', ' D']);
@@ -192,7 +186,6 @@ describe('combinators', () => {
                 () => failure(),
                 () => failure(),
             );
-
             const result = parser('D');
             expect(result).toBeNull();
 
@@ -203,7 +196,6 @@ describe('combinators', () => {
             const parser1 = create<'A'>((input) =>
                 success('A', input.slice(1)),
             );
-
             const parser = choice(parser1);
             const result = parser('ABCD');
             expect(result).toEqual(['A', 'BCD']);
@@ -223,7 +215,6 @@ describe('combinators', () => {
     describe('map', () => {
         it('should transform parser result with single transform', () => {
             const parser1 = create<'42'>(() => success('42', 'abc'));
-
             const parser = map(parser1, parseInt);
             const result = parser('42abc');
             expect(result).toEqual([42, 'abc']);
@@ -233,7 +224,6 @@ describe('combinators', () => {
 
         it('should chain multiple transforms', () => {
             const parser1 = create<'24'>(() => success('24', 'abc'));
-
             const parser = map(
                 parser1,
                 parseInt,
@@ -258,7 +248,6 @@ describe('combinators', () => {
             const parser1 = create(() =>
                 success(['count', '=', '5'] as const, ';'),
             );
-
             const parser = map(
                 parser1 as never,
                 ([key, , value]: ['count', '=', '5']) => ({
@@ -274,7 +263,6 @@ describe('combinators', () => {
 
         it('should maintain original input consumption', () => {
             const parser1 = create<'test'>(() => success('test', 'ing'));
-
             const parser = map(parser1, (s) => s.length);
             const result = parser('testing');
             expect(result).toEqual([4, 'ing']);
@@ -349,10 +337,6 @@ describe('combinators', () => {
         });
     });
 
-        it('should work with literal parsers', () => {
-            const parser1 = create<'AB'>((input) => {
-                if (input.startsWith('AB')) {
-                    return success('AB', input.slice(2));
     describe('many1', () => {
         it('should fail on zero occurrences', () => {
             const parser1 = create<'A'>((input) => {
