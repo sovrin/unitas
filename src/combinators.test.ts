@@ -5,6 +5,7 @@ import {
     exactly,
     lazy,
     left,
+    lexeme,
     many,
     many1,
     manyAtLeast,
@@ -17,7 +18,8 @@ import {
     optionalWith,
     right,
     sequence,
-    until,
+    token,
+    until
 } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
@@ -140,7 +142,7 @@ describe('combinators', () => {
                     return success(innerValue, afterInner.slice(1));
                 });
 
-                // Try recursive case first, then base case
+                // Try the recursive case first, then base case
                 return create<string>((input) => {
                     const recursiveResult = recursiveCase(input);
                     if (recursiveResult) return recursiveResult;
@@ -749,6 +751,111 @@ describe('combinators', () => {
             const parser = until(parser1, parser2);
             const result = parser('AAAA');
             expect(result).toBeNull();
+        });
+    });
+
+    describe('lexeme', () => {
+        it('should parse a token and consume trailing whitespace', () => {
+            const parser1 = createTestParser('A');
+            const parser = lexeme(parser1);
+            const result = parser('A       B');
+            expect(result).toEqual(['A', 'B']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should parse a token with no trailing whitespace', () => {
+            const parser1 = createTestParser('A');
+            const parser = lexeme(parser1);
+            const result = parser('AB');
+            expect(result).toEqual(['A', 'B']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should consume various types of whitespace', () => {
+            const parser1 = createTestParser('A');
+            const parser = lexeme(parser1);
+            const result = parser('A \t\n\r  B');
+            expect(result).toEqual(['A', 'B']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should fail when the underlying parser fails', () => {
+            const parser1 = createTestParser('A');
+            const parser = lexeme(parser1);
+            const result = parser('B');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should handle empty input after consuming whitespace', () => {
+            const parser1 = createTestParser('A');
+            const parser = lexeme(parser1);
+            const result = parser('A   ');
+            expect(result).toEqual(['A', '']);
+
+            assertType<Result<'A'>>(result);
+        });
+    });
+
+    describe('token', () => {
+        it('should parse a symbol and consume trailing whitespace', () => {
+            const parser = token('if');
+            const result = parser('if   (condition)');
+            expect(result).toEqual(['if', '(condition)']);
+
+            assertType<Result<'if'>>(result);
+        });
+
+        it('should parse operators with whitespace', () => {
+            const parser = token('==');
+            const result = parser('==  value');
+            expect(result).toEqual(['==', 'value']);
+
+            assertType<Result<'=='>>(result);
+        });
+
+        it('should parse punctuation symbols', () => {
+            const parser = token('(');
+            const result = parser('(  )');
+            expect(result).toEqual(['(', ')']);
+
+            assertType<Result<'('>>(result);
+        });
+
+        it('should fail when symbol does not match', () => {
+            const parser = token('while');
+            const result = parser('if (condition)');
+            expect(result).toBeNull();
+
+            assertType<Result<'while'>>(result);
+        });
+
+        it('should parse symbol with no trailing whitespace', () => {
+            const parser = token(';');
+            const result = parser(';next');
+            expect(result).toEqual([';', 'next']);
+
+            assertType<Result<';'>>(result);
+        });
+
+        it('should handle multi-character symbols', () => {
+            const parser = token('<=');
+            const result = parser('<=  100');
+            expect(result).toEqual(['<=', '100']);
+
+            assertType<Result<'<='>>(result);
+        });
+
+        it('should work with empty string symbol', () => {
+            const parser = token('');
+            const result = parser('   anything');
+            expect(result).toEqual(['', 'anything']);
+
+            assertType<Result<''>>(result);
         });
     });
 });

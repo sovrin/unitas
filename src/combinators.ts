@@ -1,5 +1,6 @@
 import { Parser, Success } from './types';
 import { failure, success } from './results';
+import { literal, regex } from './terminals';
 
 export const sequence = <T extends readonly unknown[]>(
     ...parsers: { [K in keyof T]: Parser<T[K]> }
@@ -313,4 +314,12 @@ export const until = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
 
         return success(results, remaining);
     });
+};
+
+export const lexeme = <T>(parser: Parser<T>) => {
+    return create<T>(map(sequence(parser, regex(/^\s*/)), ([value]) => value));
+};
+
+export const token = <T extends string>(str: T): Parser<T> => {
+    return create<T>(lexeme(literal(str)));
 };
