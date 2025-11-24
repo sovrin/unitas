@@ -16,7 +16,8 @@ import {
     optionalSkip,
     optionalWith,
     right,
-    sequence
+    sequence,
+    until,
 } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
@@ -724,6 +725,30 @@ describe('combinators', () => {
             expect(result).toBeNull();
 
             assertType<Result<'B'>>(result);
+        });
+    });
+
+    describe('until', () => {
+        const parser1 = createTestParser('A');
+        const parser2 = createTestParser('B');
+
+        it('should parse items until terminator is found', () => {
+            const parser = until(parser1, parser2);
+            const result = parser('AAAABAAAA');
+            expect(result).toEqual([['A', 'A', 'A', 'A'], 'BAAAA']);
+        });
+
+        it('should return empty array when terminator is at start', () => {
+            const parser1 = create(() => failure());
+            const parser = until(parser1, parser2);
+            const result = parser('BAAAA');
+            expect(result).toEqual([[], 'BAAAA']);
+        });
+
+        it('should fail when terminator is never found and parser fails', () => {
+            const parser = until(parser1, parser2);
+            const result = parser('AAAA');
+            expect(result).toBeNull();
         });
     });
 });
