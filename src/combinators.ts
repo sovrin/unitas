@@ -292,6 +292,53 @@ export const middle = <A, B, C>(
     return create<B>(map(sequence(parserA, parserB, parserC), ([, b]) => b));
 };
 
+type First<T extends readonly unknown[]> = T extends readonly [
+    infer F,
+    ...unknown[],
+]
+    ? F
+    : never;
+
+export const first = <T extends readonly unknown[]>(
+    parser: Parser<T>,
+): Parser<First<T>> => {
+    return create<First<T>>(map(parser, (arr) => arr[0] as First<T>));
+};
+
+type Last<T extends readonly unknown[]> = T extends readonly [
+    ...unknown[],
+    infer L,
+]
+    ? L
+    : never;
+
+export const last = <T extends readonly [unknown, ...unknown[]]>(
+    parser: Parser<T>,
+) => {
+    return create<Last<T>>(
+        map(parser, (arr) => arr[arr.length - 1] as Last<T>),
+    );
+};
+
+type Nth<T extends readonly unknown[], N extends number> = number extends N
+    ? T[number] | undefined
+    : N extends number
+        ? `${N}` extends `-${string}` | `${string}.${string}`
+            ? undefined
+            : T extends readonly [...infer U]
+                ? N extends keyof U
+                    ? U[N]
+                    : undefined
+                : T[N]
+        : never;
+
+export const nth = <T extends readonly unknown[], N extends number>(
+    parser: Parser<T>,
+    index: N,
+): Parser<Nth<T, N>> => {
+    return create<Nth<T, N>>(map(parser, (arr) => arr[index] as Nth<T, N>));
+};
+
 export const until = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
     return create<T[]>((input) => {
         const results: T[] = [];

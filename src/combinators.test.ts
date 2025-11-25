@@ -3,6 +3,8 @@ import {
     choice,
     create,
     exactly,
+    first,
+    last,
     lazy,
     left,
     lexeme,
@@ -13,6 +15,7 @@ import {
     manyBetween,
     map,
     middle,
+    nth,
     optional,
     optionalSkip,
     optionalWith,
@@ -727,6 +730,105 @@ describe('combinators', () => {
             expect(result).toBeNull();
 
             assertType<Result<'B'>>(result);
+        });
+    });
+
+    describe('first', () => {
+        it('should return first element of array parser result', () => {
+            const parser1 = create(() => success(['A', 'B', 'C'] as const, ''));
+            const parser = first(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual(['A', '']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should return undefined for empty array', () => {
+            const parser1 = create(() => success([] as const, 'ABC'));
+            const parser = first(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual([undefined, 'ABC']);
+
+            assertType<Result<undefined>>(result);
+        });
+    });
+
+    describe('last', () => {
+        it('should return last element of array parser result', () => {
+            const parser1 = create(() => success(['A', 'B', 'C'] as const, ''));
+            const parser = last(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual(['C', '']);
+
+            assertType<Result<'C'>>(result);
+        });
+
+        it('should return undefined for empty array', () => {
+            const parser1 = create(() =>
+                success([] as unknown as [unknown, ...unknown[]], 'ABC'),
+            );
+            const parser = last(parser1);
+            const result = parser('ABC');
+            expect(result).toEqual([undefined, 'ABC']);
+
+            assertType<Result<undefined>>(result);
+        });
+    });
+
+    describe('nth', () => {
+        it('should return element at specified index', () => {
+            const parser1 = create(() => success(['A', 'B', 'C'] as const, ''));
+
+            {
+                const parser = nth(parser1, 0);
+                const result = parser('ABC');
+                expect(result).toEqual(['A', '']);
+
+                assertType<Result<'A'>>(result);
+            }
+            {
+                const parser = nth(parser1, 1);
+                const result = parser('ABC');
+                expect(result).toEqual(['B', '']);
+
+                assertType<Result<'B'>>(result);
+            }
+            {
+                const parser = nth(parser1, 2);
+                const result = parser('ABC');
+                expect(result).toEqual(['C', '']);
+
+                assertType<Result<'C'>>(result);
+            }
+        });
+
+        it('should return undefined for out-of-bounds index', () => {
+            const parser1 = create(() => success(['A', 'B', 'C'] as const, ''));
+
+            {
+                const parser = nth(parser1, 5);
+                const result = parser('ABC');
+                expect(result).toEqual([undefined, '']);
+
+                assertType<Result<undefined>>(result);
+            }
+
+            {
+                const parser = nth(parser1, -1);
+                const result = parser('ABC');
+                expect(result).toEqual([undefined, '']);
+
+                assertType<Result<undefined>>(result);
+            }
+        });
+
+        it('should handle empty arrays', () => {
+            const parser1 = create(() => success([] as const, 'ABC'));
+            const parser = nth(parser1, 1);
+            const result = parser('');
+            expect(result).toEqual([undefined, 'ABC']);
+
+            assertType<Result<undefined>>(result);
         });
     });
 
