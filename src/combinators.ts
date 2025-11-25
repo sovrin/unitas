@@ -459,3 +459,11 @@ export const foldRight1 = <T, U>(
         return success(folded, finalRest);
     });
 };
+
+export const peek = <T>(parser: Parser<T>) => {
+    return create<T>((input) => {
+        const result = parser(input);
+
+        return result ? success(result[0], input) : failure();
+    });
+};

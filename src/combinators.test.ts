@@ -23,6 +23,7 @@ import {
     optional,
     optionalSkip,
     optionalWith,
+    peek,
     right,
     sequence,
     token,
@@ -1190,6 +1191,35 @@ describe('combinators', () => {
 
                 assertType<Result<number>>(result);
             });
+        });
+    });
+
+    describe('peek', () => {
+        it('should succeed when parser matches without consuming input', () => {
+            const parser1 = createTestParser('A');
+            const parser = peek(parser1);
+            const result = parser('AB');
+            expect(result).toEqual(['A', 'AB']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should fail when peek parser does not match', () => {
+            const parser1 = createTestParser('A');
+            const parser = peek(parser1);
+            const result = parser('BC');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should handle empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser = peek(parser1);
+            const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'>>(result);
         });
     });
 });
