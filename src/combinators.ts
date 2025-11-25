@@ -146,7 +146,9 @@ export const many = <T>(parser: Parser<T>) => {
 
         while (true) {
             const result = parser(remaining);
-            if (!result) break;
+            if (!result) {
+                break;
+            }
 
             // Prevent infinite loop: ensure progress is made
             if (result[1] === remaining) {
@@ -323,14 +325,14 @@ export const last = <T extends readonly [unknown, ...unknown[]]>(
 type Nth<T extends readonly unknown[], N extends number> = number extends N
     ? T[number] | undefined
     : N extends number
-        ? `${N}` extends `-${string}` | `${string}.${string}`
-            ? undefined
-            : T extends readonly [...infer U]
-                ? N extends keyof U
-                    ? U[N]
-                    : undefined
-                : T[N]
-        : never;
+      ? `${N}` extends `-${string}` | `${string}.${string}`
+          ? undefined
+          : T extends readonly [...infer U]
+            ? N extends keyof U
+                ? U[N]
+                : undefined
+            : T[N]
+      : never;
 
 export const nth = <T extends readonly unknown[], N extends number>(
     parser: Parser<T>,
@@ -369,4 +371,91 @@ export const lexeme = <T>(parser: Parser<T>) => {
 
 export const token = <T extends string>(str: T): Parser<T> => {
     return create<T>(lexeme(literal(str)));
+};
+
+/**
+ * parses zero or more occurrences of parser (left-to-right)
+ * never fails
+ * on zero matches, returns the initial value
+ */
+export const fold = <T, U>(
+    parser: Parser<T>,
+    initial: U,
+    folder: (acc: U, item: T) => U,
+): Parser<U> => {
+    return create<U>((input) => {
+        const [items, rest] = many(parser)(input) as Success<T[]>;
+
+        return success(items.reduce(folder, initial), rest);
+    });
+};
+
+/**
+ * parses one or more occurrences of parser (left-to-right)
+ * fails if there are no matches
+ * on success, folds all items (plus the initial) with the folder
+ */
+export const fold1 = <T, U>(
+    parser: Parser<T>,
+    initial: U,
+    folder: (acc: U, item: T) => U,
+): Parser<U> => {
+    return create<U>((input) => {
+        const first = parser(input);
+        if (!first) {
+            return failure();
+        }
+
+        const [firstValue, rest] = first;
+
+        let acc = folder(initial, firstValue);
+
+        const [items, finalRest] = many(parser)(rest) as Success<T[]>;
+        acc = items.reduce(folder, acc);
+
+        return success(acc, finalRest);
+    });
+};
+
+/**
+ * parses zero or more occurrences of parser (right-to-left)
+ * never fails
+ * on zero matches, returns the initial value
+ */
+export const foldRight = <T, U>(
+    parser: Parser<T>,
+    initial: U,
+    folder: (acc: U, item: T) => U,
+): Parser<U> => {
+    return create<U>((input) => {
+        const [items, rest] = many(parser)(input) as Success<T[]>;
+
+        return success(items.reduceRight(folder, initial), rest);
+    });
+};
+
+/**
+ * parses one or more occurrences of parser (right-to-left)
+ * fails if there are no matches
+ * on success, folds all items (plus the initial) with the folder
+ */
+export const foldRight1 = <T, U>(
+    parser: Parser<T>,
+    initial: U,
+    folder: (acc: U, item: T) => U,
+): Parser<U> => {
+    return create<U>((input) => {
+        const first = parser(input);
+        if (!first) {
+            return failure();
+        }
+
+        const [firstValue, rest] = first;
+        const [items, finalRest] = many(parser)(rest) as Success<T[]>;
+
+        const all = [firstValue, ...items];
+        const folded = all.reduceRight(folder, initial);
+
+        return success(folded, finalRest);
+    });
 };

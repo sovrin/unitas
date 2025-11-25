@@ -4,6 +4,10 @@ import {
     create,
     exactly,
     first,
+    fold,
+    fold1,
+    foldRight,
+    foldRight1,
     last,
     lazy,
     left,
@@ -22,15 +26,16 @@ import {
     right,
     sequence,
     token,
-    until
+    until,
 } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
 
-const createTestParser = <T extends string>(tester: T) =>
+const createTestParser = <T extends string | number>(tester: T) =>
     create<T>((input) => {
-        if (input.startsWith(tester)) {
-            return success(tester, input.slice(tester.length));
+        const stringTester = String(tester);
+        if (input.startsWith(stringTester)) {
+            return success(tester, input.slice(stringTester.length));
         }
 
         return failure();
@@ -958,6 +963,233 @@ describe('combinators', () => {
             expect(result).toEqual(['', 'anything']);
 
             assertType<Result<''>>(result);
+        });
+    });
+
+    describe('fold', () => {
+        const parser1 = create<string>((input: string) => {
+            if (input.length === 0) {
+                return failure();
+            }
+            return success(input[0], input.slice(1));
+        });
+
+        it('should fold left over parsed items', () => {
+            const parser = fold(parser1, 'Z', (acc, item) => `(${acc}${item})`);
+            const result = parser('ABC');
+            expect(result).toEqual(['(((ZA)B)C)', '']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with empty input (return initial value and not consume input)', () => {
+            const parser = fold(
+                create<string>(() => failure()),
+                'Z',
+                (acc, item) => `(${acc}${item})`,
+            );
+            const result = parser('ABC');
+            expect(result).toEqual(['Z', 'ABC']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with empty input (return initial value)', () => {
+            const parser = fold(
+                create<string>(() => failure()),
+                'Z',
+                (acc, item) => `(${acc}${item})`,
+            );
+            const result = parser('');
+            expect(result).toEqual(['Z', '']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with complex accumulator types', () => {
+            const parser = fold(
+                parser1,
+                { label: '', count: 0 },
+                (acc, label) => ({
+                    label: acc.label + label,
+                    count: acc.count + 1,
+                }),
+            );
+            const result = parser('ABC');
+            expect(result).toEqual([{ label: 'ABC', count: 3 }, '']);
+
+            assertType<
+                Result<{
+                    label: string;
+                    count: number;
+                }>
+            >(result);
+        });
+
+        it('should work with array building', () => {
+            const parser = fold(parser1, [] as string[], (acc, digit) => [
+                ...acc,
+                digit + 'Z',
+            ]);
+            const result = parser('ABC');
+            expect(result).toEqual([['AZ', 'BZ', 'CZ'], '']);
+
+            assertType<Result<string[]>>(result);
+        });
+
+        it('should not fail and return the initial value and not consume', () => {
+            const parser1 = create(() => failure());
+            const parser = fold(parser1, 0, (acc) => acc + 1);
+            const result = parser('ABC');
+            expect(result).toEqual([0, 'ABC']);
+
+            assertType<Result<number>>(result);
+        });
+    });
+
+    describe('fold1', () => {
+        const parser1 = create<string>((input: string) => {
+            if (input.length === 0) {
+                return failure();
+            }
+            return success(input[0], input.slice(1));
+        });
+
+        it('should fold left over parsed items', () => {
+            const parser = fold1(parser1, '', (acc, value) => acc + value);
+            const result = parser('ABC');
+            expect(result).toEqual(['ABC', '']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should return null, one or more successful parser returns are required', () => {
+            const parser1 = create<number>(() => failure());
+            const parser = fold1(parser1, 42, (acc, digit) => acc + digit);
+            const result = parser('ABC');
+            expect(result).toBeNull();
+
+            assertType<Result<number>>(result);
+        });
+    });
+
+    describe('foldRight', () => {
+        const parser1 = create<string>((input: string) => {
+            if (input.length === 0) {
+                return failure();
+            }
+
+            return success(input[0], input.slice(1));
+        });
+
+        it('should fold right over parsed items', () => {
+            const parser = foldRight(
+                parser1,
+                'Z',
+                (acc, item) => `(${acc}${item})`,
+            );
+            const result = parser('ABC');
+            expect(result).toEqual(success('(((ZC)B)A)', ''));
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with empty input (return initial value and not consume input)', () => {
+            const parser = foldRight(
+                create<string>(() => failure()),
+                'Z',
+                (acc, item) => `(${acc}${item})`,
+            );
+            const result = parser('ABC');
+            expect(result).toEqual(['Z', 'ABC']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with empty input (return initial value)', () => {
+            const parser = foldRight(
+                create<string>(() => failure()),
+                'Z',
+                (acc, item) => `(${acc}${item})`,
+            );
+            const result = parser('');
+            expect(result).toEqual(['Z', '']);
+
+            assertType<Result<string>>(result);
+        });
+
+        it('should work with complex accumulator types', () => {
+            const parser = foldRight(
+                parser1,
+                { label: '', count: 0 },
+                (acc, label) => ({
+                    label: acc.label + label,
+                    count: acc.count + 1,
+                }),
+            );
+            const result = parser('CBA');
+            expect(result).toEqual([{ label: 'ABC', count: 3 }, '']);
+
+            assertType<
+                Result<{
+                    label: string;
+                    count: number;
+                }>
+            >(result);
+        });
+
+        it('should work with array building', () => {
+            const parser = foldRight(parser1, [] as string[], (acc, digit) => [
+                ...acc,
+                digit + 'Z',
+            ]);
+            const result = parser('ABC');
+            expect(result).toEqual([['CZ', 'BZ', 'AZ'], '']);
+
+            assertType<Result<string[]>>(result);
+        });
+
+        it('should not fail and return the initial value and not consume', () => {
+            const parser1 = create(() => failure());
+            const parser = foldRight(parser1, 0, (acc) => acc + 1);
+            const result = parser('ABC');
+            expect(result).toEqual([0, 'ABC']);
+
+            assertType<Result<number>>(result);
+        });
+
+        describe('foldRight1', () => {
+            const parser1 = create<string>((input: string) => {
+                if (input.length === 0) {
+                    return failure();
+                }
+                return success(input[0], input.slice(1));
+            });
+
+            it('should fold right over parsed items', () => {
+                const parser = foldRight1(
+                    parser1,
+                    'Z',
+                    (acc, item) => `(${acc}${item})`,
+                );
+                const result = parser('ABC');
+                expect(result).toEqual(success('(((ZC)B)A)', ''));
+
+                assertType<Result<string>>(result);
+            });
+
+            it('should return null, one or more successful parser returns are required', () => {
+                const parser1 = create<number>(() => failure());
+                const parser = foldRight1(
+                    parser1,
+                    42,
+                    (acc, digit) => acc + digit,
+                );
+                const result = parser('ABC');
+                expect(result).toBeNull();
+
+                assertType<Result<number>>(result);
+            });
         });
     });
 });
