@@ -8,3 +8,22 @@ export const satisfy = (predicate: (char: string) => boolean) => {
             : failure(),
     );
 };
+
+export const digit = create<number>(
+    map(
+        satisfy((c) => /[0-9]/.test(c)),
+        (c) => parseInt(c, 10),
+    ),
+);
+
+export const digits = create<number>((input) => {
+    const result = many1(digit)(input);
+    if (!result) {
+        return failure();
+    }
+
+    const [ds, rest] = result;
+    const value = ds.reduce((acc, d) => acc * 10 + d, 0);
+
+    return success(value, rest);
+});
