@@ -1,10 +1,13 @@
 import { failure, success } from './results';
-import { create } from './combinators';
+import { create, many1, map } from './combinators';
+import { Letter } from './types';
 
-export const satisfy = (predicate: (char: string) => boolean) => {
-    return create<string>((input) =>
+export const satisfy = <T extends string>(
+    predicate: (char: string) => boolean,
+) => {
+    return create<T>((input) =>
         input.length > 0 && predicate(input[0])
-            ? success(input[0], input.slice(1))
+            ? success(input[0] as T, input.slice(1))
             : failure(),
     );
 };
@@ -27,3 +30,7 @@ export const digits = create<number>((input) => {
 
     return success(value, rest);
 });
+
+export const letter = <T extends Letter>(input: T) => {
+    return create<T>(satisfy<T>((c) => /[a-zA-Z]/.test(c)))(input);
+};

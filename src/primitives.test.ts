@@ -1,5 +1,5 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { digit, digits } from './primitives';
+import { digit, digits, letter, satisfy } from './primitives';
 import { Result } from './types';
 
 describe('primitives', () => {
@@ -72,6 +72,33 @@ describe('primitives', () => {
             expect(result).toEqual([1, '']);
 
             assertType<Result<number>>(result);
+        });
+    });
+
+    describe('letter', () => {
+        it('should parse alphabetic characters', () => {
+            const result = letter('A');
+            expect(result).toEqual(['A', '']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should fail on non-letter characters', () => {
+            const result = letter('123' as never);
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
+        });
+
+        it('should only parse first character', () => {
+            expect(letter('hello' as never)).toEqual(['h', 'ello']);
+        });
+
+        it('should match the expected type', () => {
+            const result = letter('A');
+            expect(result).toEqual(['A', '']);
+
+            assertType<Result<'A'>>(result);
         });
     });
 });
