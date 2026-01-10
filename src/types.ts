@@ -21,17 +21,20 @@ export type First<T extends readonly unknown[]> = T extends readonly [
     ? F
     : never;
 
-export type Nth<T extends readonly unknown[], N extends number> = number extends N
+export type Nth<
+    T extends readonly unknown[],
+    N extends number,
+> = number extends N
     ? T[number] | undefined
     : N extends number
-        ? `${N}` extends `-${string}` | `${string}.${string}`
-            ? undefined
-            : T extends readonly [...infer U]
-                ? N extends keyof U
-                    ? U[N]
-                    : undefined
-                : T[N]
-        : never;
+      ? `${N}` extends `-${string}` | `${string}.${string}`
+          ? undefined
+          : T extends readonly [...infer U]
+            ? N extends keyof U
+                ? U[N]
+                : undefined
+            : T[N]
+      : never;
 
 export type Last<T extends readonly unknown[]> = T extends readonly [
     ...unknown[],
@@ -40,11 +43,21 @@ export type Last<T extends readonly unknown[]> = T extends readonly [
     ? L
     : never;
 
-export type Digit<T extends string> = T extends '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9'
+export type Digit<T extends string> = T extends
+    | '0'
+    | '1'
+    | '2'
+    | '3'
+    | '4'
+    | '5'
+    | '6'
+    | '7'
+    | '8'
+    | '9'
     ? true
     : false;
 
-export type Letter =
+export type LowerCaseLetter =
     | 'a'
     | 'b'
     | 'c'
@@ -70,7 +83,9 @@ export type Letter =
     | 'w'
     | 'x'
     | 'y'
-    | 'z'
+    | 'z';
+
+export type UpperCaseLetter =
     | 'A'
     | 'B'
     | 'C'
@@ -97,3 +112,5 @@ export type Letter =
     | 'X'
     | 'Y'
     | 'Z';
+
+export type Letter = LowerCaseLetter | UpperCaseLetter;

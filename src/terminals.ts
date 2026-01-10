@@ -1,5 +1,6 @@
 import { failure, success } from './results';
 import { create } from './combinators';
+import { Char } from './types';
 
 export const literal = <S extends string>(str: S) => {
     return create<S>((input) =>
@@ -8,7 +9,6 @@ export const literal = <S extends string>(str: S) => {
             : failure(),
     );
 };
-
 export const regex = (pattern: RegExp) => {
     if (pattern.global) {
         throw new Error('Global flag is not supported in regex parsers');
@@ -23,13 +23,11 @@ export const regex = (pattern: RegExp) => {
     });
 };
 
-type Char<S extends string = string> =
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    S extends `${infer _}${infer Rest}` ? (Rest extends '' ? S : never) : never;
-
 export const char = <S extends string>(expected: Char<S>) => {
     if ((expected as string).length > 1) {
-        throw new Error('char expects one character, but got ' + expected as string);
+        throw new Error(
+            ('char expects one character, but got ' + expected) as string,
+        );
     }
 
     return create<S>((input) =>
