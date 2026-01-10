@@ -1,22 +1,19 @@
 import { failure, success } from './results';
 import { create, many1, map } from './combinators';
-import { Letter } from './types';
+import { Char, Letter, LowerCaseLetter, UpperCaseLetter } from './types';
 
-export const satisfy = <T extends string>(
-    predicate: (char: string) => boolean,
-) => {
-    return create<T>((input) =>
-        input.length > 0 && predicate(input[0])
-            ? success(input[0] as T, input.slice(1))
-            : failure(),
-    );
-};
+export function satisfy<T extends string>(predicate: (c: Char<T>) => boolean) {
+    return create<T>((input) => {
+        const c = input[0] as Char<T>;
+        return input.length > 0 && predicate(c)
+            ? success(c as T, input.slice(1))
+            : failure();
+    });
+}
 
-export const digit = create<number>(
-    map(
-        satisfy((c) => /[0-9]/.test(c)),
-        (c) => parseInt(c, 10),
-    ),
+export const digit = map<string, number>(
+    satisfy((c: string) => /^[0-9]$/.test(c)),
+    (c) => parseInt(c, 10),
 );
 
 export const digits = create<number>((input) => {
@@ -31,6 +28,10 @@ export const digits = create<number>((input) => {
     return success(value, rest);
 });
 
-export const letter = <T extends Letter>(input: T) => {
-    return create<T>(satisfy<T>((c) => /[a-zA-Z]/.test(c)))(input);
-};
+export const letter = satisfy<Letter>((c) => /[a-zA-Z]/.test(c));
+
+export const whitespace = satisfy<' '>((c) => /\s/.test(c));
+
+export const uppercase = satisfy<UpperCaseLetter>((c) => /[A-Z]/.test(c));
+
+export const lowercase = satisfy<LowerCaseLetter>((c) => /[a-z]/.test(c));

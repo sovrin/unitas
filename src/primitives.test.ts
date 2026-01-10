@@ -1,11 +1,19 @@
 import { assertType, describe, expect, it } from 'vitest';
-import { digit, digits, letter, satisfy } from './primitives';
-import { Result } from './types';
+import {
+    digit,
+    digits,
+    letter,
+    lowercase,
+    satisfy,
+    uppercase,
+    whitespace,
+} from './primitives';
+import { Letter, LowerCaseLetter, Result, UpperCaseLetter } from './types';
 
 describe('primitives', () => {
     describe('satisfy', () => {
         it('should match character that satisfies predicate', () => {
-            const parser = satisfy((c) => c >= '0' && c <= '9');
+            const parser = satisfy((c: string) => c >= '0' && c <= '9');
             const result = parser('5abc');
             expect(result).toEqual(['5', 'abc']);
 
@@ -13,7 +21,7 @@ describe('primitives', () => {
         });
 
         it('should fail when character does not satisfy predicate', () => {
-            const parser = satisfy((c) => c >= '0' && c <= '9');
+            const parser = satisfy((c: string) => c >= '0' && c <= '9');
             const result = parser('abc');
             expect(result).toBeNull();
 
@@ -80,7 +88,7 @@ describe('primitives', () => {
             const result = letter('A');
             expect(result).toEqual(['A', '']);
 
-            assertType<Result<'A'>>(result);
+            assertType<Result<Letter>>(result);
         });
 
         it('should fail on non-letter characters', () => {
@@ -98,7 +106,55 @@ describe('primitives', () => {
             const result = letter('A');
             expect(result).toEqual(['A', '']);
 
-            assertType<Result<'A'>>(result);
+            assertType<Result<Letter>>(result);
+        });
+    });
+
+    describe('uppercase', () => {
+        it('should parse uppercase', () => {
+            const result = uppercase('ABC');
+            expect(result).toEqual(['A', 'BC']);
+
+            assertType<Result<UpperCaseLetter>>(result);
+        });
+
+        it('should fail on non-uppercase', () => {
+            const result = uppercase('abc');
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
+        });
+    });
+
+    describe('lowercase', () => {
+        it('should parse lowercase', () => {
+            const result = lowercase('abc');
+            expect(result).toEqual(['a', 'bc']);
+
+            assertType<Result<LowerCaseLetter>>(result);
+        });
+
+        it('should fail on non-uppercase', () => {
+            const result = lowercase('ABC');
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
+        });
+    });
+
+    describe('whitespace', () => {
+        it('should parse whitespace', () => {
+            const result = whitespace(' ');
+            expect(result).toEqual([' ', '']);
+
+            assertType<Result<' '>>(result);
+        });
+
+        it('should fail on non-whitespace', () => {
+            const result = whitespace('ABC');
+            expect(result).toBeNull();
+
+            assertType<Result<unknown>>(result);
         });
     });
 });
