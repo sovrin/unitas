@@ -436,3 +436,9 @@ export const peek = <T>(parser: Parser<T>) => {
         return result ? success(result[0], input) : failure();
     });
 };
+
+export const guard = <T>(condition: boolean, parser: Parser<T>) => {
+    return create<T | null>((input) => {
+        return condition ? parser(input) : success(null, input);
+    });
+};

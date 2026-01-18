@@ -8,6 +8,7 @@ import {
     fold1,
     foldRight,
     foldRight1,
+    guard,
     last,
     lazy,
     left,
@@ -27,7 +28,7 @@ import {
     right,
     sequence,
     token,
-    until,
+    until
 } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
@@ -1220,6 +1221,35 @@ describe('combinators', () => {
             expect(result).toBeNull();
 
             assertType<Result<'A'>>(result);
+        });
+    });
+
+    describe('guard', () => {
+        it('should run parser and consume input when condition is true', () => {
+            const parser1 = createTestParser('A');
+            const parser = guard(true, parser1);
+            const result = parser('AAA');
+            expect(result).toEqual(['A', 'AA']);
+
+            assertType<Result<'A' | null>>(result);
+        });
+
+        it('should return null and consume no input when condition is false', () => {
+            const parser1 = createTestParser('A');
+            const parser = guard(false, parser1);
+            const result = parser('BBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<'A' | null>>(result);
+        });
+
+        it('should propagate parser failure when condition is true but parser fails', () => {
+            const parser1 = createTestParser('A');
+            const parser = guard(true, parser1);
+            const result = parser('BBB');
+            expect(result).toBeNull();
+
+            assertType<Result<'A' | null>>(result);
         });
     });
 });
