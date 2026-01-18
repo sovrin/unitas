@@ -30,7 +30,8 @@ import {
     sequence,
     token,
     unless,
-    until
+    until,
+    validate
 } from './combinators';
 import { failure, success } from './results';
 import { Parser, Result } from './types';
@@ -1312,6 +1313,35 @@ describe('combinators', () => {
             expect(result).toEqual(['B', 'CCC']);
 
             assertType<Result<'A' | 'B'>>(result);
+        });
+    });
+
+    describe('validate', () => {
+        it('should succeed when parser succeeds and predicate returns true', () => {
+            const parser1 = createTestParser('A');
+            const parser = validate(parser1, (value) => value === 'A');
+            const result = parser('AAA');
+            expect(result).toEqual(['A', 'AA']);
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should fail when parser succeeds but predicate returns false', () => {
+            const parser1 = createTestParser('A');
+            const parser = validate(parser1, (value) => value !== 'A');
+            const result = parser('AAA');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'>>(result);
+        });
+
+        it('should fail when underlying parser fails', () => {
+            const parser1 = createTestParser('A');
+            const parser = validate(parser1, () => true);
+            const result = parser('BBB');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'>>(result);
         });
     });
 });
