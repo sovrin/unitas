@@ -25,6 +25,7 @@ import {
     optionalSkip,
     optionalWith,
     peek,
+    recover,
     right,
     sequence,
     token,
@@ -1291,6 +1292,26 @@ describe('combinators', () => {
             const unlessResult = unless(!condition, parser1)(input);
 
             expect(guardResult).toEqual(unlessResult);
+        });
+    });
+
+    describe('recover', () => {
+        it('should return parser result when parser succeeds', () => {
+            const parser1 = createTestParser('A');
+            const parser = recover(parser1, 'B');
+            const result = parser('AAA');
+            expect(result).toEqual(['A', 'AA']);
+
+            assertType<Result<'A' | 'B'>>(result);
+        });
+
+        it('should return fallback value when parser fails and not consume input', () => {
+            const parser1 = createTestParser('A');
+            const parser = recover(parser1, 'B');
+            const result = parser('CCC');
+            expect(result).toEqual(['B', 'CCC']);
+
+            assertType<Result<'A' | 'B'>>(result);
         });
     });
 });

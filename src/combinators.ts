@@ -448,3 +448,11 @@ export const unless = <T>(condition: boolean, parser: Parser<T>) => {
         return !condition ? parser(input) : success(null, input);
     });
 };
+
+export const recover = <T>(parser: Parser<T>, fallback: T) => {
+    return create<T>((input) => {
+        const result = parser(input);
+
+        return result ? result : success(fallback, input);
+    });
+};
