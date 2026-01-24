@@ -347,6 +347,102 @@ export const token = <T extends string>(str: T): Parser<T> => {
 };
 
 /**
+ * zero or more
+ */
+export const separatedBy = <T>(parser: Parser<T>, separator: Parser) => {
+    return create<T[]>((input) => {
+        const firstResult = parser(input);
+        if (!firstResult) {
+            return success([], input);
+        }
+
+        const results = [firstResult[0]];
+        let remaining = firstResult[1];
+
+        while (true) {
+            const sepResult = separator(remaining);
+            if (!sepResult) break;
+
+            const nextResult = parser(sepResult[1]);
+            if (!nextResult) {
+                // If separator matched but parser failed, backtrack
+                // Don't consume the separator
+                break;
+            }
+
+            results.push(nextResult[0]);
+            remaining = nextResult[1];
+        }
+
+        return success(results, remaining);
+    });
+};
+
+/**
+ * one or more
+ */
+export const separatedBy1 = <T>(parser: Parser<T>, separator: Parser) => {
+    return create<T[]>((input) => {
+        const result = separatedBy(parser, separator)(input);
+        if (!result) return failure();
+
+        const [values, remaining] = result;
+        if (values.length === 0) return failure();
+
+        return success(values, remaining);
+    });
+};
+
+/**
+ * one or more
+ */
+export const separatedEndBy1 = <T>(parser: Parser<T>, separator: Parser) => {
+    return create<T[]>((input) => {
+        const result = separatedBy1(parser, separator)(input);
+        if (!result) return failure();
+
+        const [values, remaining] = result;
+        const sepResult = separator(remaining);
+
+        return success(values, sepResult ? sepResult[1] : remaining);
+    });
+};
+
+/**
+ * zero or more
+ * consumes the separator even if there is no following match
+ */
+export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {
+    return create<T[]>((input) => {
+        const result = separatedBy(parser, separator)(input);
+        if (!result) return failure();
+
+        const [values, remaining] = result;
+        const sepResult = separator(remaining);
+
+        return success(values, sepResult ? sepResult[1] : remaining);
+    });
+};
+
+/**
+ * zero or more
+ */
+export const endBy = <T>(parser: Parser<T>, terminator: Parser) => {
+    return create<T[]>(
+        many(map(sequence(parser, terminator), ([value]) => value)),
+    );
+};
+
+/**
+ * one or more
+ */
+export const endBy1 = <T>(parser: Parser<T>, terminator: Parser) => {
+    return create<T[]>(
+        many1(map(sequence(parser, terminator), ([value]) => value)),
+    );
+};
+
+/**
  * parses zero or more occurrences of parser (left-to-right)
  * never fails
  * on zero matches, returns the initial value

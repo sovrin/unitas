@@ -2,6 +2,8 @@ import { assertType, describe, expect, it } from 'vitest';
 import {
     choice,
     create,
+    endBy,
+    endBy1,
     exactly,
     first,
     fold,
@@ -27,6 +29,10 @@ import {
     peek,
     recover,
     right,
+    separatedBy,
+    separatedBy1,
+    separatedEndBy,
+    separatedEndBy1,
     sequence,
     surrounded,
     token,
@@ -1026,6 +1032,359 @@ describe('combinators', () => {
             expect(result).toEqual(['', 'anything']);
 
             assertType<Result<''>>(result);
+        });
+    });
+
+    describe('separatedBy', () => {
+        it('should parse zero elements when first parser fails', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy(parser1, parser2);
+            const result = parser('C');
+            expect(result).toEqual([[], 'C']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse single element without separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy(parser1, parser2);
+            const result = parser('AAACCC');
+            expect(result).toEqual([['A'], 'AACCC']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple elements separated by separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy(parser1, parser2);
+            const result = parser('A,A,A');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle trailing separator by not consuming it', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy(parser1, parser2);
+            const result = parser('A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A'], ',']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle separator without following element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy(parser1, parser2);
+            const result = parser('A,A,C');
+            expect(result).toEqual([['A', 'A'], ',C']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('separatedBy1', () => {
+        it('should require at least one element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy1(parser1, parser2);
+            const result = parser('BBB');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse single element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy1(parser1, parser2);
+            const result = parser('ABC');
+            expect(result).toEqual([['A'], 'BC']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple elements', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy1(parser1, parser2);
+            const result = parser('A,A,A,A');
+            expect(result).toEqual([['A', 'A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle trailing separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy1(parser1, parser2);
+            const result = parser('A,A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A', 'A'], ',']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail on empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedBy1(parser1, parser2);
+            const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('separatedEndBy', () => {
+        it('should parse empty list', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy(parser1, parser2);
+            const result = parser('CCC');
+            expect(result).toEqual([[], 'CCC']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse elements without trailing separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy(parser1, parser2);
+            const result = parser('A,A,A');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse elements with trailing separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy(parser1, parser2);
+            const result = parser('A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle single element with separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy(parser1, parser2);
+            const result = parser('A,');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle single element without separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy(parser1, parser2);
+            const result = parser('A');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('separatedEndBy1', () => {
+        it('should require at least one element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('CCC');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse single element without separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('ACC');
+            expect(result).toEqual([['A'], 'CC']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse single element with separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('A,');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple elements with trailing separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple elements without trailing separator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('A,A,A');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail on empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = separatedEndBy1(parser1, parser2);
+            const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('endBy', () => {
+        it('should parse elements each followed by terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy(parser1, parser2);
+            const result = parser('A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse empty list when no elements', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy(parser1, parser2);
+            const result = parser('CCC');
+            expect(result).toEqual([[], 'CCC']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should require terminator after each element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy(parser1, parser2);
+            const result = parser('A,A,A');
+            expect(result).toEqual([['A', 'A'], 'A']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle single element with terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy(parser1, parser2);
+            const result = parser('A,');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy(parser1, parser2);
+            const result = parser('');
+            expect(result).toEqual([[], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('endBy1', () => {
+        it('should require at least one element', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy1(parser1, parser2);
+            const result = parser('CCC');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse single element with terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy1(parser1, parser2);
+            const result = parser('A,');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should parse multiple elements each with terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy1(parser1, parser2);
+            const result = parser('A,A,A,');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should not match when element lacks terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy1(parser1, parser2);
+            const result = parser('A,A,A');
+            expect(result).toEqual([['A', 'A'], 'A']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail on empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+
+            const parser = endBy1(parser1, parser2);
+            const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
         });
     });
 
