@@ -28,6 +28,7 @@ import {
     recover,
     right,
     sequence,
+    surrounded,
     token,
     unless,
     until,
@@ -738,6 +739,63 @@ describe('combinators', () => {
             const parser = middle(parser1, parser2, parser3);
             const result = parser('(content]');
             expect(result).toBeNull();
+
+            assertType<Result<'B'>>(result);
+        });
+    });
+
+    describe('surrounded', () => {
+        it('should parse content surrounded by same delimiter', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = surrounded(parser1, parser2);
+            const result = parser('ABA');
+            expect(result).toEqual(['B', '']);
+
+            assertType<Result<'B'>>(result);
+        });
+
+        it('should fail if opening delimiter fails', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = surrounded(parser1, parser2);
+            const result = parser('CBA');
+            expect(result).toBeNull();
+
+            assertType<Result<'B'>>(result);
+        });
+
+        it('should fail if content fails', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = surrounded(parser1, parser2);
+            const result = parser('ACA');
+            expect(result).toBeNull();
+
+            assertType<Result<'B'>>(result);
+        });
+
+        it('should fail if closing delimiter fails', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = surrounded(parser1, parser2);
+            const result = parser('ABC');
+            expect(result).toBeNull();
+
+            assertType<Result<'B'>>(result);
+        });
+
+        it('should leave remaining input', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = surrounded(parser1, parser2);
+            const result = parser('ABAAA');
+            expect(result).toEqual(['B', 'AA']);
 
             assertType<Result<'B'>>(result);
         });
