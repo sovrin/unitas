@@ -1,6 +1,7 @@
 import { assertType, describe, expect, it } from 'vitest';
 import {
     choice,
+    consume,
     create,
     delimited,
     endBy,
@@ -36,6 +37,8 @@ import {
     separatedEndBy,
     separatedEndBy1,
     sequence,
+    skipMany,
+    skipMany1,
     surrounded,
     token,
     unless,
@@ -916,6 +919,8 @@ describe('combinators', () => {
             const parser = until(parser1, parser2);
             const result = parser('AAAABAAAA');
             expect(result).toEqual([['A', 'A', 'A', 'A'], 'BAAAA']);
+
+            assertType<Result<'A'[]>>(result);
         });
 
         it('should return empty array when terminator is at start', () => {
@@ -923,12 +928,109 @@ describe('combinators', () => {
             const parser = until(parser1, parser2);
             const result = parser('BAAAA');
             expect(result).toEqual([[], 'BAAAA']);
+
+            assertType<Result<unknown[]>>(result);
         });
 
         it('should fail when terminator is never found and parser fails', () => {
             const parser = until(parser1, parser2);
             const result = parser('AAAA');
             expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('skipMany', () => {
+        it('should skip many occurrences and return null', () => {
+            const parser1 = createTestParser('A');
+            const parser = skipMany(parser1);
+            const result = parser('AAABBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should return null even when no matches found', () => {
+            const parser1 = createTestParser('A');
+            const parser = skipMany(parser1);
+            const result = parser('BBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should handle empty input', () => {
+            const parser1 = createTestParser('A');
+            const parser = skipMany(parser1);
+            const result = parser('');
+            expect(result).toEqual([null, '']);
+
+            assertType<Result<null>>(result);
+        });
+    });
+
+    describe('skipMany1', () => {
+        it('should skip one or more occurrences and return null', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = skipMany1(parser1);
+            const result = parser('AAABBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should fail when no matches found', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = skipMany1(parser1);
+            const result = parser('BBB');
+            expect(result).toBeNull();
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should succeed with single match', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = skipMany1(parser1);
+            const result = parser('ABBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should require at least one match', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = skipMany1(parser1);
+            const result = parser('B');
+            expect(result).toBeNull();
+
+            assertType<Result<null>>(result);
+        });
+    });
+
+    describe('consume', () => {
+        it('should consume parser result and return null', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = consume(parser1);
+            const result = parser('ABBB');
+            expect(result).toEqual([null, 'BBB']);
+
+            assertType<Result<null>>(result);
+        });
+
+        it('should fail when underlying parser fails', () => {
+            const parser1 = createTestParser('A');
+
+            const parser = consume(parser1);
+            const result = parser('BBB');
+            expect(result).toBeNull();
+
+            assertType<Result<null>>(result);
         });
     });
 

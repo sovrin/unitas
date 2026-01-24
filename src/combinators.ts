@@ -338,6 +338,24 @@ export const until = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
     });
 };
 
+/**
+ * zero or more
+ */
+export const skipMany = <T>(parser: Parser<T>) => {
+    return create<null>(map(many(parser), () => null));
+};
+
+/**
+ * one or more
+ */
+export const skipMany1 = <T>(parser: Parser<T>) => {
+    return create<null>(map(many1(parser), () => null));
+};
+
+export const consume = <T>(parser: Parser<T>) => {
+    return create<null>(map(parser, () => null));
+};
+
 export const lexeme = <T>(parser: Parser<T>) => {
     return create<T>(map(sequence(parser, regex(/^\s*/)), ([value]) => value));
 };
