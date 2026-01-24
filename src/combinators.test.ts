@@ -2,6 +2,7 @@ import { assertType, describe, expect, it } from 'vitest';
 import {
     choice,
     create,
+    delimited,
     endBy,
     endBy1,
     exactly,
@@ -11,6 +12,7 @@ import {
     foldRight,
     foldRight1,
     guard,
+    interleaved,
     last,
     lazy,
     left,
@@ -1382,6 +1384,114 @@ describe('combinators', () => {
 
             const parser = endBy1(parser1, parser2);
             const result = parser('');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+    });
+
+    describe('interleaved', () => {
+        it('should parse alternating items and separators', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = interleaved(parser1, parser2);
+            const result = parser('ABABA');
+            expect(result).toEqual([['A', 'B', 'A', 'B', 'A'], '']);
+
+            assertType<Result<('A' | 'B')[]>>(result);
+        });
+
+        it('should handle single item', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = interleaved(parser1, parser2);
+            const result = parser('AC');
+            expect(result).toEqual([['A'], 'C']);
+
+            assertType<Result<('A' | 'B')[]>>(result);
+        });
+
+        it('should handle no match', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = interleaved(parser1, parser2);
+            const result = parser('CC');
+            expect(result).toEqual([[], 'CC']);
+
+            assertType<Result<('A' | 'B')[]>>(result);
+        });
+
+        it('should stop when separator has no following item', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+
+            const parser = interleaved(parser1, parser2);
+            const result = parser('ABABC');
+            expect(result).toEqual([['A', 'B', 'A'], 'BC']);
+
+            assertType<Result<('A' | 'B')[]>>(result);
+        });
+    });
+
+    describe('delimited', () => {
+        it('should parse separated elements followed by terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+            const parser3 = createTestParser(';');
+
+            const parser = delimited(parser1, parser2, parser3);
+            const result = parser('A,A,A;');
+            expect(result).toEqual([['A', 'A', 'A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle single element with terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+            const parser3 = createTestParser(';');
+
+            const parser = delimited(parser1, parser2, parser3);
+            const result = parser('A;');
+            expect(result).toEqual([['A'], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should handle empty list with terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+            const parser3 = createTestParser(';');
+
+            const parser = delimited(parser1, parser2, parser3);
+            const result = parser(';');
+            expect(result).toEqual([[], '']);
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail without terminator', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+            const parser3 = createTestParser(';');
+
+            const parser = delimited(parser1, parser2, parser3);
+            const result = parser('A,A,A');
+            expect(result).toBeNull();
+
+            assertType<Result<'A'[]>>(result);
+        });
+
+        it('should fail on parser fail', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser(',');
+            const parser3 = createTestParser(';');
+
+            const parser = delimited(parser1, parser2, parser3);
+            const result = parser('A,A,B;');
             expect(result).toBeNull();
 
             assertType<Result<'A'[]>>(result);
