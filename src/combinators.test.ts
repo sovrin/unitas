@@ -1,9 +1,8 @@
-import { assertType, describe, expect, it } from 'vitest';
+import {assertType, describe, expect, it} from 'vitest';
 import {
     choice,
     consume,
     create,
-    delimited,
     endBy,
     endBy1,
     exactly,
@@ -36,6 +35,7 @@ import {
     separatedBy1,
     separatedEndBy,
     separatedEndBy1,
+    separatedUntil,
     sequence,
     skipMany,
     skipMany1,
@@ -43,10 +43,10 @@ import {
     token,
     unless,
     until,
-    validate
+    validate,
 } from './combinators';
-import { failure, success } from './results';
-import { Parser, Result } from './types';
+import {failure, success} from './results';
+import {Parser, Result} from './types';
 
 const createTestParser = <T extends string | number>(tester: T) =>
     create<T>((input) => {
@@ -800,6 +800,18 @@ describe('combinators', () => {
             assertType<Result<'B'>>(result);
         });
 
+        it('should support a second delimiter', () => {
+            const parser1 = createTestParser('A');
+            const parser2 = createTestParser('B');
+            const parser3 = createTestParser('C');
+
+            const parser = surrounded(parser1, parser2, parser3);
+            const result = parser('ABCAA');
+            expect(result).toEqual(['B', 'AA']);
+
+            assertType<Result<'B'>>(result);
+        });
+
         it('should leave remaining input', () => {
             const parser1 = createTestParser('A');
             const parser2 = createTestParser('B');
@@ -1538,13 +1550,13 @@ describe('combinators', () => {
         });
     });
 
-    describe('delimited', () => {
+    describe('separatedUntil', () => {
         it('should parse separated elements followed by terminator', () => {
             const parser1 = createTestParser('A');
             const parser2 = createTestParser(',');
             const parser3 = createTestParser(';');
 
-            const parser = delimited(parser1, parser2, parser3);
+            const parser = separatedUntil(parser1, parser2, parser3);
             const result = parser('A,A,A;');
             expect(result).toEqual([['A', 'A', 'A'], '']);
 
@@ -1556,7 +1568,7 @@ describe('combinators', () => {
             const parser2 = createTestParser(',');
             const parser3 = createTestParser(';');
 
-            const parser = delimited(parser1, parser2, parser3);
+            const parser = separatedUntil(parser1, parser2, parser3);
             const result = parser('A;');
             expect(result).toEqual([['A'], '']);
 
@@ -1568,7 +1580,7 @@ describe('combinators', () => {
             const parser2 = createTestParser(',');
             const parser3 = createTestParser(';');
 
-            const parser = delimited(parser1, parser2, parser3);
+            const parser = separatedUntil(parser1, parser2, parser3);
             const result = parser(';');
             expect(result).toEqual([[], '']);
 
@@ -1580,7 +1592,7 @@ describe('combinators', () => {
             const parser2 = createTestParser(',');
             const parser3 = createTestParser(';');
 
-            const parser = delimited(parser1, parser2, parser3);
+            const parser = separatedUntil(parser1, parser2, parser3);
             const result = parser('A,A,A');
             expect(result).toBeNull();
 
@@ -1592,7 +1604,7 @@ describe('combinators', () => {
             const parser2 = createTestParser(',');
             const parser3 = createTestParser(';');
 
-            const parser = delimited(parser1, parser2, parser3);
+            const parser = separatedUntil(parser1, parser2, parser3);
             const result = parser('A,A,B;');
             expect(result).toBeNull();
 

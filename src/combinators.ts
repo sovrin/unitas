@@ -289,8 +289,12 @@ export const middle = <A, B, C>(
     return create<B>(map(sequence(parserA, parserB, parserC), ([, b]) => b));
 };
 
-export const surrounded = <T>(delimiter: Parser, content: Parser<T>) => {
-    return create<T>(middle(delimiter, content, delimiter));
+export const surrounded = <T>(
+    first: Parser,
+    content: Parser<T>,
+    second?: Parser,
+) => {
+    return create<T>(middle(first, content, second || first));
 };
 
 export const first = <T extends readonly unknown[]>(
@@ -488,7 +492,7 @@ export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {
     });
 };
 
-export const delimited = <T>(
+export const separatedUntil = <T>(
     parser: Parser<T>,
     separator: Parser,
     terminator: Parser,
