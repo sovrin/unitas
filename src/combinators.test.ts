@@ -1,8 +1,7 @@
-import {assertType, describe, expect, it} from 'vitest';
+import { assertType, describe, expect, it } from 'vitest';
 import {
     choice,
     consume,
-    create,
     endBy,
     endBy1,
     exactly,
@@ -16,6 +15,7 @@ import {
     last,
     lazy,
     left,
+    leftAssoc,
     lexeme,
     many,
     many1,
@@ -43,13 +43,14 @@ import {
     token,
     unless,
     until,
-    validate,
+    validate
 } from './combinators';
-import {failure, success} from './results';
-import {Parser, Result} from './types';
+import { failure, success } from './results';
+import { Parser, Result } from './types';
+import { create } from './core';
 
-const createTestParser = <T extends string | number>(tester: T) =>
-    create<T>((input) => {
+const createTestParser = <T extends string | number>(tester: T) => {
+    return create<T>((input) => {
         const stringTester = String(tester);
         if (input.startsWith(stringTester)) {
             return success(tester, input.slice(stringTester.length));
@@ -57,6 +58,7 @@ const createTestParser = <T extends string | number>(tester: T) =>
 
         return failure();
     });
+};
 
 describe('combinators', () => {
     describe('sequence', () => {
@@ -1984,5 +1986,74 @@ describe('combinators', () => {
 
             assertType<Result<'A'>>(result);
         });
+    });
+
+    describe('leftAssoc', () => {
+        it('should parse left-associative sums without other combinators', () => {
+            const parser1 = createTestParser(1);
+            const operator = create((input) => {
+                if (input.startsWith('+')) {
+                    return success(
+                        (left: number, right: number) => left + right,
+                        input.slice(1),
+                    );
+                }
+                return failure();
+            });
+
+            const parser = leftAssoc(parser1, operator);
+
+            const result = parser('1+1+1');
+            expect(result).toEqual([3, '']); // ((1+1)+1)
+
+            assertType<Result<number>>(result);
+        });
+
+        it('should handle single operand', () => {
+            const parser1 = createTestParser(1);
+            const operator = create((input) => {
+                if (input.startsWith('+')) {
+                    return success(
+                        (left: number, right: number) => left + right,
+                        input.slice(1),
+                    );
+                }
+                return failure();
+            });
+            const parser = leftAssoc(parser1, operator);
+            const result = parser('42');
+            expect(result).toEqual([42, '']);
+        });
+        //
+        // it('should parse left-associative operations', () => {
+        //     const parser = leftAssoc(numberParser, addOp);
+        //     expect(parser('1+2+3')).toEqual([6, '']); // ((1+2)+3)
+        // });
+        //
+        // it('should handle mixed operations with same precedence', () => {
+        //     const parser = leftAssoc(numberParser, addSubOp);
+        //     expect(parser('10-3+2')).toEqual([9, '']); // ((10-3)+2)
+        // });
+        //
+        // it('should stop when operator is not found', () => {
+        //     const parser = leftAssoc(numberParser, addOp);
+        //     expect(parser('1+2*3')).toEqual([3, '*3']); // 1+2, then stops
+        // });
+        //
+        // it('should handle multiplication and division', () => {
+        //     const parser = leftAssoc(numberParser, mulDivOp);
+        //     expect(parser('8/2*3')).toEqual([12, '']); // ((8/2)*3)
+        //     expect(parser('24/3/2')).toEqual([4, '']); // ((24/3)/2)
+        // });
+        //
+        // it('should fail when first operand fails', () => {
+        //     const parser = leftAssoc(numberParser, addOp);
+        //     expect(parser('abc')).toBeNull();
+        // });
+        //
+        // it('should handle trailing operators gracefully', () => {
+        //     const parser = leftAssoc(numberParser, addOp);
+        //     expect(parser('1+2+')).toEqual([3, '+']); // Stops at incomplete operation
+        // });
     });
 });

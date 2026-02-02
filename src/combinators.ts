@@ -1,6 +1,7 @@
 import { First, Last, Nth, Parser, Success } from './types';
 import { failure, success } from './results';
 import { literal, regex } from './terminals';
+import { create } from './core';
 
 export const sequence = <T extends readonly unknown[]>(
     ...parsers: { [K in keyof T]: Parser<T[K]> }
@@ -23,11 +24,6 @@ export const sequence = <T extends readonly unknown[]>(
     });
 };
 
-export const create = <T>(parserFn: Parser<T>): Parser<T> => {
-    return (input) => {
-        return parserFn(input);
-    };
-};
 export const lazy = <T>(thunk: () => Parser<T>) => {
     return create<T>((input) => thunk()(input));
 };
@@ -630,5 +626,30 @@ export const validate = <T>(
         if (!result) return failure();
 
         return predicate(result[0]) ? result : failure();
+    });
+};
+
+export const leftAssoc = <T>(
+    term: Parser<T>,
+    operator: Parser<(left: T, right: T) => T>,
+) => {
+    return create<T>((input) => {
+        const firstResult = term(input);
+        if (!firstResult) return failure();
+
+        let [accumulator, remaining] = firstResult;
+
+        while (true) {
+            const opResult = operator(remaining);
+            if (!opResult) break;
+
+            const nextResult = term(opResult[1]);
+            if (!nextResult) break;
+
+            accumulator = opResult[0](accumulator, nextResult[0]);
+            remaining = nextResult[1];
+        }
+
+        return success(accumulator, remaining);
     });
 };

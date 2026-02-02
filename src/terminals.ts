@@ -1,6 +1,4 @@
 import { failure, success } from './results';
-import { choice, create, surrounded } from './combinators';
-import { Char, Parser } from './types';
 import {
     Char,
     Letter,
@@ -8,6 +6,8 @@ import {
     Parser,
     UpperCaseLetter,
 } from './types';
+import { create } from './core';
+import { choice, many1, map, surrounded } from './combinators';
 
 export const literal = <S extends string>(str: S) => {
     return create<S>((input) =>

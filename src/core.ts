@@ -1,6 +1,12 @@
 import { Grammar, Parser } from './types';
 import { lazy } from './combinators';
 
+export const create = <T>(parserFn: Parser<T>): Parser<T> => {
+    return (input) => {
+        return parserFn(input);
+    };
+};
+
 export const run = <T>(parser: Parser<T>, input: string): T | null => {
     const result = parser(input);
     if (!result) {
