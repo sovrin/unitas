@@ -1,0 +1,61 @@
+import { describe, it } from 'vitest';
+import { create } from '../core/create';
+import { success } from '../core/success';
+import { map } from './map';
+import { assertResult } from '../../test/utils.test';
+import { failure } from '../core/failure';
+
+describe('map', () => {
+    it('should transform parser result with single transform', () => {
+        const parser1 = create<'42'>(() => success('42', 'abc'));
+        const parser = map(parser1, parseInt);
+        const result = parser('42abc');
+
+        assertResult<number>(result, [42, 'abc']);
+    });
+
+    it('should chain multiple transforms', () => {
+        const parser1 = create<'24'>(() => success('24', 'abc'));
+        const parser = map(
+            parser1,
+            parseInt,
+            (n: number) => n * 2,
+            (n: number) => n.toString(),
+        );
+        const result = parser('21abc');
+
+        assertResult<string>(result, ['48', 'abc']);
+    });
+
+    it('should fail if underlying parser fails', () => {
+        const parser1 = create<string>(() => failure());
+        const parser = map(parser1, (s) => s.toUpperCase());
+        const result = parser('goodbye');
+
+        assertResult<string>(result);
+    });
+
+    it('should handle complex transformations', () => {
+        const parser1 = create(() =>
+            success(['count', '=', '5'] as const, ';'),
+        );
+        const parser = map(
+            parser1 as never,
+            ([key, , value]: ['count', '=', '5']) => ({
+                [key]: parseInt(value),
+            }),
+        );
+        const result = parser('count=5;');
+
+        // :O, surprising!
+        assertResult<{ count: number }>(result, [{ count: 5 }, ';']);
+    });
+
+    it('should maintain original input consumption', () => {
+        const parser1 = create<'test'>(() => success('test', 'ing'));
+        const parser = map(parser1, (s) => s.length);
+        const result = parser('testing');
+
+        assertResult<number>(result, [4, 'ing']);
+    });
+});
