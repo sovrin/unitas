@@ -19,11 +19,16 @@ describe('leftAssoc', () => {
             '-': (left, right) => left - right,
             '*': (left, right) => left * right,
             '/': (left, right) => left / right,
+            '**': (left, right) => Math.pow(left, right),
         };
 
-        const op = ops[input[0]];
+        const [operator] = input.match(/\*\*|[+\-*/]/) || [];
+        if (!operator) return failure();
 
-        return op ? success(op, input.slice(1)) : failure();
+        const operation = ops[operator];
+        if (!operation) return failure();
+
+        return success(operation, input.slice(operator.length));
     });
 
     it('should parse left-associative sums without other combinators', () => {
