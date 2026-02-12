@@ -3,7 +3,10 @@ import { failure } from '../core/failure';
 import { success } from '../core/success';
 import type { Parser } from '../types';
 
-export const leftAssoc = <T>(
+/**
+ * one or more
+ */
+export const chainLeft1 = <T>(
     term: Parser<T>,
     operator: Parser<(left: T, right: T) => T>,
 ) => {

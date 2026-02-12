@@ -3,7 +3,7 @@ import { Parser, Result } from '../types';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
 
-export const rightAssoc = <T>(
+export const chainRight1 = <T>(
     term: Parser<T>,
     operator: Parser<(left: T, right: T) => T>,
 ) => {
@@ -15,7 +15,7 @@ export const rightAssoc = <T>(
             const opResult = operator(remaining);
             if (!opResult) return success(leftValue, remaining);
 
-            const rightResult = rightAssoc(term, operator)(opResult[1]);
+            const rightResult = chainRight1(term, operator)(opResult[1]);
             if (!rightResult) return success(leftValue, remaining);
 
             const combinedValue = opResult[0](leftValue, rightResult[0]);
