@@ -25,13 +25,14 @@ describe('lazy', () => {
     });
 
     it('should enable recursive parsers', () => {
-        const charParser = (expected: string) =>
-            create<string>((input) => {
+        const charParser = (expected: string) => {
+            return create<string>((input) => {
                 if (input.length > 0 && input[0] === expected) {
                     return success(expected, input.slice(1));
                 }
                 return failure();
             });
+        };
 
         const parent: Parser<string> = lazy<string>(() => {
             const baseCase = charParser('x');
