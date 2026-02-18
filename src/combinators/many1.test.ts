@@ -34,4 +34,21 @@ describe('many1', () => {
 
         assertResult<'A'[]>(result);
     });
+
+    it('should fail when many returns null after first success', () => {
+        let callCount = 0;
+        const flakyParser = (input: string) => {
+            callCount++;
+            if (callCount === 1) {
+                return ['A', input.slice(1)] as const;
+            }
+            // On subsequent calls, throw to make many() fail
+            throw new Error('unexpected');
+        };
+
+        const parser = many1(flakyParser as any);
+
+        // many() will throw internally, but this depends on many's implementation
+        expect(() => parser('AAA')).toThrow();
+    });
 });

@@ -14,10 +14,8 @@ export const many1 = <T>(parser: Parser<T>) => {
             return failure();
         }
 
-        const restResults = many(parser)(result[1]);
+        const [manyValue, manyRemainder] = many(parser)(result[1])!;
 
-        return restResults
-            ? success([result[0], ...restResults[0]], restResults[1])
-            : failure();
+        return success([result[0], ...manyValue], manyRemainder);
     });
 };

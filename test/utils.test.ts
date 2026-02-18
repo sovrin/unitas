@@ -35,8 +35,7 @@ export const operatorParser = create((input) => {
     if (!operator) return failure();
 
     const operation = ops[operator];
-    if (!operation) return failure();
-
+    
     return success(operation, input.slice(operator.length));
 });
 

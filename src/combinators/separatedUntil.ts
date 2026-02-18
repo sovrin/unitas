@@ -10,10 +10,9 @@ export const separatedUntil = <T>(
     terminator: Parser,
 ) => {
     return create<T[]>((input) => {
-        const items = separatedBy(parser, separator)(input);
-        if (!items) return failure();
+        const [values, remaining] = separatedBy(parser, separator)(input)!;
 
-        const term = terminator(items[1]);
-        return term ? success(items[0], term[1]) : failure();
+        const result = terminator(remaining);
+        return result ? success(values, result[1]) : failure();
     });
 };

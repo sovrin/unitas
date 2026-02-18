@@ -10,9 +10,8 @@ import { separatedBy } from './separatedBy';
 export const separatedBy1 = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {
         const result = separatedBy(parser, separator)(input);
-        if (!result) return failure();
 
-        const [values, remaining] = result;
+        const [values, remaining] = result!;
         if (values.length === 0) return failure();
 
         return success(values, remaining);

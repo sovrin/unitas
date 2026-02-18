@@ -45,4 +45,11 @@ describe('optionalWith', () => {
             'y',
         ]);
     });
+
+    it('should return parsed value when parser succeeds', () => {
+        const parser = optionalWith(parser1, 'default');
+        const result = parser('ABCD');
+
+        assertResult<'A' | 'default'>(result, ['A', 'BCD']);
+    });
 });

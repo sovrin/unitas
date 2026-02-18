@@ -24,4 +24,11 @@ describe('charIn', () => {
 
         assertResult<never>(result);
     });
+
+    it('should handle empty input', () => {
+        const parser = charIn(['A'] as const);
+        const result = parser('');
+
+        assertResult<'A'>(result);
+    });
 });
