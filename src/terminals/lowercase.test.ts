@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
-import { lowercase } from './lowercase';
-import { LowerCaseLetter } from '../types';
+
 import { assertResult } from '../../test/utils.test';
+import type { LowerCaseLetter } from '../types';
+import { lowercase } from './lowercase';
 
 describe('lowercase', () => {
     it('should parse lowercase', () => {

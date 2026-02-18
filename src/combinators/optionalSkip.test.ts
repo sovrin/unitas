@@ -1,8 +1,9 @@
 import { describe, it } from 'vitest';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
-import { optionalSkip } from './optionalSkip';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { optionalSkip } from './optionalSkip';
 
 describe('optionalSkip', () => {
     it('should consume input on success', () => {

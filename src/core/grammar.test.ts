@@ -1,8 +1,9 @@
 import { assertType, describe, expect, it } from 'vitest';
+
+import { sequence } from '../combinators/sequence';
+import { literal } from '../terminals/literal';
 import { grammar } from './grammar';
 import { run } from './run';
-import { literal } from '../terminals/literal';
-import { sequence } from '../combinators/sequence';
 
 describe('grammar', () => {
     it('should create recursive parsers', () => {

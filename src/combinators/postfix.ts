@@ -1,9 +1,12 @@
 import { create } from '../core/create';
-import { Parser } from '../types';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
+import type { Parser } from '../types';
 
-export const postfix = <T>(atom: Parser<T>, operator: Parser<(value: T) => T>) => {
+export const postfix = <T>(
+    atom: Parser<T>,
+    operator: Parser<(value: T) => T>,
+) => {
     return create<T>((input) => {
         const atomResult = atom(input);
         if (!atomResult) return failure();

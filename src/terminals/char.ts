@@ -1,7 +1,7 @@
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
-import { Char } from '../types';
+import type { Char } from '../types';
 
 export const char = <S extends string>(expected: Char<S>) => {
     if ((expected as string).length !== 1) {

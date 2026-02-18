@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { rest } from './rest';
+
 import { assertResult } from '../../test/utils.test';
+import { rest } from './rest';
 
 describe('rest', () => {
     it('should return all remaining input', () => {

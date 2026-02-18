@@ -1,7 +1,7 @@
 import { create } from '../core/create';
-import { Parser, Result } from '../types';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
+import type { Parser, Result } from '../types';
 
 export const chainRight1 = <T>(
     term: Parser<T>,

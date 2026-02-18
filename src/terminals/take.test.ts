@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { take } from './take';
+
 import { assertResult } from '../../test/utils.test';
+import { take } from './take';
 
 describe('take', () => {
     it('should take specified number of characters', () => {

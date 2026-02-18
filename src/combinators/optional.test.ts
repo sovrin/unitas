@@ -1,8 +1,9 @@
 import { describe, it } from 'vitest';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
-import { optional } from './optional';
-import { failure } from '../core/failure';
 import { create } from '../core/create';
+import { failure } from '../core/failure';
+import { optional } from './optional';
 
 describe('optional', () => {
     const parser1 = createTestParser('A');

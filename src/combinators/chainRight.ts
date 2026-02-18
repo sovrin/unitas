@@ -1,6 +1,6 @@
-import { Parser } from '../types';
 import { create } from '../core/create';
 import { success } from '../core/success';
+import type { Parser } from '../types';
 import { chainRight1 } from './chainRight1';
 
 /**

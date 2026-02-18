@@ -1,4 +1,5 @@
 import { describe, it } from 'vitest';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
 import { endBy1 } from './endBy1';
 

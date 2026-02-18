@@ -1,4 +1,5 @@
 import { describe, expect, it } from 'vitest';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
 import { guard } from './guard';
 

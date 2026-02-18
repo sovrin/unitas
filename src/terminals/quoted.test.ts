@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
 import { literal } from './literal';
 import { quoted } from './quoted';
-import { assertResult } from '../../test/utils.test';
 
 describe('quoted', () => {
     it('should parse double-quoted content', () => {

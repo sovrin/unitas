@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { tab } from './tab';
+
 import { assertResult } from '../../test/utils.test';
+import { tab } from './tab';
 
 describe('tab', () => {
     it('should parse tab character', () => {

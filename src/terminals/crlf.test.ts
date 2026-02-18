@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { crlf } from './crlf';
+
 import { assertResult } from '../../test/utils.test';
+import { crlf } from './crlf';
 
 describe('crlf', () => {
     it('should parse CRLF sequence', () => {

@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { digits } from './digits';
+
 import { assertResult } from '../../test/utils.test';
+import { digits } from './digits';
 
 describe('digits', () => {
     it('should parse multiple digits and return number', () => {

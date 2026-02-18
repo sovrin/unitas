@@ -1,8 +1,8 @@
-import { digit } from './digit';
 import { many1 } from '../combinators/many1';
+import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
-import { create } from '../core/create';
+import { digit } from './digit';
 
 export const digits = create<number>((input) => {
     const result = many1(digit)(input);

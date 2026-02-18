@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { token } from './token';
+
 import { assertResult } from '../../test/utils.test';
+import { token } from './token';
 
 describe('token', () => {
     it('should parse a symbol and consume trailing whitespace', () => {

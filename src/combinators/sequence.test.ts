@@ -1,9 +1,10 @@
 import { describe, it } from 'vitest';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
-import { sequence } from './sequence';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
+import { sequence } from './sequence';
 
 describe('sequence', () => {
     it('should call parsers in order and collect results', () => {

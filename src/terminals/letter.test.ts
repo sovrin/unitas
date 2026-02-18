@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
-import { letter } from './letter';
+
 import { assertResult } from '../../test/utils.test';
-import { Letter } from '../types';
+import type { Letter } from '../types';
+import { letter } from './letter';
 
 describe('letter', () => {
     it('should parse alphabetic characters', () => {

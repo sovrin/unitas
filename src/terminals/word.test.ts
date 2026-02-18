@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { word } from './word';
+
 import { assertResult } from '../../test/utils.test';
+import { word } from './word';
 
 describe('word', () => {
     it('should parse whole words with word boundaries', () => {

@@ -1,10 +1,11 @@
 import { describe, expect, it } from 'vitest';
-import { lazy } from './lazy';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
+import type { Parser } from '../types';
 import { create } from './create';
-import { success } from './success';
 import { failure } from './failure';
-import { Parser } from '../types';
+import { lazy } from './lazy';
+import { success } from './success';
 
 describe('lazy', () => {
     it('should defer parser creation', () => {

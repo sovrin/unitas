@@ -1,8 +1,9 @@
 import { describe, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
+import { create } from '../core/create';
 import { success } from '../core/success';
 import { first } from './first';
-import { create } from '../core/create';
-import { assertResult } from '../../test/utils.test';
 
 describe('first', () => {
     it('should return first element of array parser result', () => {

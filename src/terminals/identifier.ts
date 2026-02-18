@@ -1,7 +1,7 @@
 import { create } from '../core/create';
-import { regex } from './regex';
-import { success } from '../core/success';
 import { failure } from '../core/failure';
+import { success } from '../core/success';
+import { regex } from './regex';
 
 export const identifier = create<string>((input) => {
     const result = regex(/^[a-zA-Z_][a-zA-Z0-9_]*/)(input);

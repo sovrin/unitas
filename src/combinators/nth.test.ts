@@ -1,8 +1,9 @@
 import { describe, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
 import { create } from '../core/create';
 import { success } from '../core/success';
 import { nth } from './nth';
-import { assertResult } from '../../test/utils.test';
 
 describe('nth', () => {
     it('should return element at specified index', () => {

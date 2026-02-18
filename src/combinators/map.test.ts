@@ -1,9 +1,10 @@
 import { describe, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
 import { create } from '../core/create';
+import { failure } from '../core/failure';
 import { success } from '../core/success';
 import { map } from './map';
-import { assertResult } from '../../test/utils.test';
-import { failure } from '../core/failure';
 
 describe('map', () => {
     it('should transform parser result with single transform', () => {

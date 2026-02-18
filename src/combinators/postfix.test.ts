@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
-import { postfix } from './postfix';
-import { Parser } from '../types';
+
 import { assertResult, numberParser } from '../../test/utils.test';
+import type { Parser } from '../types';
+import { postfix } from './postfix';
 
 describe('postfix', () => {
     const postfixOps: Parser<(value: number) => number> = (input) => {

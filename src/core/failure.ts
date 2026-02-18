@@ -1,3 +1,3 @@
-import { Failure } from '../types';
+import type { Failure } from '../types';
 
 export const failure = (): Failure => null;

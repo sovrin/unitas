@@ -1,8 +1,7 @@
 import { create } from '../core/create';
-import { Parser } from '../types';
 import { success } from '../core/success';
+import type { Parser } from '../types';
 import { chainLeft1 } from './chainLeft1';
-
 
 /**
  * zero or more

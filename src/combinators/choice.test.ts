@@ -1,9 +1,10 @@
 import { describe, it } from 'vitest';
-import { failure } from '../core/failure';
+
+import { assertResult, createTestParser } from '../../test/utils.test';
 import { create } from '../core/create';
+import { failure } from '../core/failure';
 import { success } from '../core/success';
 import { choice } from './choice';
-import { assertResult, createTestParser } from '../../test/utils.test';
 
 describe('choice', () => {
     it('should try parsers in order and return first success', () => {

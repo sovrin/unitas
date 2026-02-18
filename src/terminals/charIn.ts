@@ -1,7 +1,7 @@
 import { create } from '../core/create';
 import { failure } from '../core/failure';
+import type { Char } from '../types';
 import { char } from './char';
-import { Char } from '../types';
 
 export function charIn<S extends string>(
     chars: readonly Char<S>[],

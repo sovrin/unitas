@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { identifier } from './identifier';
+
 import { assertResult } from '../../test/utils.test';
+import { identifier } from './identifier';
 
 describe('identifier', () => {
     it('should parse valid identifiers', () => {

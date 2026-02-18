@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { line } from './line';
+
 import { assertResult } from '../../test/utils.test';
+import { line } from './line';
 
 describe('line', () => {
     it('should parse until newline', () => {

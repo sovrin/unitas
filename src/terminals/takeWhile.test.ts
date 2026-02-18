@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { takeWhile } from './takeWhile';
+
 import { assertResult } from '../../test/utils.test';
+import { takeWhile } from './takeWhile';
 
 describe('takeWhile', () => {
     it('should take characters while predicate is true', () => {

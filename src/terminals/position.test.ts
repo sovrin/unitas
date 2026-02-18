@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { position } from './position';
+
 import { assertResult } from '../../test/utils.test';
+import { position } from './position';
 
 describe('position', () => {
     it('should return current position (input length)', () => {

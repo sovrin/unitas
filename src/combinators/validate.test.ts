@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { validate } from './validate';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
+import { validate } from './validate';
 
 describe('validate', () => {
     it('should succeed when parser succeeds and predicate returns true', () => {

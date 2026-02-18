@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { literal } from './literal';
+
 import { assertResult } from '../../test/utils.test';
+import { literal } from './literal';
 
 describe('literal', () => {
     it('should match exact string at beginning of input', () => {

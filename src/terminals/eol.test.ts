@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { eol } from './eol';
+
 import { assertResult } from '../../test/utils.test';
+import { eol } from './eol';
 
 describe('eol', () => {
     it('should parse various line endings', () => {

@@ -1,10 +1,11 @@
 import { describe, it } from 'vitest';
-import { chainLeft } from './chainLeft';
+
 import {
     assertResult,
     numberParser,
     operatorParser,
 } from '../../test/utils.test';
+import { chainLeft } from './chainLeft';
 
 describe('chainLeft', () => {
     it('should return default value when parser fails', () => {

@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { noneOf } from './noneOf';
+
 import { assertResult } from '../../test/utils.test';
+import { noneOf } from './noneOf';
 
 describe('noneOf', () => {
     it('should match character not in forbidden set', () => {

@@ -1,11 +1,12 @@
 import { describe, it } from 'vitest';
-import { chainRight1 } from './chainRight1';
-import { chainLeft1 } from './chainLeft1';
+
 import {
     assertResult,
     numberParser,
     operatorParser,
 } from '../../test/utils.test';
+import { chainLeft1 } from './chainLeft1';
+import { chainRight1 } from './chainRight1';
 
 describe('chainRight1', () => {
     it('should handle single operand', () => {

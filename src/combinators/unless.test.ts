@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { unless } from './unless';
+
 import { assertResult, createTestParser } from '../../test/utils.test';
 import { guard } from './guard';
+import { unless } from './unless';
 
 describe('unless', () => {
     it('should run parser and consume input when condition is false', () => {

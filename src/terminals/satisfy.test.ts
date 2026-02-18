@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { satisfy } from './satisfy';
+
 import { assertResult } from '../../test/utils.test';
+import { satisfy } from './satisfy';
 
 describe('satisfy', () => {
     it('should match character that satisfies predicate', () => {

@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { charIn } from './charIn';
+
 import { assertResult } from '../../test/utils.test';
+import { charIn } from './charIn';
 
 describe('charIn', () => {
     it('should match character from allowed set', () => {

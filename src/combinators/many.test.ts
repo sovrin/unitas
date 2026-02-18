@@ -1,8 +1,9 @@
 import { describe, expect, it } from 'vitest';
+
+import { assertResult, createTestParser } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { many } from './many';
-import { assertResult, createTestParser } from '../../test/utils.test';
 
 describe('many', () => {
     it('should parse zero occurrences', () => {

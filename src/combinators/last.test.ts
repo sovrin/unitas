@@ -1,8 +1,9 @@
 import { describe, it } from 'vitest';
-import { create } from '../core/create';
-import { last } from './last';
-import { success } from '../core/success';
+
 import { assertResult } from '../../test/utils.test';
+import { create } from '../core/create';
+import { success } from '../core/success';
+import { last } from './last';
 
 describe('last', () => {
     it('should return last element of array parser result', () => {

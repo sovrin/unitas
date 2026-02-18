@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { regex } from './regex';
+
 import { assertResult } from '../../test/utils.test';
+import { regex } from './regex';
 
 describe('regex', () => {
     it('should match pattern at beginning of input', () => {

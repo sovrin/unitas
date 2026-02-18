@@ -1,4 +1,4 @@
-import { Parser } from '../types';
+import type { Parser } from '../types';
 
 export const create = <T>(parserFn: Parser<T>): Parser<T> => {
     return (input) => {

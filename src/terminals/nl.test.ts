@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { nl } from './nl';
+
 import { assertResult } from '../../test/utils.test';
+import { nl } from './nl';
 
 describe('nl', () => {
     it('should parse newline character', () => {

@@ -1,9 +1,10 @@
 import { describe, expect, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
 import { foldRight } from './foldRight';
-import { assertResult } from '../../test/utils.test';
 
 describe('foldRight', () => {
     const parser1 = create<string>((input: string) => {

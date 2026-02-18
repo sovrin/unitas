@@ -1,7 +1,7 @@
 import { create } from '../core/create';
-import { Parser } from '../types';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
+import type { Parser } from '../types';
 
 export const prefix = <T>(
     operator: Parser<(value: T) => T>,

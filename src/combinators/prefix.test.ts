@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
-import { prefix } from './prefix';
-import { Parser } from '../types';
+
 import { assertResult, numberParser } from '../../test/utils.test';
+import type { Parser } from '../types';
+import { prefix } from './prefix';
 
 describe('prefix', () => {
     const unaryOps: Parser<(value: number) => number> = (input) => {

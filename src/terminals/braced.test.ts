@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
-import { literal } from './literal';
-import { braced } from './braced';
+
 import { assertResult } from '../../test/utils.test';
+import { braced } from './braced';
+import { literal } from './literal';
 
 describe('braced', () => {
     it('should parse braced content', () => {

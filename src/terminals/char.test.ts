@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
-import { char } from './char';
+
 import { assertResult } from '../../test/utils.test';
+import { char } from './char';
 
 describe('char', () => {
     it('should match single character', () => {

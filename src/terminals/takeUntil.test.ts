@@ -1,4 +1,5 @@
 import { describe, it } from 'vitest';
+
 import { assertResult } from '../../test/utils.test';
 import { takeUntil } from './takeUntil';
 

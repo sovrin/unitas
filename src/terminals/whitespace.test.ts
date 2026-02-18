@@ -1,6 +1,7 @@
 import { describe, it } from 'vitest';
-import { whitespace } from './whitespace';
+
 import { assertResult } from '../../test/utils.test';
+import { whitespace } from './whitespace';
 
 describe('whitespace', () => {
     it('should parse whitespace', () => {

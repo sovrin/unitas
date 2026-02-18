@@ -1,4 +1,4 @@
-import { Grammar, Parser } from '../types';
+import type { Grammar, Parser } from '../types';
 import { lazy } from './lazy';
 
 export const grammar = <T extends Record<string, unknown>>(

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
+
+import { assertResult } from '../../test/utils.test';
 import { literal } from './literal';
 import { parenthesized } from './parenthesized';
-import { assertResult } from '../../test/utils.test';
 
 describe('parenthesized', () => {
     it('should parse parenthesized content', () => {

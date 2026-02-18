@@ -13,8 +13,7 @@ export const foldRight = <T, U>(
     initial: U,
     folder: (acc: U, item: T) => U,
 ): Parser<U> => {
-    return create<U>((input
-    ) => {
+    return create<U>((input) => {
         const [items, rest] = many(parser)(input) as Success<T[]>;
 
         return success(items.reduceRight(folder, initial), rest);
