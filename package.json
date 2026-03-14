@@ -25,6 +25,26 @@
                 "types": "./dist/index.d.cts",
                 "default": "./dist/index.cjs"
             }
+        },
+        "./combinators": {
+            "import": {
+                "types": "./dist/combinators.d.mts",
+                "default": "./dist/combinators.mjs"
+            },
+            "require": {
+                "types": "./dist/combinators.d.cts",
+                "default": "./dist/combinators.cjs"
+            }
+        },
+        "./terminals": {
+            "import": {
+                "types": "./dist/terminals.d.mts",
+                "default": "./dist/terminals.mjs"
+            },
+            "require": {
+                "types": "./dist/terminals.d.cts",
+                "default": "./dist/terminals.cjs"
+            }
         }
     },
     "scripts": {
@@ -36,7 +56,8 @@
         "coverage": "vitest run --coverage",
         "format": "oxfmt",
         "lint": "oxlint",
-        "lint:fix": "oxlint --fix"
+        "lint:fix": "oxlint --fix",
+        "generate": "node bin/generate-index.mjs"
     },
     "devDependencies": {
         "@types/node": "^25",
