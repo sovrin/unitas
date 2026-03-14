@@ -23,13 +23,13 @@ describe('interleaved', () => {
         assertResult<('A' | 'B')[]>(result, [['A'], 'C']);
     });
 
-    it('should handle no match', () => {
+    it('should fail when first item does not match', () => {
         const parser1 = createTestParser('A');
         const parser2 = createTestParser('B');
         const parser = interleaved(parser1, parser2);
         const result = parser('CC');
 
-        assertResult<('A' | 'B')[]>(result, [[], 'CC']);
+        assertResult<('A' | 'B')[]>(result);
     });
 
     it('should stop when separator has no following item', () => {
