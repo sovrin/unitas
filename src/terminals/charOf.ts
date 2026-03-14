@@ -4,10 +4,10 @@ import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { char } from './char';
 
-export function charIn<S extends string>(
+export function charOf<S extends string>(
     chars: readonly Char<S>[],
 ): ReturnType<typeof char<Char<S>>>;
-export function charIn(chars: readonly string[]) {
+export function charOf(chars: readonly string[]) {
     return create<string>((input) => {
         if (input.length === 0) {
             return failure();
