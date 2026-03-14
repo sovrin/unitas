@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
     assertResult,
@@ -8,31 +8,31 @@ import {
 import { chainLeft } from './chainLeft';
 
 describe('chainLeft', () => {
-    it('should return default value when parser fails', () => {
-        const parser = chainLeft(numberParser, operatorParser, 999);
+    it('should return null when parser fails', () => {
+        const parser = chainLeft(numberParser, operatorParser);
         const result = parser('abc');
 
-        assertResult<number>(result, [999, 'abc']);
+        expect(result).toBeNull();
     });
 
     it('should parse successful chain', () => {
-        const parser = chainLeft(numberParser, operatorParser, 0);
+        const parser = chainLeft(numberParser, operatorParser);
         const result = parser('1+2+3');
 
-        assertResult<number>(result, [6, '']);
+        assertResult<number | null>(result, [6, '']);
     });
 
-    it('should return single value without default when successful', () => {
-        const parser = chainLeft(numberParser, operatorParser, 999);
+    it('should return single value when successful', () => {
+        const parser = chainLeft(numberParser, operatorParser);
         const result = parser('42');
 
-        assertResult<number>(result, [42, '']);
+        assertResult<number | null>(result, [42, '']);
     });
 
-    it('should handle empty input with default', () => {
-        const parser = chainLeft(numberParser, operatorParser, 0);
+    it('should handle empty input', () => {
+        const parser = chainLeft(numberParser, operatorParser);
         const result = parser('');
 
-        assertResult<number>(result, [0, '']);
+        expect(result).toBeNull();
     });
 });

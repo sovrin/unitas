@@ -1,4 +1,4 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import {
     assertResult,
@@ -8,38 +8,38 @@ import {
 import { chainRight } from './chainRight';
 
 describe('chainRight', () => {
-    it('should return default value when parser fails', () => {
-        const parser = chainRight(numberParser, operatorParser, 1);
+    it('should return null when parser fails', () => {
+        const parser = chainRight(numberParser, operatorParser);
         const result = parser('abc');
 
-        assertResult<number>(result, [1, 'abc']);
+        expect(result).toBeNull();
     });
 
     it('should parse successful chain', () => {
-        const parser = chainRight(numberParser, operatorParser, 1);
+        const parser = chainRight(numberParser, operatorParser);
         const result = parser('2**3');
 
-        assertResult<number>(result, [8, '']);
+        assertResult<number | null>(result, [8, '']);
     });
 
-    it('should return single value without default when successful', () => {
-        const parser = chainRight(numberParser, operatorParser, 999);
+    it('should return single value when successful', () => {
+        const parser = chainRight(numberParser, operatorParser);
         const result = parser('5');
 
-        assertResult<number>(result, [5, '']);
+        assertResult<number | null>(result, [5, '']);
     });
 
-    it('should handle empty input with default', () => {
-        const parser = chainRight(numberParser, operatorParser, 1);
+    it('should handle empty input', () => {
+        const parser = chainRight(numberParser, operatorParser);
         const result = parser('');
 
-        assertResult<number>(result, [1, '']);
+        expect(result).toBeNull();
     });
 
-    it('should demonstrate right associativity with default', () => {
-        const parser = chainRight(numberParser, operatorParser, 0);
+    it('should demonstrate right associativity', () => {
+        const parser = chainRight(numberParser, operatorParser);
         const result = parser('10-3-2');
 
-        assertResult<number>(result, [9, '']); // 10-(3-2)
+        assertResult<number | null>(result, [9, '']); // 10-(3-2)
     });
 });
