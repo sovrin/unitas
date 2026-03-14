@@ -1,6 +1,7 @@
+import type { Char } from '../types';
+
 import { create } from '../core/create';
 import { failure } from '../core/failure';
-import type { Char } from '../types';
 import { char } from './char';
 
 export function charIn<S extends string>(

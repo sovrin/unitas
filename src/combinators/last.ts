@@ -1,5 +1,6 @@
-import { create } from '../core/create';
 import type { Last, Parser } from '../types';
+
+import { create } from '../core/create';
 import { map } from './map';
 
 export const last = <T extends readonly [unknown, ...unknown[]]>(

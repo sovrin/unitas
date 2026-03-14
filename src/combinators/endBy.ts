@@ -1,5 +1,6 @@
-import { create } from '../core/create';
 import type { Parser } from '../types';
+
+import { create } from '../core/create';
 import { many } from './many';
 import { map } from './map';
 import { sequence } from './sequence';

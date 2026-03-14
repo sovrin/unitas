@@ -7,7 +7,7 @@ import { success } from '../core/success';
 import { foldRight1 } from './foldRight1';
 
 describe('foldRight1', () => {
-    const parser1 = create<string>((input: string) => {
+    const stringParser = create<string>((input: string) => {
         if (input.length === 0) {
             return failure();
         }
@@ -16,7 +16,7 @@ describe('foldRight1', () => {
 
     it('should fold right over parsed items', () => {
         const parser = foldRight1(
-            parser1,
+            stringParser,
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -26,8 +26,12 @@ describe('foldRight1', () => {
     });
 
     it('should return null, one or more successful parser returns are required', () => {
-        const parser1 = create<number>(() => failure());
-        const parser = foldRight1(parser1, 42, (acc, digit) => acc + digit);
+        const failureParser = create<number>(() => failure());
+        const parser = foldRight1(
+            failureParser,
+            42,
+            (acc, digit) => acc + digit,
+        );
         const result = parser('ABC');
 
         assertResult<number>(result);

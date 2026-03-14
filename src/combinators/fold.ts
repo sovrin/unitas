@@ -1,6 +1,7 @@
+import type { Parser, Success } from '../types';
+
 import { create } from '../core/create';
 import { success } from '../core/success';
-import type { Parser, Success } from '../types';
 import { many } from './many';
 
 /**

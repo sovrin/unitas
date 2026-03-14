@@ -7,8 +7,8 @@ import { many } from './many';
 
 describe('many', () => {
     it('should parse zero occurrences', () => {
-        const parser1 = create(() => failure());
-        const parser = many(parser1);
+        const failureParser = create(() => failure());
+        const parser = many(failureParser);
         const result = parser('BCD');
 
         assertResult<unknown[]>(result, [[], 'BCD']);

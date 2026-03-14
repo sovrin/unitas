@@ -6,10 +6,10 @@ import { failure } from '../core/failure';
 import { optional } from './optional';
 
 describe('optional', () => {
-    const parser1 = createTestParser('A');
+    const aParser = createTestParser('A');
 
     it('should return parsed value when parser succeeds', () => {
-        const parser = optional(parser1);
+        const parser = optional(aParser);
         const result = parser('ABC');
 
         assertResult<'A' | null>(result, ['A', 'BC']);

@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
 import type { Parser } from '../types';
+
+import { assertResult, createTestParser } from '../../test/utils.test';
 import { create } from './create';
 import { failure } from './failure';
 import { lazy } from './lazy';
@@ -87,8 +88,8 @@ describe('lazy', () => {
     });
 
     it('should handle parser that fails', () => {
-        const parser1 = create(() => failure());
-        const result = parser1('goodbye');
+        const failureParser = create(() => failure());
+        const result = failureParser('goodbye');
 
         assertResult<unknown>(result);
     });

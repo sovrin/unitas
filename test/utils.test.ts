@@ -1,8 +1,10 @@
-import { create } from '../src/core/create';
-import { success } from '../src/core/success';
-import { failure } from '../src/core/failure';
 import { assertType, expect } from 'vitest';
-import { Result } from '../src/types';
+
+import type { Result } from '../src/types';
+
+import { create } from '../src/core/create';
+import { failure } from '../src/core/failure';
+import { success } from '../src/core/success';
 
 export const createTestParser = <T extends string | number>(tester: T) => {
     return create<T>((input) => {
@@ -35,7 +37,7 @@ export const operatorParser = create((input) => {
     if (!operator) return failure();
 
     const operation = ops[operator];
-    
+
     return success(operation, input.slice(operator.length));
 });
 

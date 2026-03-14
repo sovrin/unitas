@@ -27,9 +27,9 @@ describe('sequence', () => {
     });
 
     it('should fail if first parser fails', () => {
-        const parser1 = create(() => failure());
+        const failureParser = create(() => failure());
         const parser2 = createTestParser('B');
-        const parser = sequence(parser1, parser2);
+        const parser = sequence(failureParser, parser2);
         const result = parser('xxx');
 
         assertResult<[unknown, 'B']>(result);
@@ -37,9 +37,9 @@ describe('sequence', () => {
 
     it('should fail if middle parser fails', () => {
         const parser1 = createTestParser('A');
-        const parser2 = create(() => failure());
+        const failureParser = create(() => failure());
         const parser3 = createTestParser('C');
-        const parser = sequence(parser1, parser2, parser3);
+        const parser = sequence(parser1, failureParser, parser3);
         const result = parser('xxx');
 
         assertResult<['A', unknown, 'C']>(result);

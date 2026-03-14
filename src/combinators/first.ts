@@ -1,5 +1,6 @@
-import { create } from '../core/create';
 import type { First, Parser } from '../types';
+
+import { create } from '../core/create';
 import { map } from './map';
 
 export const first = <T extends readonly unknown[]>(

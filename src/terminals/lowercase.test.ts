@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
 import type { LowerCaseLetter } from '../types';
+
+import { assertResult } from '../../test/utils.test';
 import { lowercase } from './lowercase';
 
 describe('lowercase', () => {

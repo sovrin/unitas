@@ -6,25 +6,25 @@ import { failure } from '../core/failure';
 import { optionalWith } from './optionalWith';
 
 describe('optionalWith', () => {
-    const parser1 = createTestParser('A');
+    const parserA = createTestParser('A');
 
     it('should return default value when parser fails', () => {
-        const parser = optionalWith(parser1, 'default');
+        const parser = optionalWith(parserA, 'default');
         const result = parser('BCD');
 
         assertResult<'A' | 'default'>(result, ['default', 'BCD']);
     });
 
     it('should not consume input when parser fails', () => {
-        const parser1 = create<'A'>(() => failure());
-        const parser = optionalWith(parser1, 'world');
+        const parserFail = create<'A'>(() => failure());
+        const parser = optionalWith(parserFail, 'world');
         const result = parser('goodbye');
 
         assertResult<'A' | 'world'>(result, ['world', 'goodbye']);
     });
 
     it('should handle empty input', () => {
-        const parser = optionalWith(parser1, 'empty');
+        const parser = optionalWith(parserA, 'empty');
         const result = parser('');
 
         assertResult<'A' | 'empty'>(result, ['empty', '']);
@@ -47,7 +47,7 @@ describe('optionalWith', () => {
     });
 
     it('should return parsed value when parser succeeds', () => {
-        const parser = optionalWith(parser1, 'default');
+        const parser = optionalWith(parserA, 'default');
         const result = parser('ABCD');
 
         assertResult<'A' | 'default'>(result, ['A', 'BCD']);

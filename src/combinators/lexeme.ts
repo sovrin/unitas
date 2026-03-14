@@ -1,6 +1,7 @@
+import type { Parser } from '../types';
+
 import { create } from '../core/create';
 import { regex } from '../terminals/regex';
-import type { Parser } from '../types';
 import { map } from './map';
 import { sequence } from './sequence';
 

@@ -1,54 +1,56 @@
 {
-  "name": "unitas",
-  "version": "0.0.0",
-  "type": "module",
-  "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
-  "types": "./dist/index.d.mts",
-  "exports": {
-    ".": {
-      "import": {
-        "types": "./dist/index.d.mts",
-        "default": "./dist/index.mjs"
-      },
-      "require": {
-        "types": "./dist/index.d.cts",
-        "default": "./dist/index.cjs"
-      }
+    "name": "unitas",
+    "version": "0.0.0",
+    "keywords": [],
+    "license": "MIT",
+    "author": {
+        "name": "Oleg Kamlowski",
+        "email": "oleg.kamlowski@thomann.io"
+    },
+    "files": [
+        "src",
+        "README.md"
+    ],
+    "type": "module",
+    "main": "./dist/index.cjs",
+    "module": "./dist/index.js",
+    "types": "./dist/index.d.mts",
+    "exports": {
+        ".": {
+            "import": {
+                "types": "./dist/index.d.mts",
+                "default": "./dist/index.mjs"
+            },
+            "require": {
+                "types": "./dist/index.d.cts",
+                "default": "./dist/index.cjs"
+            }
+        }
+    },
+    "scripts": {
+        "build": "tsdown",
+        "watch": "tsdown --watch",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "test:types": "attw --pack .",
+        "coverage": "vitest run --coverage",
+        "format": "oxfmt",
+        "lint": "oxlint",
+        "lint:fix": "oxlint --fix"
+    },
+    "devDependencies": {
+        "@types/node": "^25",
+        "@vitest/coverage-istanbul": "^4.0.16",
+        "@vitest/coverage-v8": "^4",
+        "oxfmt": "^0.38.0",
+        "oxlint": "^1.53.0",
+        "tsdown": "^0.20",
+        "tsx": "^4",
+        "typescript": "^5",
+        "vitest": "^4"
+    },
+    "engines": {
+        "node": ">=20.0.0",
+        "npm": ">=10.8.0"
     }
-  },
-  "scripts": {
-    "build": "tsdown",
-    "watch": "tsdown --watch",
-    "test": "vitest run",
-    "test:watch": "vitest",
-    "test:types": "attw --pack .",
-    "coverage": "vitest run --coverage",
-    "format": "prettier --write src"
-  },
-  "engines": {
-    "node": ">=20.0.0",
-    "npm": ">=10.8.0"
-  },
-  "files": [
-    "src",
-    "README.md"
-  ],
-  "author": {
-    "name": "Oleg Kamlowski",
-    "email": "oleg.kamlowski@thomann.io"
-  },
-  "license": "MIT",
-  "keywords": [],
-  "devDependencies": {
-    "oxfmt": "^0.38.0",
-    "oxlint": "^1.53.0",
-    "@types/node": "^25",
-    "@vitest/coverage-istanbul": "^4.0.16",
-    "@vitest/coverage-v8": "^4",
-    "tsdown": "^0.20",
-    "tsx": "^4",
-    "typescript": "^5",
-    "vitest": "^4"
-  }
 }

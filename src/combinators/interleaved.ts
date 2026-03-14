@@ -1,7 +1,8 @@
+import type { Parser } from '../types';
+
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
-import type { Parser } from '../types';
 
 export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {
     return create<Array<T | S>>((input) => {

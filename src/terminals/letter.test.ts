@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
 import type { Letter } from '../types';
+
+import { assertResult } from '../../test/utils.test';
 import { letter } from './letter';
 
 describe('letter', () => {

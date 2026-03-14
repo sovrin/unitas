@@ -7,7 +7,7 @@ import { success } from '../core/success';
 import { foldRight } from './foldRight';
 
 describe('foldRight', () => {
-    const parser1 = create<string>((input: string) => {
+    const stringParser = create<string>((input: string) => {
         if (input.length === 0) {
             return failure();
         }
@@ -17,7 +17,7 @@ describe('foldRight', () => {
 
     it('should fold right over parsed items', () => {
         const parser = foldRight(
-            parser1,
+            stringParser,
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -51,7 +51,7 @@ describe('foldRight', () => {
 
     it('should work with complex accumulator types', () => {
         const parser = foldRight(
-            parser1,
+            stringParser,
             { label: '', count: 0 },
             (acc, label) => ({
                 label: acc.label + label,
@@ -67,7 +67,7 @@ describe('foldRight', () => {
     });
 
     it('should work with array building', () => {
-        const parser = foldRight(parser1, [] as string[], (acc, digit) => [
+        const parser = foldRight(stringParser, [] as string[], (acc, digit) => [
             ...acc,
             digit + 'Z',
         ]);
@@ -77,8 +77,8 @@ describe('foldRight', () => {
     });
 
     it('should not fail and return the initial value and not consume', () => {
-        const parser1 = create(() => failure());
-        const parser = foldRight(parser1, 0, (acc) => acc + 1);
+        const parserFail = create(() => failure());
+        const parser = foldRight(parserFail, 0, (acc) => acc + 1);
         const result = parser('ABC');
         expect(result).toEqual([0, 'ABC']);
 

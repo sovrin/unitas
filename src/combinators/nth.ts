@@ -1,5 +1,6 @@
-import { create } from '../core/create';
 import type { Nth, Parser } from '../types';
+
+import { create } from '../core/create';
 import { map } from './map';
 
 export const nth = <T extends readonly unknown[], N extends number>(

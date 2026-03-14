@@ -15,8 +15,8 @@ describe('optionalSkip', () => {
     });
 
     it('should not consume input on failure', () => {
-        const parser1 = create(() => failure());
-        const parser = optionalSkip(parser1);
+        const failureParser = create(() => failure());
+        const parser = optionalSkip(failureParser);
         const result = parser('ABCD');
 
         assertResult<void>(result, [undefined, 'ABCD']);

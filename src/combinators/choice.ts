@@ -1,6 +1,7 @@
+import type { Parser } from '../types';
+
 import { create } from '../core/create';
 import { failure } from '../core/failure';
-import type { Parser } from '../types';
 
 export const choice = <T>(...parsers: Parser<T>[]) => {
     return create<T>((input) => {

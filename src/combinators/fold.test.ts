@@ -7,7 +7,7 @@ import { success } from '../core/success';
 import { fold } from './fold';
 
 describe('fold', () => {
-    const parser1 = create<string>((input: string) => {
+    const stringParser = create<string>((input: string) => {
         if (input.length === 0) {
             return failure();
         }
@@ -15,7 +15,11 @@ describe('fold', () => {
     });
 
     it('should fold left over parsed items', () => {
-        const parser = fold(parser1, 'Z', (acc, item) => `(${acc}${item})`);
+        const parser = fold(
+            stringParser,
+            'Z',
+            (acc, item) => `(${acc}${item})`,
+        );
         const result = parser('ABC');
 
         assertResult<string>(result, ['(((ZA)B)C)', '']);
@@ -44,10 +48,14 @@ describe('fold', () => {
     });
 
     it('should work with complex accumulator types', () => {
-        const parser = fold(parser1, { label: '', count: 0 }, (acc, label) => ({
-            label: acc.label + label,
-            count: acc.count + 1,
-        }));
+        const parser = fold(
+            stringParser,
+            { label: '', count: 0 },
+            (acc, label) => ({
+                label: acc.label + label,
+                count: acc.count + 1,
+            }),
+        );
         const result = parser('ABC');
 
         assertResult<{
@@ -57,7 +65,7 @@ describe('fold', () => {
     });
 
     it('should work with array building', () => {
-        const parser = fold(parser1, [] as string[], (acc, digit) => [
+        const parser = fold(stringParser, [] as string[], (acc, digit) => [
             ...acc,
             digit + 'Z',
         ]);
@@ -67,8 +75,8 @@ describe('fold', () => {
     });
 
     it('should not fail and return the initial value and not consume', () => {
-        const parser1 = create(() => failure());
-        const parser = fold(parser1, 0, (acc) => acc + 1);
+        const failureParser = create(() => failure());
+        const parser = fold(failureParser, 0, (acc) => acc + 1);
         const result = parser('ABC');
 
         assertResult<number>(result, [0, 'ABC']);

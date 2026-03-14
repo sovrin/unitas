@@ -1,7 +1,8 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, numberParser } from '../../test/utils.test';
 import type { Parser } from '../types';
+
+import { assertResult, numberParser } from '../../test/utils.test';
 import { prefix } from './prefix';
 
 describe('prefix', () => {
