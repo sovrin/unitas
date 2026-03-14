@@ -1,3 +1,3 @@
 import { satisfy } from './satisfy';
 
-export const whitespace = satisfy<' '>((c) => /\s/.test(c));
+export const whitespace = satisfy<string>((c) => /\s/.test(c));

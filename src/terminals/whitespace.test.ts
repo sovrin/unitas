@@ -7,18 +7,18 @@ describe('whitespace', () => {
     it('should parse whitespace', () => {
         const result = whitespace(' ');
 
-        assertResult<' '>(result, [' ', '']);
+        assertResult<string>(result, [' ', '']);
     });
 
     it('should parse only one whitespace', () => {
         const result = whitespace('   ');
 
-        assertResult<' '>(result, [' ', '  ']);
+        assertResult<string>(result, [' ', '  ']);
     });
 
     it('should fail on non-whitespace', () => {
         const result = whitespace('ABC');
 
-        assertResult<' '>(result);
+        assertResult<string>(result);
     });
 });
