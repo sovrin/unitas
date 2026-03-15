@@ -29,7 +29,7 @@ export * from './middle';
 export * from './not';
 export * from './nth';
 export * from './optional';
-export * from './optionalSkip';
+export * from './optionalConsume';
 export * from './peek';
 export * from './postfix';
 export * from './prefix';
