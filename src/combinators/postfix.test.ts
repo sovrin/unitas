@@ -7,7 +7,8 @@ import {
     assertSuccess,
     numberParser,
 } from '../../test/utils.test';
-import { failure, success } from '../core';
+import { failure } from '../core/failure';
+import { success } from '../core/success';
 import { postfix } from './postfix';
 
 describe('postfix', () => {

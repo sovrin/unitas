@@ -5,7 +5,7 @@ import {
     assertSuccess,
     createTestParser,
 } from '../../test/utils.test';
-import { success } from '../core';
+import { success } from '../core/success';
 import { many1 } from './many1';
 
 describe('many1', () => {

@@ -1,7 +1,7 @@
 import type { Parser } from '../types';
 
-import { forward } from '../core';
 import { create } from '../core/create';
+import { forward } from '../core/forward';
 import { success } from '../core/success';
 
 export const optional = <T>(parser: Parser<T>) => {
