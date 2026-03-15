@@ -42,6 +42,17 @@ describe('choice', () => {
         assertFailure<unknown>(result);
     });
 
+    it('should handle different types', () => {
+        const parserA = create<'A'>((input) => success('A', input.slice(1)));
+        const parserB = create<'B'[]>((input) =>
+            success(['B'], input.slice(1)),
+        );
+        const parser = choice(parserA, parserB);
+        const result = parser('ABC');
+
+        assertSuccess<'A' | 'B'[]>(result, 'A', 'BC');
+    });
+
     it('should handle single parser', () => {
         const parser1 = createTestParser('A');
         const parser = choice(parser1);
