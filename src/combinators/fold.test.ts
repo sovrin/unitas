@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
@@ -22,7 +22,7 @@ describe('fold', () => {
         );
         const result = parser('ABC');
 
-        assertResult<string>(result, ['(((ZA)B)C)', '']);
+        assertSuccess<string>(result, '(((ZA)B)C)', '');
     });
 
     it('should work with empty input (return initial value and not consume input)', () => {
@@ -33,7 +33,7 @@ describe('fold', () => {
         );
         const result = parser('ABC');
 
-        assertResult<string>(result, ['Z', 'ABC']);
+        assertSuccess<string>(result, 'Z', 'ABC');
     });
 
     it('should work with empty input (return initial value)', () => {
@@ -44,7 +44,7 @@ describe('fold', () => {
         );
         const result = parser('');
 
-        assertResult<string>(result, ['Z', '']);
+        assertSuccess<string>(result, 'Z', '');
     });
 
     it('should work with complex accumulator types', () => {
@@ -58,10 +58,10 @@ describe('fold', () => {
         );
         const result = parser('ABC');
 
-        assertResult<{
+        assertSuccess<{
             label: string;
             count: number;
-        }>(result, [{ label: 'ABC', count: 3 }, '']);
+        }>(result, { label: 'ABC', count: 3 }, '');
     });
 
     it('should work with array building', () => {
@@ -71,7 +71,7 @@ describe('fold', () => {
         ]);
         const result = parser('ABC');
 
-        assertResult<string[]>(result, [['AZ', 'BZ', 'CZ'], '']);
+        assertSuccess<string[]>(result, ['AZ', 'BZ', 'CZ'], '');
     });
 
     it('should not fail and return the initial value and not consume', () => {
@@ -79,6 +79,6 @@ describe('fold', () => {
         const parser = fold(failureParser, 0, (acc) => acc + 1);
         const result = parser('ABC');
 
-        assertResult<number>(result, [0, 'ABC']);
+        assertSuccess<number>(result, 0, 'ABC');
     });
 });

@@ -13,12 +13,12 @@ export const sequence = <T extends readonly unknown[]>(
 
         for (const parser of parsers) {
             const result = parser(remaining);
-            if (!result) {
+            if (!result.ok) {
                 return failure();
             }
 
-            results.push(result[0]);
-            remaining = result[1];
+            results.push(result.value);
+            remaining = result.remaining;
         }
 
         return success(results as unknown as T, remaining);

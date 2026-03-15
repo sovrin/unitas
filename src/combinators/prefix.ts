@@ -14,19 +14,19 @@ export const prefix = <T>(
 
         while (true) {
             const opResult = operator(remaining);
-            if (!opResult) break;
-            operators.push(opResult[0]);
-            remaining = opResult[1];
+            if (!opResult.ok) break;
+            operators.push(opResult.value);
+            remaining = opResult.remaining;
         }
 
         const atomResult = atom(remaining);
-        if (!atomResult) return failure();
+        if (!atomResult.ok) return failure();
 
         const finalValue = operators.reduceRight(
             (value, op) => op(value),
-            atomResult[0],
+            atomResult.value,
         );
 
-        return success(finalValue, atomResult[1]);
+        return success(finalValue, atomResult.remaining);
     });
 };

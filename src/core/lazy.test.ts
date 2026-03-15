@@ -2,7 +2,11 @@ import { describe, expect, it } from 'vitest';
 
 import type { Parser } from '../types';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { create } from './create';
 import { failure } from './failure';
 import { lazy } from './lazy';
@@ -21,7 +25,7 @@ describe('lazy', () => {
         expect(called).toBe(false);
         const result = parser('ABC');
 
-        assertResult<'A'>(result, ['A', 'BC']);
+        assertSuccess<'A'>(result, 'A', 'BC');
 
         expect(called).toBe(true);
     });
@@ -45,11 +49,12 @@ describe('lazy', () => {
                 }
 
                 const innerResult = parent(input.slice(1));
-                if (!innerResult) {
+                if (!innerResult.ok) {
                     return failure();
                 }
 
-                const [innerValue, afterInner] = innerResult;
+                const { value: innerValue, remaining: afterInner } =
+                    innerResult;
                 if (afterInner.length === 0 || afterInner[0] !== ')') {
                     return failure();
                 }
@@ -60,30 +65,30 @@ describe('lazy', () => {
             // Try the recursive case first, then base case
             return create<string>((input) => {
                 const recursiveResult = recursiveCase(input);
-                if (recursiveResult) return recursiveResult;
+                if (recursiveResult.ok) return recursiveResult;
+
                 return baseCase(input);
             });
         });
 
         {
             const result = parent('x');
-
-            assertResult<string>(result, ['x', '']);
+            assertSuccess<string>(result, 'x', '');
         }
         {
             const result = parent('(x)');
 
-            assertResult<string>(result, ['x', '']);
+            assertSuccess<string>(result, 'x', '');
         }
         {
             const result = parent('((x))');
 
-            assertResult<string>(result, ['x', '']);
+            assertSuccess<string>(result, 'x', '');
         }
         {
             const result = parent('(((x)))');
 
-            assertResult<string>(result, ['x', '']);
+            assertSuccess<string>(result, 'x', '');
         }
     });
 
@@ -91,6 +96,6 @@ describe('lazy', () => {
         const failureParser = create(() => failure());
         const result = failureParser('goodbye');
 
-        assertResult<unknown>(result);
+        assertFailure<unknown>(result);
     });
 });

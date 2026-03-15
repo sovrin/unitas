@@ -17,12 +17,14 @@ export const foldRight1 = <T, U>(
 ): Parser<U> => {
     return create<U>((input) => {
         const first = parser(input);
-        if (!first) {
+        if (!first.ok) {
             return failure();
         }
 
-        const [firstValue, rest] = first;
-        const [items, finalRest] = many(parser)(rest) as Success<T[]>;
+        const { value: firstValue, remaining: rest } = first;
+        const { value: items, remaining: finalRest } = many(parser)(
+            rest,
+        ) as Success<T[]>;
 
         const all = [firstValue, ...items];
         const folded = all.reduceRight(folder, initial);

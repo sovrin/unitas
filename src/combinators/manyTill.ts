@@ -11,17 +11,17 @@ export const manyTill = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
 
         while (true) {
             const termResult = terminator(remaining);
-            if (termResult) {
-                return success(results, termResult[1]);
+            if (termResult.ok) {
+                return success(results, termResult.remaining);
             }
 
             const parseResult = parser(remaining);
-            if (!parseResult) {
+            if (!parseResult.ok) {
                 return failure();
             }
 
-            results.push(parseResult[0]);
-            remaining = parseResult[1];
+            results.push(parseResult.value);
+            remaining = parseResult.remaining;
         }
     });
 };

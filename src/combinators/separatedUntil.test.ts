@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { separatedUntil } from './separatedUntil';
 
 describe('separatedUntil', () => {
@@ -12,7 +16,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A,A,A;');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A'], '']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
     });
 
     it('should handle single element with terminator', () => {
@@ -23,7 +27,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A;');
 
-        assertResult<'A'[]>(result, [['A'], '']);
+        assertSuccess<'A'[]>(result, ['A'], '');
     });
 
     it('should handle empty list with terminator', () => {
@@ -34,7 +38,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser(';');
 
-        assertResult<'A'[]>(result, [[], '']);
+        assertSuccess<'A'[]>(result, [], '');
     });
 
     it('should fail without terminator', () => {
@@ -45,7 +49,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A,A,A');
 
-        assertResult<'A'[]>(result);
+        assertFailure<'A'[]>(result);
     });
 
     it('should fail on parser fail', () => {
@@ -56,6 +60,6 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A,A,B;');
 
-        assertResult<'A'[]>(result);
+        assertFailure<'A'[]>(result);
     });
 });

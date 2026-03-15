@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { skipMany1 } from './skipMany1';
 
 describe('skipMany1', () => {
@@ -10,7 +14,7 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('AAABBB');
 
-        assertResult<null>(result, [null, 'BBB']);
+        assertSuccess<null>(result, null, 'BBB');
     });
 
     it('should fail when no matches found', () => {
@@ -19,7 +23,7 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('BBB');
 
-        assertResult<null>(result);
+        assertFailure<null>(result);
     });
 
     it('should succeed with single match', () => {
@@ -28,7 +32,7 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('ABBB');
 
-        assertResult<null>(result, [null, 'BBB']);
+        assertSuccess<null>(result, null, 'BBB');
     });
 
     it('should require at least one match', () => {
@@ -37,6 +41,6 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('B');
 
-        assertResult<null>(result);
+        assertFailure<null>(result);
     });
 });

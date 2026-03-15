@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { validate } from './validate';
 
 describe('validate', () => {
@@ -9,7 +13,7 @@ describe('validate', () => {
         const parser = validate(parser1, (value) => value === 'A');
         const result = parser('AAA');
 
-        assertResult<'A'>(result, ['A', 'AA']);
+        assertSuccess<'A'>(result, 'A', 'AA');
     });
 
     it('should fail when parser succeeds but predicate returns false', () => {
@@ -17,7 +21,7 @@ describe('validate', () => {
         const parser = validate(parser1, (value) => value !== 'A');
         const result = parser('AAA');
 
-        assertResult<'A'>(result);
+        assertFailure<'A'>(result);
     });
 
     it('should fail when underlying parser fails', () => {
@@ -25,6 +29,6 @@ describe('validate', () => {
         const parser = validate(parser1, () => true);
         const result = parser('BBB');
 
-        assertResult<'A'>(result);
+        assertFailure<'A'>(result);
     });
 });

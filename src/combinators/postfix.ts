@@ -10,15 +10,15 @@ export const postfix = <T>(
 ) => {
     return create<T>((input) => {
         const atomResult = atom(input);
-        if (!atomResult) return failure();
+        if (!atomResult.ok) return failure();
 
-        let [value, remaining] = atomResult;
+        let { value, remaining } = atomResult;
 
         while (true) {
             const opResult = operator(remaining);
-            if (!opResult) break;
-            value = opResult[0](value);
-            remaining = opResult[1];
+            if (!opResult.ok) break;
+            value = opResult.value(value);
+            remaining = opResult.remaining;
         }
 
         return success(value, remaining);

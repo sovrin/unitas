@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils.test';
 import { skipMany } from './skipMany';
 
 describe('skipMany', () => {
@@ -9,7 +9,7 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('AAABBB');
 
-        assertResult<null>(result, [null, 'BBB']);
+        assertSuccess<null>(result, null, 'BBB');
     });
 
     it('should return null even when no matches found', () => {
@@ -17,7 +17,7 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('BBB');
 
-        assertResult<null>(result, [null, 'BBB']);
+        assertSuccess<null>(result, null, 'BBB');
     });
 
     it('should handle empty input', () => {
@@ -25,6 +25,6 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('');
 
-        assertResult<null>(result, [null, '']);
+        assertSuccess<null>(result, null, '');
     });
 });

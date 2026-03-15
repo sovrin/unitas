@@ -2,31 +2,31 @@ import { describe, it } from 'vitest';
 
 import type { Letter } from '../types';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { letter } from './letter';
 
 describe('letter', () => {
     it('should parse alphabetic characters', () => {
         const result = letter('A');
 
-        assertResult<Letter>(result, ['A', '']);
+        assertSuccess<Letter>(result, 'A', '');
     });
 
     it('should fail on non-letter characters', () => {
         const result = letter('123' as never);
 
-        assertResult<unknown>(result);
+        assertFailure<unknown>(result);
     });
 
     it('should only parse first character', () => {
         const result = letter('hello' as never);
 
-        assertResult<unknown>(result, ['h', 'ello']);
+        assertSuccess<unknown>(result, 'h', 'ello');
     });
 
     it('should match the expected type', () => {
         const result = letter('A');
 
-        assertResult<Letter>(result, ['A', '']);
+        assertSuccess<Letter>(result, 'A', '');
     });
 });

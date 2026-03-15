@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { optionalSkip } from './optionalSkip';
@@ -11,7 +11,7 @@ describe('optionalSkip', () => {
         const parser = optionalSkip(parser1);
         const result = parser('ABCD');
 
-        assertResult<void>(result, [undefined, 'BCD']);
+        assertSuccess<void>(result, undefined, 'BCD');
     });
 
     it('should not consume input on failure', () => {
@@ -19,6 +19,6 @@ describe('optionalSkip', () => {
         const parser = optionalSkip(failureParser);
         const result = parser('ABCD');
 
-        assertResult<void>(result, [undefined, 'ABCD']);
+        assertSuccess<void>(result, undefined, 'ABCD');
     });
 });

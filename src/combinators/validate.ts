@@ -9,8 +9,8 @@ export const validate = <T>(
 ) => {
     return create<T>((input) => {
         const result = parser(input);
-        if (!result) return failure();
+        if (!result.ok) return failure();
 
-        return predicate(result[0]) ? result : failure();
+        return predicate(result.value) ? result : failure();
     });
 };

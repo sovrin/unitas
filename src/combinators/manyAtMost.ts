@@ -10,12 +10,12 @@ export const manyAtMost = <T>(parser: Parser<T>, n: number) => {
 
         for (let i = 0; i < n; i++) {
             const result = parser(remaining);
-            if (!result) {
+            if (!result.ok) {
                 break;
             }
 
-            results.push(result[0]);
-            remaining = result[1];
+            results.push(result.value);
+            remaining = result.remaining;
         }
 
         return success(results, remaining);

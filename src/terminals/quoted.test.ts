@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { literal } from './literal';
 import { quoted } from './quoted';
 
@@ -10,7 +10,7 @@ describe('quoted', () => {
         const parser = quoted(parser1);
         const result = parser('"ABC"');
 
-        assertResult<'ABC'>(result, ['ABC', '']);
+        assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should parse single-quoted content', () => {
@@ -18,7 +18,7 @@ describe('quoted', () => {
         const parser = quoted(parser1);
         const result = parser("'ABC'");
 
-        assertResult<'ABC'>(result, ['ABC', '']);
+        assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should fail with mismatched quotes', () => {
@@ -26,15 +26,14 @@ describe('quoted', () => {
         const parser = quoted(parser1);
         const result = parser('\'ABC"');
 
-        assertResult<'ABC'>(result);
+        assertFailure<'ABC'>(result);
     });
 
     it('should handle empty quoted strings', () => {
         const parser1 = literal('');
         const parser = quoted(parser1);
         const result = parser('""');
-        expect(result).toEqual(['', '']);
 
-        assertResult<''>(result, ['', '']);
+        assertSuccess<''>(result, '', '');
     });
 });

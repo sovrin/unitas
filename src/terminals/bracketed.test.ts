@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { bracketed } from './bracketed';
 import { literal } from './literal';
 
@@ -10,7 +10,7 @@ describe('bracketed', () => {
         const parser = bracketed(parser1);
         const result = parser('[ABC]');
 
-        assertResult<'ABC'>(result, ['ABC', '']);
+        assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should fail with uneven brackets', () => {
@@ -18,7 +18,7 @@ describe('bracketed', () => {
         const parser = bracketed(parser1);
         const result = parser('[ABC');
 
-        assertResult<'ABC'>(result);
+        assertFailure<'ABC'>(result);
     });
 
     it('should handle empty brackets', () => {
@@ -26,6 +26,6 @@ describe('bracketed', () => {
         const parser = bracketed(parser1);
         const result = parser('[]');
 
-        assertResult<''>(result, ['', '']);
+        assertSuccess<''>(result, '', '');
     });
 });

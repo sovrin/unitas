@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { satisfy } from './satisfy';
 
 describe('satisfy', () => {
@@ -8,22 +8,20 @@ describe('satisfy', () => {
         const parser = satisfy((c: string) => c >= '0' && c <= '9');
         const result = parser('5abc');
 
-        assertResult<string>(result, ['5', 'abc']);
+        assertSuccess<string>(result, '5', 'abc');
     });
 
     it('should fail when character does not satisfy predicate', () => {
         const parser = satisfy((c: string) => c >= '0' && c <= '9');
         const result = parser('abc');
-        expect(result).toBeNull();
 
-        assertResult<string>(result);
+        assertFailure<string>(result);
     });
 
     it('should fail on empty input', () => {
         const parser = satisfy(() => true);
         const result = parser('');
-        expect(result).toBeNull();
 
-        assertResult<string>(result);
+        assertFailure<string>(result);
     });
 });

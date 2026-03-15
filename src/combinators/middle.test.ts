@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { middle } from './middle';
 
 describe('middle', () => {
@@ -12,27 +16,27 @@ describe('middle', () => {
         const parser = middle(parser1, parser2, parser3);
         const result = parser('ABC');
 
-        assertResult<'B'>(result, ['B', '']);
+        assertSuccess<'B'>(result, 'B', '');
     });
 
     it('should fail if first parser fails', () => {
         const parser = middle(parser1, parser2, parser3);
         const result = parser('[content)');
 
-        assertResult<'B'>(result);
+        assertFailure<'B'>(result);
     });
 
     it('should fail if middle parser fails', () => {
         const parser = middle(parser1, parser2, parser3);
         const result = parser('(wrong)');
 
-        assertResult<'B'>(result);
+        assertFailure<'B'>(result);
     });
 
     it('should fail if last parser fails', () => {
         const parser = middle(parser1, parser2, parser3);
         const result = parser('(content]');
 
-        assertResult<'B'>(result);
+        assertFailure<'B'>(result);
     });
 });

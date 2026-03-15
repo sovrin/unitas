@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser, Success } from '../types';
 
 import { create } from '../core/create';
 import { success } from '../core/success';
@@ -12,9 +12,9 @@ export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {
         const result = separatedBy(parser, separator)(input);
 
-        const [values, remaining] = result!;
+        const { value: values, remaining } = result as Success<T[]>;
         const sepResult = separator(remaining);
 
-        return success(values, sepResult ? sepResult[1] : remaining);
+        return success(values, sepResult.ok ? sepResult.remaining : remaining);
     });
 };

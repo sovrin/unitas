@@ -1,16 +1,11 @@
 import type { Parser } from '../types';
 
-import { create } from '../core/create';
-import { failure } from '../core/failure';
+import { create, forward } from '../core';
 
 export const attempt = <T>(parser: Parser<T>) => {
     return create<T>((input) => {
         const result = parser(input);
 
-        if (!result) {
-            return failure();
-        }
-
-        return result;
+        return forward(result);
     });
 };

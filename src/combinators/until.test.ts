@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { until } from './until';
@@ -13,7 +17,7 @@ describe('until', () => {
         const parser = until(aParser, bParser);
         const result = parser('AAAABAAAA');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A', 'A'], 'BAAAA']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 'BAAAA');
     });
 
     it('should return empty array when terminator is at start', () => {
@@ -21,13 +25,13 @@ describe('until', () => {
         const parser = until(failureParser, bParser);
         const result = parser('BAAAA');
 
-        assertResult<unknown[]>(result, [[], 'BAAAA']);
+        assertSuccess<unknown[]>(result, [], 'BAAAA');
     });
 
     it('should fail when terminator is never found and parser fails', () => {
         const parser = until(aParser, bParser);
         const result = parser('AAAA');
 
-        assertResult<'A'[]>(result);
+        assertFailure<'A'[]>(result);
     });
 });

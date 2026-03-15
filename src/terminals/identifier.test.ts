@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { identifier } from './identifier';
 
 describe('identifier', () => {
@@ -8,27 +8,27 @@ describe('identifier', () => {
         {
             const result = identifier('variable_name');
 
-            assertResult<string>(result, ['variable_name', '']);
+            assertSuccess<string>(result, 'variable_name', '');
         }
         {
             const result = identifier('_private');
 
-            assertResult<string>(result, ['_private', '']);
+            assertSuccess<string>(result, '_private', '');
         }
         {
             const result = identifier('camelCase');
 
-            assertResult<string>(result, ['camelCase', '']);
+            assertSuccess<string>(result, 'camelCase', '');
         }
         {
             const result = identifier('PascalCase');
 
-            assertResult<string>(result, ['PascalCase', '']);
+            assertSuccess<string>(result, 'PascalCase', '');
         }
         {
             const result = identifier('name123');
 
-            assertResult<string>(result, ['name123', '']);
+            assertSuccess<string>(result, 'name123', '');
         }
     });
 
@@ -36,27 +36,27 @@ describe('identifier', () => {
         {
             const result = identifier('123invalid');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
         {
             const result = identifier('invalid-name');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
         {
             const result = identifier('invalid.name');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
         {
             const result = identifier('valid_name!');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
         {
             const result = identifier('test.property');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
     });
 
@@ -64,12 +64,12 @@ describe('identifier', () => {
         {
             const result = identifier('a');
 
-            assertResult<string>(result, ['a', '']);
+            assertSuccess<string>(result, 'a', '');
         }
         {
             const result = identifier('_');
 
-            assertResult<string>(result, ['_', '']);
+            assertSuccess<string>(result, '_', '');
         }
     });
 });

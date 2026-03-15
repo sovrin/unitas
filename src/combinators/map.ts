@@ -82,15 +82,15 @@ export function map<A>(
 ) {
     return create((input) => {
         const result = parser(input);
-        if (!result) {
+        if (!result.ok) {
             return failure();
         }
 
         const finalValue = transforms.reduce(
             (acc, fn) => fn(acc),
-            result[0] as unknown,
+            result.value as unknown,
         );
 
-        return success(finalValue, result[1]);
+        return success(finalValue, result.remaining);
     });
 }

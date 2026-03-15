@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { skip } from './skip';
 
 describe('skip', () => {
@@ -9,7 +13,7 @@ describe('skip', () => {
         const parser = skip(parser1, 3);
         const result = parser('AAAB');
 
-        assertResult<null>(result, [null, 'B']);
+        assertSuccess<null>(result, null, 'B');
     });
 
     it('should fail if not enough occurrences', () => {
@@ -17,7 +21,7 @@ describe('skip', () => {
         const parser = skip(parser1, 3);
         const result = parser('AB');
 
-        expect(result).toBeNull();
+        assertFailure(result);
     });
 
     it('should skip zero occurrences', () => {
@@ -25,6 +29,6 @@ describe('skip', () => {
         const parser = skip(parser1, 0);
         const result = parser('ABC');
 
-        assertResult<null>(result, [null, 'ABC']);
+        assertSuccess<null>(result, null, 'ABC');
     });
 });

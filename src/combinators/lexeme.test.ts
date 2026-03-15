@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { lexeme } from './lexeme';
 
 describe('lexeme', () => {
@@ -9,7 +13,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A       B');
 
-        assertResult<'A'>(result, ['A', 'B']);
+        assertSuccess<'A'>(result, 'A', 'B');
     });
 
     it('should parse a token with no trailing whitespace', () => {
@@ -17,7 +21,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('AB');
 
-        assertResult<'A'>(result, ['A', 'B']);
+        assertSuccess<'A'>(result, 'A', 'B');
     });
 
     it('should consume various types of whitespace', () => {
@@ -25,7 +29,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A \t\n\r  B');
 
-        assertResult<'A'>(result, ['A', 'B']);
+        assertSuccess<'A'>(result, 'A', 'B');
     });
 
     it('should fail when the underlying parser fails', () => {
@@ -33,7 +37,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('B');
 
-        assertResult<'A'>(result);
+        assertFailure<'A'>(result);
     });
 
     it('should handle empty input after consuming whitespace', () => {
@@ -41,6 +45,6 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A   ');
 
-        assertResult<'A'>(result, ['A', '']);
+        assertSuccess<'A'>(result, 'A', '');
     });
 });

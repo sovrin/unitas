@@ -1,3 +1,6 @@
 import type { Failure } from '../types';
 
-export const failure = (): Failure => null;
+export const failure = (error?: string): Failure => ({
+    ok: false,
+    error,
+});

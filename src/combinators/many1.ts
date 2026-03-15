@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser, Success } from '../types';
 
 import { create } from '../core/create';
 import { failure } from '../core/failure';
@@ -11,12 +11,14 @@ import { many } from './many';
 export const many1 = <T>(parser: Parser<T>) => {
     return create<T[]>((input) => {
         const result = parser(input);
-        if (!result) {
+        if (!result.ok) {
             return failure();
         }
 
-        const [manyValue, manyRemainder] = many(parser)(result[1])!;
+        const { value: manyValue, remaining: manyRemainder } = many(parser)(
+            result.remaining,
+        ) as Success<T[]>;
 
-        return success([result[0], ...manyValue], manyRemainder);
+        return success([result.value, ...manyValue], manyRemainder);
     });
 };

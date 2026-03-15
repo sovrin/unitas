@@ -1,6 +1,10 @@
 import { describe, expect, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { guard } from './guard';
 import { unless } from './unless';
 
@@ -10,7 +14,7 @@ describe('unless', () => {
         const parser = unless(false, parser1);
         const result = parser('AAA');
 
-        assertResult<'A' | null>(result, ['A', 'AA']);
+        assertSuccess<'A' | null>(result, 'A', 'AA');
     });
 
     it('should return null and consume no input when condition is true', () => {
@@ -18,7 +22,7 @@ describe('unless', () => {
         const parser = unless(true, parser1);
         const result = parser('AAA');
 
-        assertResult<'A' | null>(result, [null, 'AAA']);
+        assertSuccess<'A' | null>(result, null, 'AAA');
     });
 
     it('should propagate parser failure when condition is false but parser fails', () => {
@@ -26,7 +30,7 @@ describe('unless', () => {
         const parser = unless(false, parser1);
         const result = parser('BBB');
 
-        assertResult<'A' | null>(result);
+        assertFailure<'A' | null>(result);
     });
 
     it('should be opposite of guard', () => {

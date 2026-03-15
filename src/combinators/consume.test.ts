@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { consume } from './consume';
 
 describe('consume', () => {
@@ -9,7 +13,7 @@ describe('consume', () => {
         const parser = consume(parser1);
         const result = parser('ABBB');
 
-        assertResult<unknown>(result, [null, 'BBB']);
+        assertSuccess<unknown>(result, null, 'BBB');
     });
 
     it('should fail when underlying parser fails', () => {
@@ -17,6 +21,6 @@ describe('consume', () => {
         const parser = consume(parser1);
         const result = parser('BBB');
 
-        assertResult<null>(result, null);
+        assertFailure<null>(result);
     });
 });

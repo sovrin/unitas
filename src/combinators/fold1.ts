@@ -17,15 +17,18 @@ export const fold1 = <T, U>(
 ): Parser<U> => {
     return create<U>((input) => {
         const first = parser(input);
-        if (!first) {
+        if (!first.ok) {
             return failure();
         }
 
-        const [firstValue, rest] = first;
+        const { value: firstValue, remaining } = first;
 
         let acc = folder(initial, firstValue);
 
-        const [items, finalRest] = many(parser)(rest) as Success<T[]>;
+        const { value: items, remaining: finalRest } = many(parser)(
+            remaining,
+        ) as Success<T[]>;
+
         acc = items.reduce(folder, acc);
 
         return success(acc, finalRest);

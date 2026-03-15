@@ -1,15 +1,19 @@
 import type { Parser } from '../types';
 
-export const run = <T>(parser: Parser<T>, input: string): T | null => {
+export const run = <T>(parser: Parser<T>, input: string): T => {
     const result = parser(input);
-    if (!result) {
-        return null;
+    if (!result.ok) {
+        if (result.error === undefined) {
+            throw new Error('Parsing failed: Unexpected error');
+        }
+
+        throw new Error(`Parsing failed: ${result.error}`);
     }
 
-    const [parsed, remainder] = result;
-    if (remainder !== '') {
-        throw new Error(`Not all input consumed: "${remainder}"`);
+    const { value, remaining } = result;
+    if (remaining !== '') {
+        throw new Error(`Not all input consumed: "${remaining}"`);
     }
 
-    return parsed;
+    return value;
 };

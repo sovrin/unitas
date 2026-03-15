@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
@@ -12,7 +12,7 @@ describe('map', () => {
         const parser = map(parser1, parseInt);
         const result = parser('42abc');
 
-        assertResult<number>(result, [42, 'abc']);
+        assertSuccess<number>(result, 42, 'abc');
     });
 
     it('should chain multiple transforms', () => {
@@ -25,7 +25,7 @@ describe('map', () => {
         );
         const result = parser('21abc');
 
-        assertResult<string>(result, ['48', 'abc']);
+        assertSuccess<string>(result, '48', 'abc');
     });
 
     it('should fail if underlying parser fails', () => {
@@ -33,7 +33,7 @@ describe('map', () => {
         const parser = map(parser1, (s) => s.toUpperCase());
         const result = parser('goodbye');
 
-        assertResult<string>(result);
+        assertFailure<string>(result);
     });
 
     it('should handle complex transformations', () => {
@@ -49,7 +49,7 @@ describe('map', () => {
         const result = parser('count=5;');
 
         // :O, surprising!
-        assertResult<{ count: number }>(result, [{ count: 5 }, ';']);
+        assertSuccess<{ count: number }>(result, { count: 5 }, ';');
     });
 
     it('should maintain original input consumption', () => {
@@ -57,6 +57,6 @@ describe('map', () => {
         const parser = map(parser1, (s) => s.length);
         const result = parser('testing');
 
-        assertResult<number>(result, [4, 'ing']);
+        assertSuccess<number>(result, 4, 'ing');
     });
 });

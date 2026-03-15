@@ -6,12 +6,12 @@ import { digit } from './digit';
 
 export const digits = create<number>((input) => {
     const result = many1(digit)(input);
-    if (!result) {
+    if (!result.ok) {
         return failure();
     }
 
-    const [ds, rest] = result;
-    const value = ds.reduce((acc, d) => acc * 10 + d, 0);
+    const { value: list, remaining: rest } = result;
+    const value = list.reduce((acc, d) => acc * 10 + d, 0);
 
     return success(value, rest);
 });

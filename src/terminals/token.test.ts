@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { token } from './token';
 
 describe('token', () => {
@@ -8,48 +8,48 @@ describe('token', () => {
         const parser = token('if');
         const result = parser('if   (condition)');
 
-        assertResult<'if'>(result, ['if', '(condition)']);
+        assertSuccess<'if'>(result, 'if', '(condition)');
     });
 
     it('should parse operators with whitespace', () => {
         const parser = token('==');
         const result = parser('==  value');
 
-        assertResult<'=='>(result, ['==', 'value']);
+        assertSuccess<'=='>(result, '==', 'value');
     });
 
     it('should parse punctuation symbols', () => {
         const parser = token('(');
         const result = parser('(  )');
 
-        assertResult<'('>(result, ['(', ')']);
+        assertSuccess<'('>(result, '(', ')');
     });
 
     it('should fail when symbol does not match', () => {
         const parser = token('while');
         const result = parser('if (condition)');
 
-        assertResult<'while'>(result);
+        assertFailure<'while'>(result);
     });
 
     it('should parse symbol with no trailing whitespace', () => {
         const parser = token(';');
         const result = parser(';next');
 
-        assertResult<';'>(result, [';', 'next']);
+        assertSuccess<';'>(result, ';', 'next');
     });
 
     it('should handle multi-character symbols', () => {
         const parser = token('<=');
         const result = parser('<=  100');
 
-        assertResult<'<='>(result, ['<=', '100']);
+        assertSuccess<'<='>(result, '<=', '100');
     });
 
     it('should work with empty string symbol', () => {
         const parser = token('');
         const result = parser('   anything');
 
-        assertResult<''>(result, ['', 'anything']);
+        assertSuccess<''>(result, '', 'anything');
     });
 });

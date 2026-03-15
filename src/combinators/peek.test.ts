@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { peek } from './peek';
 
 describe('peek', () => {
@@ -9,7 +13,7 @@ describe('peek', () => {
         const parser = peek(parser1);
         const result = parser('AB');
 
-        assertResult<'A'>(result, ['A', 'AB']);
+        assertSuccess<'A'>(result, 'A', 'AB');
     });
 
     it('should fail when peek parser does not match', () => {
@@ -17,15 +21,14 @@ describe('peek', () => {
         const parser = peek(parser1);
         const result = parser('BC');
 
-        assertResult<'A'>(result);
+        assertFailure<'A'>(result);
     });
 
     it('should handle empty input', () => {
         const parser1 = createTestParser('A');
         const parser = peek(parser1);
         const result = parser('');
-        expect(result).toBeNull();
 
-        assertResult<'A'>(result);
+        assertFailure<'A'>(result);
     });
 });

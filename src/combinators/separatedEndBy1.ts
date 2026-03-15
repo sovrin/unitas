@@ -11,11 +11,11 @@ import { separatedBy1 } from './separatedBy1';
 export const separatedEndBy1 = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {
         const result = separatedBy1(parser, separator)(input);
-        if (!result) return failure();
+        if (!result.ok) return failure();
 
-        const [values, remaining] = result;
+        const { value: values, remaining } = result;
         const sepResult = separator(remaining);
 
-        return success(values, sepResult ? sepResult[1] : remaining);
+        return success(values, sepResult.ok ? sepResult.remaining : remaining);
     });
 };

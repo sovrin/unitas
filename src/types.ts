@@ -1,17 +1,14 @@
 export type Parser<T = unknown> = (input: string) => Result<T>;
 
+export type Success<T> = { ok: true; value: T; remaining: string };
+export type Failure = { ok: false; error?: string };
 export type Result<T> = Success<T> | Failure;
-
-export type Success<T> = readonly [T, string];
-
-export type Failure = null;
 
 export type Grammar<T extends Record<string, unknown>> = {
     [K in keyof T]: (parsers: { [P in keyof T]: Parser<T[P]> }) => Parser<T[K]>;
 };
 
 export type Char<S extends string = string> =
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     S extends `${infer _}${infer Rest}` ? (Rest extends '' ? S : never) : never;
 
 export type First<T extends readonly unknown[]> = T extends readonly [

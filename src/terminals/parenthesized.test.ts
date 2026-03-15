@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { literal } from './literal';
 import { parenthesized } from './parenthesized';
 
@@ -10,7 +10,7 @@ describe('parenthesized', () => {
         const parser = parenthesized(parser1);
         const result = parser('(ABC)');
 
-        assertResult<'ABC'>(result, ['ABC', '']);
+        assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should fail with uneven parentheses', () => {
@@ -18,15 +18,14 @@ describe('parenthesized', () => {
         const parser = parenthesized(parser1);
         const result = parser('(ABC');
 
-        assertResult<'ABC'>(result);
+        assertFailure<'ABC'>(result);
     });
 
     it('should handle empty parentheses', () => {
         const parser1 = literal('');
         const parser = parenthesized(parser1);
         const result = parser('()');
-        expect(result).toEqual(['', '']);
 
-        assertResult<''>(result, ['', '']);
+        assertSuccess<''>(result, '', '');
     });
 });

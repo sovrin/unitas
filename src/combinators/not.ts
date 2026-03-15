@@ -8,6 +8,6 @@ export const not = <T>(parser: Parser<T>) => {
     return create<null>((input) => {
         const result = parser(input);
 
-        return result ? failure() : success(null, input);
+        return result.ok ? failure() : success(null, input);
     });
 };

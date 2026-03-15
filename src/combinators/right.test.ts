@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { right } from './right';
 
 describe('right', () => {
@@ -11,20 +15,20 @@ describe('right', () => {
         const parser = right(parser1, parser2);
         const result = parser('AB');
 
-        assertResult<'B'>(result, ['B', '']);
+        assertSuccess<'B'>(result, 'B', '');
     });
 
     it('should fail if first parser fails', () => {
         const parser = right(parser1, parser2);
         const result = parser('goodbye world');
 
-        assertResult<'B'>(result);
+        assertFailure<'B'>(result);
     });
 
     it('should fail if second parser fails', () => {
         const parser = right(parser1, parser2);
         const result = parser('hello universe');
 
-        assertResult<'B'>(result);
+        assertFailure<'B'>(result);
     });
 });

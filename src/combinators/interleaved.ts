@@ -7,21 +7,21 @@ import { success } from '../core/success';
 export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {
     return create<Array<T | S>>((input) => {
         const firstResult = item(input);
-        if (!firstResult) return failure();
+        if (!firstResult.ok) return failure();
 
-        const results: Array<T | S> = [firstResult[0]];
-        let remaining = firstResult[1];
+        const results: Array<T | S> = [firstResult.value];
+        let remaining = firstResult.remaining;
 
         while (true) {
             const sepResult = separator(remaining);
-            if (!sepResult) break;
+            if (!sepResult.ok) break;
 
-            const nextResult = item(sepResult[1]);
-            if (!nextResult) break;
+            const nextResult = item(sepResult.remaining);
+            if (!nextResult.ok) break;
 
-            results.push(sepResult[0]);
-            results.push(nextResult[0]);
-            remaining = nextResult[1];
+            results.push(sepResult.value);
+            results.push(nextResult.value);
+            remaining = nextResult.remaining;
         }
 
         return success(results, remaining);

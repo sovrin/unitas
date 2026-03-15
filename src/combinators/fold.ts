@@ -15,8 +15,9 @@ export const fold = <T, U>(
     folder: (acc: U, item: T) => U,
 ): Parser<U> => {
     return create<U>((input) => {
-        const [items, rest] = many(parser)(input) as Success<T[]>;
+        const result = many(parser)(input) as Success<T[]>;
+        const { value, remaining } = result;
 
-        return success(items.reduce(folder, initial), rest);
+        return success(value.reduce(folder, initial), remaining);
     });
 };

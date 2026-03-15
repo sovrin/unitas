@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { char } from './char';
 
 describe('char', () => {
@@ -8,22 +8,21 @@ describe('char', () => {
         const parser = char('A');
         const result = parser('ABC');
 
-        assertResult<'A' | null>(result, ['A', 'BC']);
+        assertSuccess<'A' | null>(result, 'A', 'BC');
     });
 
     it('should fail when character does not match', () => {
         const parser = char('A');
         const result = parser('BCD');
-        expect(result).toBeNull();
 
-        assertResult<'A' | null>(result);
+        assertFailure<'A' | null>(result);
     });
 
     it('should fail on empty input', () => {
         const parser = char('A');
         const result = parser('');
 
-        assertResult<'A' | null>(result);
+        assertFailure<'A' | null>(result);
     });
 
     it('should throw if more then one character is given', () => {

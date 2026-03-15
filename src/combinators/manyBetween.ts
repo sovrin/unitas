@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser, Success } from '../types';
 
 import { create } from '../core/create';
 import { failure } from '../core/failure';
@@ -9,12 +9,15 @@ import { manyAtMost } from './manyAtMost';
 export const manyBetween = <T>(parser: Parser<T>, min: number, max: number) => {
     return create<T[]>((input) => {
         const required = exactly(parser, min)(input);
-        if (!required) {
+        if (!required.ok) {
             return failure();
         }
 
-        const [more, rest] = manyAtMost(parser, max - min)(required[1])!;
+        const { value: more, remaining: rest } = manyAtMost(
+            parser,
+            max - min,
+        )(required.remaining) as Success<T[]>;
 
-        return success([...required[0], ...more], rest);
+        return success([...required.value, ...more], rest);
     });
 };

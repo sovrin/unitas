@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { word } from './word';
 
 describe('word', () => {
@@ -9,13 +9,13 @@ describe('word', () => {
             const parser = word('test');
             const result = parser('test abc');
 
-            assertResult<string>(result, ['test', 'abc']);
+            assertSuccess<string>(result, 'test', 'abc');
         }
         {
             const parser = word('hello');
             const result = parser('hello world');
 
-            assertResult<string>(result, ['hello', 'world']);
+            assertSuccess<string>(result, 'hello', 'world');
         }
     });
 
@@ -24,13 +24,13 @@ describe('word', () => {
             const parser = word('test');
             const result = parser('testing');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
         {
             const parser = word('cat');
             const result = parser('category');
 
-            assertResult<string>(result);
+            assertFailure<string>(result);
         }
     });
 
@@ -39,13 +39,13 @@ describe('word', () => {
             const parser = word('test');
             const result = parser('test!');
 
-            assertResult<string>(result, ['test', '!']);
+            assertSuccess<string>(result, 'test', '!');
         }
         {
             const parser = word('word');
             const result = parser('word.');
 
-            assertResult<string>(result, ['word', '.']);
+            assertSuccess<string>(result, 'word', '.');
         }
     });
 });

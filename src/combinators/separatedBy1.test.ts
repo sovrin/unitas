@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { separatedBy1 } from './separatedBy1';
 
 describe('separatedBy1', () => {
@@ -11,7 +15,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('BBB');
 
-        assertResult<'A'[]>(result);
+        assertFailure<'A'[]>(result);
     });
 
     it('should parse single element', () => {
@@ -21,7 +25,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('ABC');
 
-        assertResult<'A'[]>(result, [['A'], 'BC']);
+        assertSuccess<'A'[]>(result, ['A'], 'BC');
     });
 
     it('should parse multiple elements', () => {
@@ -31,7 +35,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('A,A,A,A');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A', 'A'], '']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], '');
     });
 
     it('should handle trailing separator', () => {
@@ -41,7 +45,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('A,A,A,A,');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A', 'A'], ',']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], ',');
     });
 
     it('should fail on empty input', () => {
@@ -51,6 +55,6 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('');
 
-        assertResult<'A'[]>(result);
+        assertFailure<'A'[]>(result);
     });
 });

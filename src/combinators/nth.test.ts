@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { success } from '../core/success';
 import { nth } from './nth';
@@ -13,19 +13,19 @@ describe('nth', () => {
             const parser = nth(parser1, 0);
             const result = parser('ABC');
 
-            assertResult<'A'>(result, ['A', '']);
+            assertSuccess<'A'>(result, 'A', '');
         }
         {
             const parser = nth(parser1, 1);
             const result = parser('ABC');
 
-            assertResult<'B'>(result, ['B', '']);
+            assertSuccess<'B'>(result, 'B', '');
         }
         {
             const parser = nth(parser1, 2);
             const result = parser('ABC');
 
-            assertResult<'C'>(result, ['C', '']);
+            assertSuccess<'C'>(result, 'C', '');
         }
     });
 
@@ -36,14 +36,14 @@ describe('nth', () => {
             const parser = nth(parser1, 5);
             const result = parser('ABC');
 
-            assertResult<undefined>(result, [undefined, '']);
+            assertSuccess<undefined>(result, undefined, '');
         }
 
         {
             const parser = nth(parser1, -1);
             const result = parser('ABC');
 
-            assertResult<undefined>(result, [undefined, '']);
+            assertSuccess<undefined>(result, undefined, '');
         }
     });
 
@@ -52,6 +52,6 @@ describe('nth', () => {
         const parser = nth(parser1, 1);
         const result = parser('');
 
-        assertResult<undefined>(result, [undefined, 'ABC']);
+        assertSuccess<undefined>(result, undefined, 'ABC');
     });
 });

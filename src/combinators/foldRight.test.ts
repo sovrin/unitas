@@ -1,6 +1,6 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
@@ -22,9 +22,8 @@ describe('foldRight', () => {
             (acc, item) => `(${acc}${item})`,
         );
         const result = parser('ABC');
-        expect(result).toEqual(success('(((ZC)B)A)', ''));
 
-        assertResult<string>(result, ['(((ZC)B)A)', '']);
+        assertSuccess<string>(result, '(((ZC)B)A)', '');
     });
 
     it('should work with empty input (return initial value and not consume input)', () => {
@@ -35,7 +34,7 @@ describe('foldRight', () => {
         );
         const result = parser('ABC');
 
-        assertResult<string>(result, ['Z', 'ABC']);
+        assertSuccess<string>(result, 'Z', 'ABC');
     });
 
     it('should work with empty input (return initial value)', () => {
@@ -46,7 +45,7 @@ describe('foldRight', () => {
         );
         const result = parser('');
 
-        assertResult<string>(result, ['Z', '']);
+        assertSuccess<string>(result, 'Z', '');
     });
 
     it('should work with complex accumulator types', () => {
@@ -60,10 +59,10 @@ describe('foldRight', () => {
         );
         const result = parser('CBA');
 
-        assertResult<{
+        assertSuccess<{
             label: string;
             count: number;
-        }>(result, [{ label: 'ABC', count: 3 }, '']);
+        }>(result, { label: 'ABC', count: 3 }, '');
     });
 
     it('should work with array building', () => {
@@ -73,15 +72,14 @@ describe('foldRight', () => {
         ]);
         const result = parser('ABC');
 
-        assertResult<string[]>(result, [['CZ', 'BZ', 'AZ'], '']);
+        assertSuccess<string[]>(result, ['CZ', 'BZ', 'AZ'], '');
     });
 
     it('should not fail and return the initial value and not consume', () => {
         const parserFail = create(() => failure());
         const parser = foldRight(parserFail, 0, (acc) => acc + 1);
         const result = parser('ABC');
-        expect(result).toEqual([0, 'ABC']);
 
-        assertResult<number>(result, [0, 'ABC']);
+        assertSuccess<number>(result, 0, 'ABC');
     });
 });

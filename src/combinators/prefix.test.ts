@@ -2,25 +2,30 @@ import { describe, it } from 'vitest';
 
 import type { Parser } from '../types';
 
-import { assertResult, numberParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    numberParser,
+} from '../../test/utils.test';
+import { failure, success } from '../core';
 import { prefix } from './prefix';
 
 describe('prefix', () => {
     const unaryOps: Parser<(value: number) => number> = (input) => {
         if (input.startsWith('-')) {
-            return [(value) => -value, input.slice(1)];
+            return success((value) => -value, input.slice(1));
         }
         if (input.startsWith('+')) {
-            return [(value) => Math.abs(value), input.slice(1)];
+            return success((value) => Math.abs(value), input.slice(1));
         }
-        return null;
+        return failure();
     };
 
     it('should handle atom without prefix operators', () => {
         const parser = prefix(unaryOps, numberParser);
         const result = parser('42');
 
-        assertResult<number>(result, [42, '']);
+        assertSuccess<number>(result, 42, '');
     });
 
     it('should apply single prefix operator', () => {
@@ -28,12 +33,12 @@ describe('prefix', () => {
         {
             const result = parser('-5');
 
-            assertResult<number>(result, [-5, '']);
+            assertSuccess<number>(result, -5, '');
         }
         {
             const result = parser('+5');
 
-            assertResult<number>(result, [5, '']); // abs(5) = 5
+            assertSuccess<number>(result, 5, ''); // abs(5) = 5
         }
     });
 
@@ -42,12 +47,12 @@ describe('prefix', () => {
         {
             const result = parser('--5');
 
-            assertResult<number>(result, [5, '']); // -(-5) = 5
+            assertSuccess<number>(result, 5, ''); // -(-5) = 5
         }
         {
             const result = parser('+-5');
 
-            assertResult<number>(result, [5, '']); // +(-5) = abs(-5) = 5
+            assertSuccess<number>(result, 5, ''); // +(-5) = abs(-5) = 5
         }
     });
 
@@ -55,20 +60,20 @@ describe('prefix', () => {
         const parser = prefix(unaryOps, numberParser);
         const result = parser('-abc');
 
-        assertResult<number>(result);
+        assertFailure<number>(result);
     });
 
     it('should handle long chains of prefix operators', () => {
         const parser = prefix(unaryOps, numberParser);
         const result = parser('---5');
 
-        assertResult<number>(result, [-5, '']); // -(-(- 5)) = -5
+        assertSuccess<number>(result, -5, ''); // -(-(- 5)) = -5
     });
 
     it('should handle operators that consume no input when none match', () => {
         const parser = prefix(unaryOps, numberParser);
         const result = parser('123*');
 
-        assertResult<number>(result, [123, '*']);
+        assertSuccess<number>(result, 123, '*');
     });
 });

@@ -10,10 +10,10 @@ export const skip = <T>(parser: Parser<T>, count: number) => {
 
         for (let i = 0; i < count; i++) {
             const result = parser(remaining);
-            if (!result) {
+            if (!result.ok) {
                 return failure();
             }
-            remaining = result[1];
+            remaining = result.remaining;
         }
 
         return success(null, remaining);

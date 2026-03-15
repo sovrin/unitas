@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
@@ -18,7 +18,7 @@ describe('fold1', () => {
         const parser = fold1(stringParser, '', (acc, value) => acc + value);
         const result = parser('ABC');
 
-        assertResult<string>(result, ['ABC', '']);
+        assertSuccess<string>(result, 'ABC', '');
     });
 
     it('should return null, one or more successful parser returns are required', () => {
@@ -26,6 +26,6 @@ describe('fold1', () => {
         const parser = fold1(failureParser, 42, (acc, digit) => acc + digit);
         const result = parser('ABC');
 
-        assertResult<number>(result);
+        assertFailure<number>(result);
     });
 });

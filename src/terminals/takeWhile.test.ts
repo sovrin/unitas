@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils.test';
 import { takeWhile } from './takeWhile';
 
 describe('takeWhile', () => {
@@ -8,27 +8,27 @@ describe('takeWhile', () => {
         const parser = takeWhile((c) => c >= '0' && c <= '9');
         const result = parser('123ABC');
 
-        assertResult<string>(result, ['123', 'ABC']);
+        assertSuccess<string>(result, '123', 'ABC');
     });
 
     it('should return empty string when first character fails predicate', () => {
         const parser = takeWhile((c) => c >= '0' && c <= '9');
         const result = parser('ABC123');
 
-        assertResult<string>(result, ['', 'ABC123']);
+        assertSuccess<string>(result, '', 'ABC123');
     });
 
     it('should take all characters when all satisfy predicate', () => {
         const parser = takeWhile((c) => c >= '0' && c <= '9');
         const result = parser('123');
 
-        assertResult<string>(result, ['123', '']);
+        assertSuccess<string>(result, '123', '');
     });
 
     it('should handle empty input', () => {
         const parser = takeWhile(() => true);
         const result = parser('');
 
-        assertResult<string>(result, ['', '']);
+        assertSuccess<string>(result, '', '');
     });
 });

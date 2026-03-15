@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { interleaved } from './interleaved';
 
 describe('interleaved', () => {
@@ -10,7 +14,7 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('ABABA');
 
-        assertResult<('A' | 'B')[]>(result, [['A', 'B', 'A', 'B', 'A'], '']);
+        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A', 'B', 'A'], '');
     });
 
     it('should handle single item', () => {
@@ -18,9 +22,8 @@ describe('interleaved', () => {
         const parser2 = createTestParser('B');
         const parser = interleaved(parser1, parser2);
         const result = parser('AC');
-        expect(result).toEqual([['A'], 'C']);
 
-        assertResult<('A' | 'B')[]>(result, [['A'], 'C']);
+        assertSuccess<('A' | 'B')[]>(result, ['A'], 'C');
     });
 
     it('should fail when first item does not match', () => {
@@ -29,7 +32,7 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('CC');
 
-        assertResult<('A' | 'B')[]>(result);
+        assertFailure<('A' | 'B')[]>(result);
     });
 
     it('should stop when separator has no following item', () => {
@@ -38,6 +41,6 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('ABABC');
 
-        assertResult<('A' | 'B')[]>(result, [['A', 'B', 'A'], 'BC']);
+        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A'], 'BC');
     });
 });

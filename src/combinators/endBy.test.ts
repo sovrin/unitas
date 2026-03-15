@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils.test';
 import { endBy } from './endBy';
 
 describe('endBy', () => {
@@ -10,7 +10,7 @@ describe('endBy', () => {
         const parser = endBy(parser1, parser2);
         const result = parser('A,A,A,');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A'], '']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
     });
 
     it('should parse empty list when no elements', () => {
@@ -19,7 +19,7 @@ describe('endBy', () => {
         const parser = endBy(parser1, parser2);
         const result = parser('CCC');
 
-        assertResult<'A'[]>(result, [[], 'CCC']);
+        assertSuccess<'A'[]>(result, [], 'CCC');
     });
 
     it('should require terminator after each element', () => {
@@ -28,7 +28,7 @@ describe('endBy', () => {
         const parser = endBy(parser1, parser2);
         const result = parser('A,A,A');
 
-        assertResult<'A'[]>(result, [['A', 'A'], 'A']);
+        assertSuccess<'A'[]>(result, ['A', 'A'], 'A');
     });
 
     it('should handle single element with terminator', () => {
@@ -38,7 +38,7 @@ describe('endBy', () => {
         const parser = endBy(parser1, parser2);
         const result = parser('A,');
 
-        assertResult<'A'[]>(result, [['A'], '']);
+        assertSuccess<'A'[]>(result, ['A'], '');
     });
 
     it('should handle empty input', () => {
@@ -47,6 +47,6 @@ describe('endBy', () => {
         const parser = endBy(parser1, parser2);
         const result = parser('');
 
-        assertResult<'A'[]>(result, [[], '']);
+        assertSuccess<'A'[]>(result, [], '');
     });
 });

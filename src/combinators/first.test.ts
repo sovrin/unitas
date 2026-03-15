@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils.test';
 import { create } from '../core/create';
 import { success } from '../core/success';
 import { first } from './first';
@@ -11,7 +11,7 @@ describe('first', () => {
         const parser = first(parser1);
         const result = parser('ABC');
 
-        assertResult<'A'>(result, ['A', '']);
+        assertSuccess<'A'>(result, 'A', '');
     });
 
     it('should return undefined for empty array', () => {
@@ -19,6 +19,6 @@ describe('first', () => {
         const parser = first(parser1);
         const result = parser('ABC');
 
-        assertResult<undefined>(result, [undefined, 'ABC']);
+        assertSuccess<undefined>(result, undefined, 'ABC');
     });
 });

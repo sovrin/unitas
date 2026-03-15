@@ -13,9 +13,9 @@ describe('run', () => {
     });
 
     it('should return null result', () => {
-        const result = run(parser, 'B');
-
-        expect(result).toBeNull();
+        expect(() => {
+            run(parser, 'B');
+        }).toThrowError('Parsing failed: Unexpected error');
     });
 
     it('should throw error for not remaining input', () => {

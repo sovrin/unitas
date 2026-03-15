@@ -1,8 +1,6 @@
 import type { Parser } from '../types';
 
-import { create } from '../core/create';
-import { failure } from '../core/failure';
-import { success } from '../core/success';
+import { create, failure, forward } from '../core';
 import { chainRight1 } from './chainRight1';
 import { optional } from './optional';
 
@@ -12,10 +10,10 @@ export const chainRight = <T>(
 ) => {
     return create<T | null>((input) => {
         const result = optional(chainRight1(parser, operator))(input);
+        if (!result.ok || result.value === null) {
+            return failure();
+        }
 
-        if (!result) return failure();
-
-        const [value] = result;
-        return value === null ? failure() : success(value, result[1]);
+        return forward(result);
     });
 };

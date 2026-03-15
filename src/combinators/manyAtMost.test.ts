@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils.test';
 import { manyAtMost } from './manyAtMost';
 
 describe('manyAtMost', () => {
@@ -10,34 +10,34 @@ describe('manyAtMost', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('AABCD');
 
-        assertResult<'A'[]>(result, [['A', 'A'], 'BCD']);
+        assertSuccess<'A'[]>(result, ['A', 'A'], 'BCD');
     });
 
     it('should parse exactly n occurrences when available', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('AAABCD');
 
-        assertResult<'A'[]>(result, [['A', 'A', 'A'], 'BCD']);
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
     });
 
     it('should not parse more than n occurrences', () => {
         const parser = manyAtMost(parser1, 2);
         const result = parser('AAAAAA');
 
-        assertResult<'A'[]>(result, [['A', 'A'], 'AAAA']);
+        assertSuccess<'A'[]>(result, ['A', 'A'], 'AAAA');
     });
 
     it('should parse zero occurrences', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('BCD');
 
-        assertResult<'A'[]>(result, [[], 'BCD']);
+        assertSuccess<'A'[]>(result, [], 'BCD');
     });
 
     it('should handle limit of zero', () => {
         const parser = manyAtMost(parser1, 0);
         const result = parser('AAABCD');
 
-        assertResult<'A'[]>(result, [[], 'AAABCD']);
+        assertSuccess<'A'[]>(result, [], 'AAABCD');
     });
 });

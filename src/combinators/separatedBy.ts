@@ -9,26 +9,26 @@ import { success } from '../core/success';
 export const separatedBy = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {
         const firstResult = parser(input);
-        if (!firstResult) {
+        if (!firstResult.ok) {
             return success([], input);
         }
 
-        const results = [firstResult[0]];
-        let remaining = firstResult[1];
+        const results = [firstResult.value];
+        let remaining = firstResult.remaining;
 
         while (true) {
             const sepResult = separator(remaining);
-            if (!sepResult) break;
+            if (!sepResult.ok) break;
 
-            const nextResult = parser(sepResult[1]);
-            if (!nextResult) {
+            const nextResult = parser(sepResult.remaining);
+            if (!nextResult.ok) {
                 // If separator matched but parser failed, backtrack
                 // Don't consume the separator
                 break;
             }
 
-            results.push(nextResult[0]);
-            remaining = nextResult[1];
+            results.push(nextResult.value);
+            remaining = nextResult.remaining;
         }
 
         return success(results, remaining);

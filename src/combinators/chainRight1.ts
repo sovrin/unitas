@@ -10,19 +10,19 @@ export const chainRight1 = <T>(
 ) => {
     return create<T>((input) => {
         const leftResult = term(input);
-        if (!leftResult) return failure();
+        if (!leftResult.ok) return failure();
 
         const tryRightSide = (leftValue: T, remaining: string): Result<T> => {
             const opResult = operator(remaining);
-            if (!opResult) return success(leftValue, remaining);
+            if (!opResult.ok) return success(leftValue, remaining);
 
-            const rightResult = chainRight1(term, operator)(opResult[1]);
-            if (!rightResult) return success(leftValue, remaining);
+            const rightResult = chainRight1(term, operator)(opResult.remaining);
+            if (!rightResult.ok) return success(leftValue, remaining);
 
-            const combinedValue = opResult[0](leftValue, rightResult[0]);
-            return success(combinedValue, rightResult[1]);
+            const combinedValue = opResult.value(leftValue, rightResult.value);
+            return success(combinedValue, rightResult.remaining);
         };
 
-        return tryRightSide(leftResult[0], leftResult[1]);
+        return tryRightSide(leftResult.value, leftResult.remaining);
     });
 };

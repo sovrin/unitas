@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { optional } from './optional';
@@ -12,7 +12,7 @@ describe('optional', () => {
         const parser = optional(aParser);
         const result = parser('ABC');
 
-        assertResult<'A' | null>(result, ['A', 'BC']);
+        assertSuccess<'A' | null>(result, 'A', 'BC');
     });
 
     it('should return null when parser fails', () => {
@@ -20,6 +20,6 @@ describe('optional', () => {
         const parser = optional(parser1);
         const result = parser('ABC');
 
-        assertResult<'A' | null>(result, [null, 'ABC']);
+        assertSuccess<'A' | null>(result, null, 'ABC');
     });
 });

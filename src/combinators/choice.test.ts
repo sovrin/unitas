@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
@@ -14,7 +18,7 @@ describe('choice', () => {
         const parser = choice(parserA, parserB, parserC);
         const result = parser('ABC');
 
-        assertResult<'A' | 'B' | 'C'>(result, ['B', 'BC']);
+        assertSuccess<'A' | 'B' | 'C'>(result, 'B', 'BC');
     });
 
     it('should try all parsers if earlier ones fail', () => {
@@ -24,7 +28,7 @@ describe('choice', () => {
         const parser = choice(parserA, parserB, parserC);
         const result = parser('C D');
 
-        assertResult<'A' | 'B' | 'C'>(result, ['C', ' D']);
+        assertSuccess<'A' | 'B' | 'C'>(result, 'C', ' D');
     });
 
     it('should fail if all parsers fail', () => {
@@ -35,7 +39,7 @@ describe('choice', () => {
         );
         const result = parser('D');
 
-        assertResult<unknown>(result);
+        assertFailure<unknown>(result);
     });
 
     it('should handle single parser', () => {
@@ -43,13 +47,13 @@ describe('choice', () => {
         const parser = choice(parser1);
         const result = parser('ABCD');
 
-        assertResult<'A'>(result, ['A', 'BCD']);
+        assertSuccess<'A'>(result, 'A', 'BCD');
     });
 
     it('should handle empty choices', () => {
         const parser = choice();
         const result = parser('anything');
 
-        assertResult<unknown>(result);
+        assertFailure<unknown>(result);
     });
 });

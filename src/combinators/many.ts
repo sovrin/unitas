@@ -13,17 +13,17 @@ export const many = <T>(parser: Parser<T>) => {
 
         while (true) {
             const result = parser(remaining);
-            if (!result) {
+            if (!result.ok) {
                 break;
             }
 
             // Prevent infinite loop: ensure progress is made
-            if (result[1] === remaining) {
+            if (result.remaining === remaining) {
                 break;
             }
 
-            results.push(result[0]);
-            remaining = result[1];
+            results.push(result.value);
+            remaining = result.remaining;
         }
 
         return success(results, remaining);

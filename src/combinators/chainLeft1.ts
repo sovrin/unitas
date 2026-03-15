@@ -13,19 +13,20 @@ export const chainLeft1 = <T>(
 ) => {
     return create<T>((input) => {
         const firstResult = term(input);
-        if (!firstResult) return failure();
+        if (!firstResult.ok) return failure();
 
-        let [accumulator, remaining] = firstResult;
+        let accumulator = firstResult.value;
+        let remaining = firstResult.remaining;
 
         while (true) {
             const opResult = operator(remaining);
-            if (!opResult) break;
+            if (!opResult.ok) break;
 
-            const nextResult = term(opResult[1]);
-            if (!nextResult) break;
+            const nextResult = term(opResult.remaining);
+            if (!nextResult.ok) break;
 
-            accumulator = opResult[0](accumulator, nextResult[0]);
-            remaining = nextResult[1];
+            accumulator = opResult.value(accumulator, nextResult.value);
+            remaining = nextResult.remaining;
         }
 
         return success(accumulator, remaining);

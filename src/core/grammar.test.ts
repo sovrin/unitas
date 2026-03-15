@@ -1,5 +1,6 @@
 import { assertType, describe, expect, it } from 'vitest';
 
+import { assertSuccess } from '../../test/utils.test';
 import { choice } from '../combinators/choice';
 import { map } from '../combinators/map';
 import { sequence } from '../combinators/sequence';
@@ -41,8 +42,15 @@ describe('grammar', () => {
             b: () => literal('b'),
         });
 
-        expect(a('abc')).toEqual(['a', 'bc']);
-        expect(b('bcd')).toEqual(['b', 'cd']);
+        {
+            const result = a('abc');
+            assertSuccess<'a'>(result, 'a', 'bc');
+        }
+
+        {
+            const result = b('bcd');
+            assertSuccess<'b'>(result, 'b', 'cd');
+        }
     });
 
     it('should handle the example', () => {
@@ -65,22 +73,22 @@ describe('grammar', () => {
 
         {
             const result = add('2+3');
-            expect(result).toEqual([5, '']);
+            assertSuccess<unknown>(result, 5, '');
         }
 
         {
             const result = number('5');
-            expect(result).toEqual([5, '']);
+            assertSuccess<number>(result, 5, '');
         }
 
         {
             const result = term('(2+3)');
-            expect(result).toEqual([5, '']);
+            assertSuccess<unknown>(result, 5, '');
         }
 
         {
             const result = expr('1+(2+3)'); // [6, '']
-            expect(result).toEqual([6, '']);
+            assertSuccess<unknown>(result, 6, '');
         }
     });
 });

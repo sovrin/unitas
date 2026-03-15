@@ -1,6 +1,10 @@
 import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { guard } from './guard';
 
 describe('guard', () => {
@@ -9,7 +13,7 @@ describe('guard', () => {
         const parser = guard(true, parser1);
         const result = parser('AAA');
 
-        assertResult<'A' | null>(result, ['A', 'AA']);
+        assertSuccess<'A' | null>(result, 'A', 'AA');
     });
 
     it('should fail when condition is false', () => {
@@ -17,7 +21,7 @@ describe('guard', () => {
         const parser = guard(false, parser1);
         const result = parser('BBB');
 
-        assertResult<'A' | null>(result);
+        assertFailure<'A' | null>(result);
     });
 
     it('should propagate parser failure when condition is true but parser fails', () => {
@@ -25,6 +29,6 @@ describe('guard', () => {
         const parser = guard(true, parser1);
         const result = parser('BBB');
 
-        assertResult<'A' | null>(result);
+        assertFailure<'A' | null>(result);
     });
 });

@@ -41,10 +41,25 @@ export const operatorParser = create((input) => {
     return success(operation, input.slice(operator.length));
 });
 
-export const assertResult = <T>(
+export const assertSuccess = <T>(
     result: Result<T>,
-    expected: Result<T> = null,
+    value: T,
+    remaining: string,
 ) => {
     assertType<Result<T>>(result);
-    expect(result).toEqual(expected);
+
+    expect(result).toEqual({
+        ok: true,
+        value,
+        remaining,
+    });
+};
+
+export const assertFailure = <T>(result: Result<T>, error = undefined) => {
+    assertType<Result<T>>(result);
+
+    expect(result).toEqual({
+        ok: false,
+        error,
+    });
 };

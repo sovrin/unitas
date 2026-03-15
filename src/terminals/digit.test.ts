@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { digit } from './digit';
 
 describe('digit', () => {
@@ -8,17 +8,17 @@ describe('digit', () => {
         {
             const result = digit('5abc');
 
-            assertResult<number>(result, [5, 'abc']);
+            assertSuccess<number>(result, 5, 'abc');
         }
         {
             const result = digit('0xyz');
 
-            assertResult<number>(result, [0, 'xyz']);
+            assertSuccess<number>(result, 0, 'xyz');
         }
         {
             const result = digit('9');
 
-            assertResult<number>(result, [9, '']);
+            assertSuccess<number>(result, 9, '');
         }
     });
 
@@ -26,23 +26,23 @@ describe('digit', () => {
         {
             const result = digit('abc');
 
-            assertResult<number>(result);
+            assertFailure<number>(result);
         }
         {
             const result = digit('!');
 
-            assertResult<number>(result);
+            assertFailure<number>(result);
         }
         {
             const result = digit('');
 
-            assertResult<number>(result);
+            assertFailure<number>(result);
         }
     });
 
     it('should only parse first digit', () => {
         const result = digit('123');
 
-        assertResult<number>(result, [1, '23']);
+        assertSuccess<number>(result, 1, '23');
     });
 });

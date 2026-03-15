@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertResult } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { digits } from './digits';
 
 describe('digits', () => {
@@ -8,17 +8,17 @@ describe('digits', () => {
         {
             const result = digits('123abc');
 
-            assertResult<number>(result, [123, 'abc']);
+            assertSuccess<number>(result, 123, 'abc');
         }
         {
             const result = digits('42');
 
-            assertResult<number>(result, [42, '']);
+            assertSuccess<number>(result, 42, '');
         }
         {
             const result = digits('007xyz');
 
-            assertResult<number>(result, [7, 'xyz']);
+            assertSuccess<number>(result, 7, 'xyz');
         }
     });
 
@@ -26,18 +26,18 @@ describe('digits', () => {
         {
             const result = digits('abc');
 
-            assertResult<number>(result);
+            assertFailure<number>(result);
         }
         {
             const result = digits('');
 
-            assertResult<number>(result);
+            assertFailure<number>(result);
         }
     });
 
     it('should handle single digit', () => {
         const result = digits('5abc');
 
-        assertResult<number>(result, [5, 'abc']);
+        assertSuccess<number>(result, 5, 'abc');
     });
 });

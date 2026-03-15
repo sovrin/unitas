@@ -1,6 +1,10 @@
-import { describe, expect, it } from 'vitest';
+import { describe, it } from 'vitest';
 
-import { assertResult, createTestParser } from '../../test/utils.test';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils.test';
 import { manyTill } from './manyTill';
 
 describe('manyTill', () => {
@@ -10,7 +14,7 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('AAAB');
 
-        assertResult<string[]>(result, [['A', 'A', 'A'], '']);
+        assertSuccess<string[]>(result, ['A', 'A', 'A'], '');
     });
 
     it('should return empty array if terminator matches immediately', () => {
@@ -19,7 +23,7 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('B');
 
-        assertResult<string[]>(result, [[], '']);
+        assertSuccess<string[]>(result, [], '');
     });
 
     it('should fail if terminator never matches', () => {
@@ -28,7 +32,7 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('AAA');
 
-        expect(result).toBeNull();
+        assertFailure(result);
     });
 
     it('should stop at first terminator match', () => {
@@ -37,6 +41,6 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('AABAB');
 
-        assertResult<string[]>(result, [['A', 'A'], 'AB']);
+        assertSuccess<string[]>(result, ['A', 'A'], 'AB');
     });
 });
