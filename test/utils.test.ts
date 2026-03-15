@@ -55,7 +55,7 @@ export const assertSuccess = <T>(
     });
 };
 
-export const assertFailure = <T>(result: Result<T>, error = undefined) => {
+export const assertFailure = <T>(result: Result<T>, error?: string) => {
     assertType<Result<T>>(result);
 
     expect(result).toEqual({

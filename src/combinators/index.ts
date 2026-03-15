@@ -15,7 +15,6 @@ export * from './foldRight';
 export * from './foldRight1';
 export * from './guard';
 export * from './interleaved';
-export * from './label';
 export * from './last';
 export * from './left';
 export * from './lexeme';
