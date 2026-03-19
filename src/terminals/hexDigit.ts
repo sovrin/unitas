@@ -1,8 +1,23 @@
-import type { HexDigit, Result } from '../types';
+import type { Result } from '../types';
 
+import { type Digit } from './digit';
 import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
+export type HexDigit =
+    | Digit
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'A'
+    | 'B'
+    | 'C'
+    | 'D'
+    | 'E'
+    | 'F';
 
 const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c));
 

@@ -1,8 +1,35 @@
-import type { LowercaseLetter, Result } from '../types';
+import type { Result } from '../types';
 
 import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
+export type LowercaseLetter =
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'g'
+    | 'h'
+    | 'i'
+    | 'j'
+    | 'k'
+    | 'l'
+    | 'm'
+    | 'n'
+    | 'o'
+    | 'p'
+    | 'q'
+    | 'r'
+    | 's'
+    | 't'
+    | 'u'
+    | 'v'
+    | 'w'
+    | 'x'
+    | 'y'
+    | 'z';
 
 const parser = satisfy<LowercaseLetter>((c) => /[a-z]/.test(c));
 

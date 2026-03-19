@@ -1,8 +1,11 @@
-import type { Letter, Result } from '../types';
+import type { Result } from '../types';
 
+import { type LowercaseLetter } from './lowercase';
 import { satisfy } from './satisfy';
+import { type UppercaseLetter } from './uppercase';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
+export type Letter = LowercaseLetter | UppercaseLetter;
 
 const parser = satisfy<Letter>((c) => /[a-zA-Z]/.test(c));
 

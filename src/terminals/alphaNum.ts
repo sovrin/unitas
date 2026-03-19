@@ -1,8 +1,11 @@
-import type { AlphaNum, Result } from '../types';
+import type { Result } from '../types';
 
+import { type Digit } from './digit';
+import { type Letter } from './letter';
 import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
+export type AlphaNum = Letter | Digit;
 
 const parser = satisfy<AlphaNum>((c) => /[a-zA-Z0-9]/.test(c));
 
