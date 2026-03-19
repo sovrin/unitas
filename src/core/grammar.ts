@@ -1,6 +1,10 @@
-import type { Grammar, Parser } from '../types';
+import type { Parser } from '../types';
 
 import { lazy } from './lazy';
+
+export type Grammar<T extends Record<string, unknown>> = {
+    [K in keyof T]: (parsers: { [P in keyof T]: Parser<T[P]> }) => Parser<T[K]>;
+};
 
 export const grammar = <T extends Record<string, unknown>>(
     definitions: Grammar<T>,
