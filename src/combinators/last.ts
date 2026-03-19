@@ -1,7 +1,14 @@
-import type { Last, Parser } from '../types';
+import type { Parser } from '../types';
 
 import { create } from '../core/create';
 import { map } from './map';
+
+export type Last<T extends readonly unknown[]> = T extends readonly [
+    ...unknown[],
+    infer L,
+]
+    ? L
+    : never;
 
 export const last = <T extends readonly [unknown, ...unknown[]]>(
     parser: Parser<T>,
