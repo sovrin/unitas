@@ -57,7 +57,7 @@
         "format": "oxfmt",
         "lint": "oxlint",
         "lint:fix": "oxlint --fix",
-        "generate": "node bin/generate-index.mjs",
+        "fix:index": "tsx bin/generate-index.mjs",
         "fix:imports": "npx jscodeshift -t bin/split-imports.mjs src --extensions=ts --parser=tsx"
     },
     "devDependencies": {
