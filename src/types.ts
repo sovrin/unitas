@@ -14,21 +14,6 @@ export type First<T extends readonly unknown[]> = T extends readonly [
     ? F
     : never;
 
-export type Nth<
-    T extends readonly unknown[],
-    N extends number,
-> = number extends N
-    ? T[number] | undefined
-    : N extends number
-      ? `${N}` extends `-${string}` | `${string}.${string}`
-          ? undefined
-          : T extends readonly [...infer U]
-            ? N extends keyof U
-                ? U[N]
-                : undefined
-            : T[N]
-      : never;
-
 export type Last<T extends readonly unknown[]> = T extends readonly [
     ...unknown[],
     infer L,
