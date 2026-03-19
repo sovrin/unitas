@@ -1,6 +1,6 @@
-import { create } from '../core/create';
 import { failure } from '../core/failure';
 import { forward } from '../core/forward';
+import { create } from '../core/parser';
 import { regex } from './regex';
 
 export const identifier = create<string>((input) => {

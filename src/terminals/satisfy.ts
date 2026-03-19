@@ -1,8 +1,7 @@
-import type { Char } from '../types';
-
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { success } from '../core/success';
+import { type Char } from './char';
 
 export function satisfy<T extends string>(predicate: (c: Char<T>) => boolean) {
     return create<T>((input) => {

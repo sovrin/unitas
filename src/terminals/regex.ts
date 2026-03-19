@@ -1,5 +1,5 @@
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 
 export const regex = <T = string>(pattern: RegExp) => {

@@ -1,8 +1,9 @@
-import type { Char } from '../types';
-
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { success } from '../core/success';
+
+export type Char<S extends string = string> =
+    S extends `${infer _}${infer Rest}` ? (Rest extends '' ? S : never) : never;
 
 export const char = <S extends string>(expected: Char<S>) => {
     if ((expected as string).length !== 1) {

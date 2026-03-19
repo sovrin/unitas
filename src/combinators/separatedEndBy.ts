@@ -1,7 +1,5 @@
-import type { Parser, Success } from '../types';
-
-import { create } from '../core/create';
-import { success } from '../core/success';
+import { create, type Parser } from '../core/parser';
+import { type Success, success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 /**

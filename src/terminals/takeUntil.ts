@@ -1,4 +1,4 @@
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 
 export const takeUntil = (predicate: (char: string) => boolean) => {

@@ -1,5 +1,4 @@
-import type { Result } from '../types';
-
+import { type Result } from '../core/result';
 import { type Digit } from './digit';
 import { type Letter } from './letter';
 import { satisfy } from './satisfy';

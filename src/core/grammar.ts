@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
 import { lazy } from './lazy';
 

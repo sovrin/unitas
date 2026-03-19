@@ -1,7 +1,7 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 
 export const until = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {

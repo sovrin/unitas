@@ -1,9 +1,8 @@
 import { assertType, expect } from 'vitest';
 
-import type { Result } from '../src/types';
-
-import { create } from '../src/core/create';
 import { failure } from '../src/core/failure';
+import { create } from '../src/core/parser';
+import { type Result } from '../src/core/result';
 import { success } from '../src/core/success';
 
 export const createTestParser = <T extends string | number>(tester: T) => {

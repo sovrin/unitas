@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
 export const run = <T>(parser: Parser<T>, input: string): T => {
     const result = parser(input);

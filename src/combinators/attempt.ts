@@ -1,7 +1,7 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
-import { create } from '../core/create';
 import { forward } from '../core/forward';
+import { create } from '../core/parser';
 
 export const attempt = <T>(parser: Parser<T>) => {
     return create<T>((input) => {

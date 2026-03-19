@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import { assertSuccess } from '../../test/utils.test';
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 import { first } from './first';
 

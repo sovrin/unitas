@@ -1,15 +1,15 @@
 import { describe, expect, it } from 'vitest';
 
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
 import {
     assertFailure,
     assertSuccess,
     createTestParser,
 } from '../../test/utils.test';
-import { create } from './create';
 import { failure } from './failure';
 import { lazy } from './lazy';
+import { create } from './parser';
 import { success } from './success';
 
 describe('lazy', () => {

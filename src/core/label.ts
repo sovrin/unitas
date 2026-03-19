@@ -1,8 +1,8 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
-import { create } from './create';
 import { failure } from './failure';
 import { forward } from './forward';
+import { create } from './parser';
 
 export const label = <T>(parser: Parser<T>, expected: string): Parser<T> => {
     return create<T>((input) => {

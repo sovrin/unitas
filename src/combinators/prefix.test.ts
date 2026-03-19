@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
 import {
     assertFailure,

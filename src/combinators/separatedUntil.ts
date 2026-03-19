@@ -1,8 +1,6 @@
-import type { Parser, Success } from '../types';
-
-import { create } from '../core/create';
 import { failure } from '../core/failure';
-import { success } from '../core/success';
+import { create, type Parser } from '../core/parser';
+import { success, type Success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 export const separatedUntil = <T>(
@@ -17,6 +15,7 @@ export const separatedUntil = <T>(
         )(input) as Success<T[]>;
 
         const result = terminator(remaining);
+
         return result.ok ? success(values, result.remaining) : failure();
     });
 };

@@ -1,9 +1,7 @@
 import { describe, it } from 'vitest';
 
-import type { UppercaseLetter } from '../types';
-
 import { assertFailure, assertSuccess } from '../../test/utils.test';
-import { uppercase } from './uppercase';
+import { uppercase, type UppercaseLetter } from './uppercase';
 
 describe('uppercase', () => {
     it('should parse uppercase letter', () => {

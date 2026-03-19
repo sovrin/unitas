@@ -1,9 +1,7 @@
 import { describe, it } from 'vitest';
 
-import type { AlphaNum } from '../types';
-
 import { assertFailure, assertSuccess } from '../../test/utils.test';
-import { alphaNum } from './alphaNum';
+import { alphaNum, type AlphaNum } from './alphaNum';
 
 describe('alphaNum', () => {
     it('should parse letter', () => {

@@ -1,9 +1,7 @@
 import { describe, it } from 'vitest';
 
-import type { HexDigit } from '../types';
-
 import { assertFailure, assertSuccess } from '../../test/utils.test';
-import { hexDigit } from './hexDigit';
+import { hexDigit, type HexDigit } from './hexDigit';
 
 describe('hexDigit', () => {
     it('should parse hexadecimal digits', () => {

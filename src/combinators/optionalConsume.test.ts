@@ -1,8 +1,8 @@
 import { describe, it } from 'vitest';
 
 import { assertSuccess, createTestParser } from '../../test/utils.test';
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { optionalConsume } from './optionalConsume';
 
 describe('optionalConsume', () => {

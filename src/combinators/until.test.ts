@@ -5,8 +5,8 @@ import {
     assertSuccess,
     createTestParser,
 } from '../../test/utils.test';
-import { create } from '../core/create';
 import { failure } from '../core/failure';
+import { create } from '../core/parser';
 import { until } from './until';
 
 describe('until', () => {

@@ -1,4 +1,4 @@
-import { type Parser } from '../types';
+import { type Parser } from '../core';
 
 type Pipe<A, B> = (this: Parser<A>, arg: A) => B;
 

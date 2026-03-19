@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 import { pipe } from './pipe';
 

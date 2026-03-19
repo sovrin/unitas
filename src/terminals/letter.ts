@@ -1,5 +1,4 @@
-import type { Result } from '../types';
-
+import { type Result } from '../core/result';
 import { type LowercaseLetter } from './lowercase';
 import { satisfy } from './satisfy';
 import { type UppercaseLetter } from './uppercase';

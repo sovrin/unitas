@@ -1,6 +1,6 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { map } from './map';
 
 export type First<T extends readonly unknown[]> = T extends readonly [

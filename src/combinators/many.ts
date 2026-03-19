@@ -1,7 +1,5 @@
-import type { Parser, Success } from '../types';
-
-import { create } from '../core/create';
-import { success } from '../core/success';
+import { create, type Parser } from '../core/parser';
+import { success, type Success } from '../core/success';
 
 /**
  * zero or more occurrences

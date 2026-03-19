@@ -1,8 +1,6 @@
-import type { Char } from '../types';
-
-import { create } from '../core/create';
 import { failure } from '../core/failure';
-import { char } from './char';
+import { create } from '../core/parser';
+import { type Char, char } from './char';
 
 export function charOf<S extends string>(
     chars: readonly Char<S>[],

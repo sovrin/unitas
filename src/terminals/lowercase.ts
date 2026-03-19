@@ -1,5 +1,4 @@
-import type { Result } from '../types';
-
+import { type Result } from '../core/result';
 import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;

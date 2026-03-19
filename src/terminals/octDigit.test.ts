@@ -1,9 +1,7 @@
 import { describe, it } from 'vitest';
 
-import type { OctDigit } from '../types';
-
 import { assertFailure, assertSuccess } from '../../test/utils.test';
-import { octDigit } from './octDigit';
+import { octDigit, type OctDigit } from './octDigit';
 
 describe('octDigit', () => {
     it('should parse octal digits', () => {

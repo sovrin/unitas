@@ -1,7 +1,7 @@
 import { lexeme } from '../combinators/lexeme';
 import { map } from '../combinators/map';
 import { sequence } from '../combinators/sequence';
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { literal } from './literal';
 import { regex } from './regex';
 

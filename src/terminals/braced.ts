@@ -1,4 +1,4 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
 import { surrounded } from '../combinators/surrounded';
 import { literal } from './literal';

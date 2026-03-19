@@ -1,6 +1,6 @@
-import type { Parser } from '../types';
+import type { Parser } from '../core/parser';
 
-import { create } from '../core/create';
+import { create } from '../core/parser';
 import { success } from '../core/success';
 
 export const manyAtMost = <T>(parser: Parser<T>, n: number) => {

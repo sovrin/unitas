@@ -1,4 +1,4 @@
-import { type Result } from '../types';
+import { type Result } from './result';
 
 export const match = <T, U>(
     result: Result<T>,
