@@ -74,7 +74,7 @@ export function pipe<A, B, C, D, E, F, G, H, I, J>(
 ): Pipe<unknown, unknown>;
 
 export function pipe(...fns: Array<Pipe<unknown | never, unknown | never>>) {
-    return function (value: unknown) {
+    return function (this: Parser, value: unknown) {
         return fns.reduce((acc, fn) => fn.bind(this)(acc), value);
     };
 }
