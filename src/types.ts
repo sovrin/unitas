@@ -40,21 +40,26 @@ export type Last<T extends readonly unknown[]> = T extends readonly [
     ? L
     : never;
 
-export type Digit<T extends string> = T extends
-    | '0'
-    | '1'
-    | '2'
-    | '3'
-    | '4'
-    | '5'
-    | '6'
-    | '7'
-    | '8'
-    | '9'
-    ? true
-    : false;
+export type Digit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7' | '8' | '9';
 
-export type LowerCaseLetter =
+export type OctDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
+
+export type HexDigit =
+    | Digit
+    | 'a'
+    | 'b'
+    | 'c'
+    | 'd'
+    | 'e'
+    | 'f'
+    | 'A'
+    | 'B'
+    | 'C'
+    | 'D'
+    | 'E'
+    | 'F';
+
+export type LowercaseLetter =
     | 'a'
     | 'b'
     | 'c'
@@ -82,7 +87,7 @@ export type LowerCaseLetter =
     | 'y'
     | 'z';
 
-export type UpperCaseLetter =
+export type UppercaseLetter =
     | 'A'
     | 'B'
     | 'C'
@@ -110,4 +115,6 @@ export type UpperCaseLetter =
     | 'Y'
     | 'Z';
 
-export type Letter = LowerCaseLetter | UpperCaseLetter;
+export type Letter = LowercaseLetter | UppercaseLetter;
+
+export type AlphaNum = Letter | Digit;

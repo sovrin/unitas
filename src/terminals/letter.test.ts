@@ -7,7 +7,7 @@ import { letter } from './letter';
 
 describe('letter', () => {
     it('should parse alphabetic characters', () => {
-        const result = letter('A');
+        const result = letter('A' as const);
 
         assertSuccess<Letter>(result, 'A', '');
     });
@@ -28,5 +28,17 @@ describe('letter', () => {
         const result = letter('A');
 
         assertSuccess<Letter>(result, 'A', '');
+    });
+
+    it('should narrow result to first character type for const string', () => {
+        const result = letter('abc' as const);
+
+        assertSuccess<'a'>(result, 'a', 'bc');
+    });
+
+    it('should narrow result type for uppercase const string', () => {
+        const result = letter('XYZ' as const);
+
+        assertSuccess<'X'>(result, 'X', 'YZ');
     });
 });

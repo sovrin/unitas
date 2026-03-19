@@ -1,20 +1,32 @@
 import { describe, it } from 'vitest';
 
-import type { UpperCaseLetter } from '../types';
+import type { UppercaseLetter } from '../types';
 
 import { assertFailure, assertSuccess } from '../../test/utils.test';
 import { uppercase } from './uppercase';
 
 describe('uppercase', () => {
-    it('should parse uppercase', () => {
+    it('should parse uppercase letter', () => {
         const result = uppercase('ABC');
 
-        assertSuccess<UpperCaseLetter>(result, 'A', 'BC');
+        assertSuccess<UppercaseLetter>(result, 'A', 'BC');
     });
 
-    it('should fail on non-uppercase', () => {
+    it('should fail on lowercase', () => {
         const result = uppercase('abc');
 
-        assertFailure<unknown>(result);
+        assertFailure<UppercaseLetter>(result);
+    });
+
+    it('should fail on empty input', () => {
+        const result = uppercase('');
+
+        assertFailure<UppercaseLetter>(result);
+    });
+
+    it('should narrow result to first character type for const string', () => {
+        const result = uppercase('ABC' as const);
+
+        assertSuccess<'A'>(result, 'A', 'BC');
     });
 });
