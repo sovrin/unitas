@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import { assertFailure, assertSuccess } from '../../test/utils.test';
-import { literal } from './literal';
+import { literal } from '../terminals/literal';
 import { parenthesized } from './parenthesized';
 
 describe('parenthesized', () => {

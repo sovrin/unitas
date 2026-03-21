@@ -1,8 +1,8 @@
 import { describe, it } from 'vitest';
 
 import { assertFailure, assertSuccess } from '../../test/utils.test';
+import { literal } from '../terminals/literal';
 import { bracketed } from './bracketed';
-import { literal } from './literal';
 
 describe('bracketed', () => {
     it('should parse bracketed content', () => {

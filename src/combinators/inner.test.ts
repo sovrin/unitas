@@ -5,36 +5,36 @@ import {
     assertSuccess,
     createTestParser,
 } from '../../test/utils.test';
-import { middle } from './middle';
+import { inner } from './inner';
 
-describe('middle', () => {
+describe('inner', () => {
     const parser1 = createTestParser('A');
     const parser2 = createTestParser('B');
     const parser3 = createTestParser('C');
 
-    it('should return the middle parser result', () => {
-        const parser = middle(parser1, parser2, parser3);
+    it('should return the inner parser result', () => {
+        const parser = inner(parser1, parser2, parser3);
         const result = parser('ABC');
 
         assertSuccess<'B'>(result, 'B', '');
     });
 
     it('should fail if first parser fails', () => {
-        const parser = middle(parser1, parser2, parser3);
+        const parser = inner(parser1, parser2, parser3);
         const result = parser('[content)');
 
         assertFailure<'B'>(result);
     });
 
-    it('should fail if middle parser fails', () => {
-        const parser = middle(parser1, parser2, parser3);
+    it('should fail if inner parser fails', () => {
+        const parser = inner(parser1, parser2, parser3);
         const result = parser('(wrong)');
 
         assertFailure<'B'>(result);
     });
 
     it('should fail if last parser fails', () => {
-        const parser = middle(parser1, parser2, parser3);
+        const parser = inner(parser1, parser2, parser3);
         const result = parser('(content]');
 
         assertFailure<'B'>(result);

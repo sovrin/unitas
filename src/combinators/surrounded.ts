@@ -1,12 +1,12 @@
 import type { Parser } from '../core/parser';
 
 import { create } from '../core/parser';
-import { middle } from './middle';
+import { inner } from './inner';
 
 export const surrounded = <T>(
     first: Parser,
     content: Parser<T>,
     second?: Parser,
 ) => {
-    return create<T>(middle(first, content, second || first));
+    return create<T>(inner(first, content, second || first));
 };
