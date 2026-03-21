@@ -2,7 +2,7 @@ import type { Parser } from '../core/parser';
 
 import { choice } from '../combinators/choice';
 import { surrounded } from '../combinators/surrounded';
-import { literal } from './literal';
+import { literal } from '../terminals/literal';
 
 export const quoted = <T>(content: Parser<T>) => {
     return choice(

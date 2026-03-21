@@ -1,3 +1,4 @@
+export * from './filter';
 export * from './flatten';
 export * from './join';
 export * from './pipe';
