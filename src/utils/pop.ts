@@ -10,6 +10,11 @@ type Tail<T extends ReadonlyArray<unknown>> = ((...rest: T) => void) extends (
     ? R
     : never;
 
+/**
+ * @example
+ * get the last element of an array
+ * pop()([1, 2, 3]) // 3
+ */
 export const pop = () => {
     return <T extends ReadonlyArray<unknown>>(haystack: T): LastElement<T> => {
         return haystack.at(-1) as LastElement<T>;

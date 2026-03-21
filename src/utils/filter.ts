@@ -1,5 +1,11 @@
 import { type Parser } from '../core';
 
+/**
+ * @example
+ * exclude values from array
+ * filter([1, 2, 3])([1, 2, 3, 4, 5]) // [4, 5]
+ * filter([1, 2], true)([1, false, 3]) // [3]
+ */
 type ExcludeValues<
     T extends readonly unknown[],
     U extends readonly unknown[],
