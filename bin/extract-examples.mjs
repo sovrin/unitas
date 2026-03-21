@@ -118,8 +118,9 @@ import { describe, it, expect } from 'vitest';
 import * as utils from '../src/utils';
 import * as combinators from '../src/combinators';
 import * as terminals from '../src/terminals';
+import * as helpers from './helpers';
 
-Object.assign(globalThis, utils, combinators, terminals);
+Object.assign(globalThis, utils, combinators, terminals, helpers);
 
 describe('examples from source', () => {
 `;
