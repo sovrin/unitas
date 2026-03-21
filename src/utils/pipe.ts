@@ -4,7 +4,7 @@ import { type Parser } from '../core/parser';
  * Pipe parser functions together.
  *
  * @example
- * pipe(parser1, parser2, parser3)(input)
+ * pipe(lexeme)(letters)('xyz   abc') // { ok: true, value: 'xyz', remaining: 'abc' }
  */
 type Pipe<A, B> = (this: Parser<A>, arg: A) => B;
 
