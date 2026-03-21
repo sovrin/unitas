@@ -19,6 +19,7 @@ function extractExamples(filePath) {
         if (comment.includes('@example')) {
             const lines = comment.split('\n');
             const exampleLines = [];
+            let description = '';
             let capturing = false;
 
             for (const line of lines) {
@@ -28,15 +29,21 @@ function extractExamples(filePath) {
                 }
                 if (capturing) {
                     const trimmed = line.replace(/^\s*\*\s?/, '');
-                    if (trimmed === '' || trimmed.startsWith('*')) {
+                    if (trimmed === '*' || trimmed.startsWith('* @')) {
                         break;
                     }
                     exampleLines.push(trimmed);
+                } else {
+                    const trimmed = line.replace(/^\s*\*\s?/, '').trim();
+                    if (trimmed && !trimmed.startsWith('@')) {
+                        description = trimmed;
+                    }
                 }
             }
 
             if (exampleLines.length > 0) {
                 examples.push({
+                    description,
                     content: exampleLines.join('\n'),
                     file: filePath,
                 });
@@ -69,41 +76,50 @@ function findSourceFiles(dir, ext = '.ts') {
 function parseExample(example) {
     const lines = example.trim().split('\n');
     const codeWithComments = [];
-    let description = '';
+    let prelude = [];
+    let seenFirstComment = false;
 
     for (const line of lines) {
         const trimmed = line.trim();
         if (!trimmed) continue;
 
-        const hasComment = trimmed.includes('//');
-        const [codePart, ...commentParts] = trimmed.split('//');
-        const comment = commentParts.join('//').trim();
-
-        if (!hasComment && !description) {
-            description = trimmed;
-        } else if (hasComment) {
+        if (trimmed.includes('//')) {
+            const [codePart, ...commentParts] = trimmed.split('//');
+            const expected = commentParts.join('//').trim();
+            const code = codePart.trim();
+            const thisPrelude = seenFirstComment ? '' : prelude.join('\n');
+            seenFirstComment = true;
             codeWithComments.push({
-                code: codePart.trim(),
-                expected: comment,
+                code,
+                expected,
+                prelude: thisPrelude,
             });
+        } else if (!seenFirstComment) {
+            prelude.push(trimmed);
         }
     }
 
-    return { description, codeWithComments };
+    return { codeWithComments };
 }
 
 function generateTestFile(examples) {
     const groups = {};
 
-    for (const { content, file } of examples) {
-        const { description, codeWithComments } = parseExample(content);
+    for (const { content, file, description } of examples) {
+        const { codeWithComments } = parseExample(content);
 
         if (codeWithComments.length === 0) continue;
 
         const assertionLines = codeWithComments
-            .map(({ code, expected }, j) => {
+            .map(({ code, expected, prelude }, j) => {
                 const varName = `__result${j}`;
-                return `            const ${varName} = ${code};
+                const preludeLines = prelude
+                    ? prelude
+                          .split('\n')
+                          .map((l) => `            ${l}`)
+                          .join('\n') + '\n'
+                    : '';
+                return `${preludeLines}            const ${varName} = ${code};
             expect(${varName}).toEqual(${expected});`;
             })
             .join('\n');
@@ -123,9 +139,10 @@ import { describe, it, expect } from 'vitest';
 import * as utils from '../src/utils';
 import * as combinators from '../src/combinators';
 import * as terminals from '../src/terminals';
+import * as core from '../src/core';
 import * as helpers from './helpers';
 
-Object.assign(globalThis, utils, combinators, terminals, helpers);
+Object.assign(globalThis, utils, combinators, terminals, core, helpers);
 
 describe('examples from source', () => {
 `;

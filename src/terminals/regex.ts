@@ -2,6 +2,12 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
+/**
+ * Parse with a regular expression.
+ *
+ * @example
+ * regex(/^\w+/)('hello world') // { ok: true, value: 'hello', remaining: ' world' }
+ */
 export const regex = <T = string>(pattern: RegExp) => {
     if (pattern.global) {
         throw new Error('Global flag is not supported in regex parsers');

@@ -2,8 +2,9 @@ import { create, type Parser } from '../core/parser';
 import { success, type Success } from '../core/success';
 
 /**
+ * Zero or more occurrences (never fails).
+ *
  * @example
- * zero or more occurrences (never fails)
  * many(literal('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const many = <T>(parser: Parser<T>) => {

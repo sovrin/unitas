@@ -20,6 +20,12 @@ export type HexDigit =
 
 const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c));
 
+/**
+ * Parse a single hexadecimal digit.
+ *
+ * @example
+ * hexDigit('fF9') // { ok: true, value: 'f', remaining: 'F9' }
+ */
 export function hexDigit<S extends `${HexDigit}${string}`>(
     input: S,
 ): Result<Head<S> & HexDigit>;

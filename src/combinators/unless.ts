@@ -4,8 +4,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Parse unless condition is true (inverse of guard).
+ *
  * @example
- * parse unless condition is true (inverse of guard)
  * unless(false, literal('hello'))('hello') // { ok: true, value: 'hello', remaining: '' }
  * unless(true, literal('hello'))('hello') // { ok: true, value: null, remaining: 'hello' }
  */

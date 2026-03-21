@@ -7,8 +7,9 @@ import { map } from './map';
 import { sequence } from './sequence';
 
 /**
+ * Parse content with optional whitespace on both sides.
+ *
  * @example
- * parse content with optional whitespace on both sides
  * padded(literal('hi'))('   hi   ') // { ok: true, value: 'hi', remaining: '' }
  */
 export const padded = <T>(content: Parser<T>) => {

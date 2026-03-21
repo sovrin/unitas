@@ -4,8 +4,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Zero or more items separated by a separator.
+ *
  * @example
- * zero or more items separated by a separator
  * separatedBy(literal('a'), literal(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedBy = <T>(parser: Parser<T>, separator: Parser) => {

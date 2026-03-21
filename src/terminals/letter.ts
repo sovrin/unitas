@@ -8,6 +8,12 @@ export type Letter = LowercaseLetter | UppercaseLetter;
 
 const parser = satisfy<Letter>((c) => /[a-zA-Z]/.test(c));
 
+/**
+ * Parse a single letter.
+ *
+ * @example
+ * letter('abc') // { ok: true, value: 'a', remaining: 'bc' }
+ */
 export function letter<S extends `${Letter}${string}`>(
     input: S,
 ): Result<Head<S> & Letter>;

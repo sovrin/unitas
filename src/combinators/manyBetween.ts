@@ -5,8 +5,9 @@ import { exactly } from './exactly';
 import { manyAtMost } from './manyAtMost';
 
 /**
+ * Parse between min and max occurrences.
+ *
  * @example
- * parse between min and max occurrences
  * manyBetween(literal('a'), 2, 3)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const manyBetween = <T>(parser: Parser<T>, min: number, max: number) => {

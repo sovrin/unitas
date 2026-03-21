@@ -12,6 +12,6 @@ export default defineConfig({
             enabled: true,
             include: ['src/**/*.test.ts'],
         },
-        include: ['src/**/*.test.ts'],
+        include: ['src/**/*.test.ts', 'test/examples.test.ts'],
     },
 });

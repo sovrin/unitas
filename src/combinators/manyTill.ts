@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Parse zero or more until terminator matches.
+ *
  * @example
- * parse zero or more until terminator matches
  * manyTill(literal('a'), literal('b'))('aaab') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const manyTill = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {

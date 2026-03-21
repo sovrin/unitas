@@ -4,8 +4,9 @@ import { type Success, success } from '../core/success';
 import { many } from './many';
 
 /**
+ * Parse one or more and fold into a single value.
+ *
  * @example
- * parse one or more and fold into a single value
  * fold1(digit, 0, (acc, d) => acc + d)('123') // { ok: true, value: 6, remaining: '' }
  */
 export const fold1 = <T, U>(

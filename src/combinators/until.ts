@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Parse until terminator matches (fails if terminator never matches).
+ *
  * @example
- * parse until terminator matches (fails if terminator never matches)
  * until(literal('a'), literal('b'))('baaa') // { ok: true, value: [], remaining: 'baaa' }
  * until(literal('a'), literal('b'))('aaba') // { ok: true, value: ['a', 'a'], remaining: 'ba' }
  */

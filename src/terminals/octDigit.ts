@@ -6,6 +6,12 @@ export type OctDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
 
 const parser = satisfy<OctDigit>((c) => /[0-7]/.test(c));
 
+/**
+ * Parse a single octal digit.
+ *
+ * @example
+ * octDigit('7abc') // { ok: true, value: '7', remaining: 'abc' }
+ */
 export function octDigit<S extends `${OctDigit}${string}`>(
     input: S,
 ): Result<Head<S> & OctDigit>;

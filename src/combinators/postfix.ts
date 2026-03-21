@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Parse postfix operators (chains atom with operators that return functions).
+ *
  * @example
- * parse postfix operators (chains atom with operators that return functions)
  * postfix(literal('a'), map(literal('!'), () => (x) => x))('a!') // { ok: true, value: 'a', remaining: '' }
  */
 export const postfix = <T>(

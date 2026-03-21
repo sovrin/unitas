@@ -4,8 +4,9 @@ import { create } from '../core/parser';
 import { inner } from './inner';
 
 /**
+ * Parse content surrounded by delimiters.
+ *
  * @example
- * parse content surrounded by delimiters
  * surrounded(literal('['), literal('hi'), literal(']'))('[hi]') // { ok: true, value: 'hi', remaining: '' }
  * surrounded(literal('a'), literal('b'), literal('c'))('abc') // { ok: true, value: 'b', remaining: '' }
  */

@@ -4,8 +4,9 @@ import { literal } from '../terminals/literal';
 import { surrounded } from './surrounded';
 
 /**
+ * Parse content surrounded by braces.
+ *
  * @example
- * parse content surrounded by braces
  * braced(literal('hi'))('{hi}') // { ok: true, value: 'hi', remaining: '' }
  */
 export const braced = <T>(content: Parser<T>) => {

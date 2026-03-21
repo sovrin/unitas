@@ -5,8 +5,9 @@ import { many1 } from './many1';
 import { map } from './map';
 
 /**
+ * Skip one or more occurrences (fails if no matches).
+ *
  * @example
- * skip one or more occurrences (fails if no matches)
  * skipMany1(literal('a'))('aaabc') // { ok: true, value: null, remaining: 'bc' }
  */
 export const skipMany1 = <T>(parser: Parser<T>) => {

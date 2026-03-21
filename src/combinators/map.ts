@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Transform the parsed value.
+ *
  * @example
- * transform the parsed value
  * map(literal('hello'), (v) => v.toUpperCase())('hello') // { ok: true, value: 'HELLO', remaining: '' }
  */
 export function map<A, B>(

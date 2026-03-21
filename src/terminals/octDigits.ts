@@ -4,6 +4,12 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 import { octDigit } from './octDigit';
 
+/**
+ * Parse one or more octal digits.
+ *
+ * @example
+ * octDigits('0777abc') // { ok: true, value: '0777', remaining: 'abc' }
+ */
 export const octDigits = create<string>((input) => {
     const result = many1(octDigit)(input);
     if (!result.ok) {

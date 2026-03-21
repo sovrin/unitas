@@ -5,8 +5,9 @@ import { exactly } from './exactly';
 import { many } from './many';
 
 /**
+ * Parse at least n occurrences.
+ *
  * @example
- * parse at least n occurrences
  * manyAtLeast(literal('a'), 2)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const manyAtLeast = <T>(parser: Parser<T>, n: number) => {

@@ -1,8 +1,9 @@
 import { type Parser } from '../core/parser';
 
 /**
+ * Pipe parser functions together.
+ *
  * @example
- * pipe parser functions together
  * pipe(parser1, parser2, parser3)(input)
  */
 type Pipe<A, B> = (this: Parser<A>, arg: A) => B;

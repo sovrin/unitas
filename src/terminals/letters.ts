@@ -4,6 +4,12 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 import { letter } from './letter';
 
+/**
+ * Parse one or more letters.
+ *
+ * @example
+ * letters('abc123') // { ok: true, value: 'abc', remaining: '123' }
+ */
 export const letters = create<string>((input) => {
     const result = many1(letter)(input);
     if (!result.ok) {

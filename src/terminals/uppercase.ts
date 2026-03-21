@@ -32,6 +32,10 @@ export type UppercaseLetter =
 
 const parser = satisfy<UppercaseLetter>((c) => /[A-Z]/.test(c));
 
+/**
+ * Parses a single uppercase letter.
+ * @example uppercase('ABC') // { ok: true, value: 'A', remaining: 'BC' }
+ */
 export function uppercase<S extends `${UppercaseLetter}${string}`>(
     input: S,
 ): Result<Head<S> & UppercaseLetter>;

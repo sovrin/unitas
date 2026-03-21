@@ -1,5 +1,11 @@
 import type { Parser } from '../core/parser';
 
+/**
+ * Runs a parser and returns the value, throws on failure or unconsumed input.
+ *
+ * @example
+ * run(literal('hello'), 'hello') // 'hello'
+ */
 export const run = <T>(parser: Parser<T>, input: string): T => {
     const result = parser(input);
     if (!result.ok) {

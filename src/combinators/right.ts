@@ -5,8 +5,9 @@ import { map } from './map';
 import { sequence } from './sequence';
 
 /**
+ * Keep only the right result from a sequence.
+ *
  * @example
- * keep only the right result from a sequence
  * right(literal('hello'), literal('world'))('helloworld') // { ok: true, value: 'world', remaining: '' }
  */
 export const right = <A, B>(parserA: Parser<A>, parserB: Parser<B>) => {

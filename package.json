@@ -36,6 +36,16 @@
                 "default": "./dist/combinators.cjs"
             }
         },
+        "./utils": {
+            "import": {
+                "types": "./dist/utils.d.mts",
+                "default": "./dist/utils.mjs"
+            },
+            "require": {
+                "types": "./dist/utils.d.cts",
+                "default": "./dist/utils.cjs"
+            }
+        },
         "./terminals": {
             "import": {
                 "types": "./dist/terminals.d.mts",
@@ -53,6 +63,7 @@
         "test": "vitest run",
         "test:watch": "vitest",
         "test:types": "attw --pack .",
+        "test:extract": "tsx bin/extract-examples.mjs && oxfmt ./test/examples.test.ts",
         "coverage": "vitest run --coverage",
         "format": "oxfmt",
         "lint": "oxlint",
@@ -65,9 +76,9 @@
         "@vitest/coverage-istanbul": "^4.0.16",
         "@vitest/coverage-v8": "^4",
         "jscodeshift": "^17",
-        "oxfmt": "^0.38.0",
-        "oxlint": "^1.53.0",
-        "tsdown": "^0.20",
+        "oxfmt": "^0.41.0",
+        "oxlint": "^1.56.0",
+        "tsdown": "^0.21",
         "tsx": "^4",
         "typescript": "^5",
         "vitest": "^4"

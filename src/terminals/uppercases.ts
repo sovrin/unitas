@@ -4,6 +4,12 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 import { uppercase } from './uppercase';
 
+/**
+ * Parses one or more uppercase letters.
+ *
+ * @example
+ * uppercases('ABCdef') // { ok: true, value: 'ABC', remaining: 'def' }
+ */
 export const uppercases = create<string>((input) => {
     const result = many1(uppercase)(input);
     if (!result.ok) {

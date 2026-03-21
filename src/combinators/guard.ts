@@ -5,8 +5,9 @@ import { forward } from '../core/forward';
 import { create } from '../core/parser';
 
 /**
+ * Conditionally apply parser based on a condition.
+ *
  * @example
- * conditionally apply parser based on a condition
  * guard(true, literal('hello'))('hello') // { ok: true, value: 'hello', remaining: '' }
  * guard(false, literal('hello'))('hello') // { ok: false }
  */

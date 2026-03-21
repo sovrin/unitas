@@ -4,8 +4,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Optionally consume input (always succeeds, returns void).
+ *
  * @example
- * optionally consume input (always succeeds, returns void)
  * optionalConsume(literal('hello'))('hello world') // { ok: true, value: undefined, remaining: ' world' }
  * optionalConsume(literal('hello'))('world') // { ok: true, value: undefined, remaining: 'world' }
  */

@@ -11,8 +11,9 @@ type Tail<T extends ReadonlyArray<unknown>> = ((...rest: T) => void) extends (
     : never;
 
 /**
+ * Get the last element of an array.
+ *
  * @example
- * get the last element of an array
  * pop()([1, 2, 3]) // 3
  */
 export const pop = () => {

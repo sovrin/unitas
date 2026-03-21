@@ -3,11 +3,6 @@ import type { Parser } from '../core/parser';
 import { create } from '../core/parser';
 import { map } from './map';
 
-/**
- * @example
- * extract the last element from a parser result array
- * last(sequence(literal('a'), literal('b')))('ab') // { ok: true, value: 'b', remaining: '' }
- */
 export type Last<T extends readonly unknown[]> = T extends readonly [
     ...unknown[],
     infer L,
@@ -15,6 +10,12 @@ export type Last<T extends readonly unknown[]> = T extends readonly [
     ? L
     : never;
 
+/**
+ * Extract the last element from a parser result array.
+ *
+ * @example
+ * last(sequence(literal('a'), literal('b')))('ab') // { ok: true, value: 'b', remaining: '' }
+ */
 export const last = <T extends readonly [unknown, ...unknown[]]>(
     parser: Parser<T>,
 ) => {

@@ -6,8 +6,9 @@ import { map } from './map';
 import { sequence } from './sequence';
 
 /**
+ * Parser that consumes trailing whitespace.
+ *
  * @example
- * parser that consumes trailing whitespace
  * lexeme(literal('hello'))('hello   world') // { ok: true, value: 'hello', remaining: 'world' }
  */
 export const lexeme = <T>(parser: Parser<T>) => {

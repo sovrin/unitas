@@ -4,8 +4,9 @@ import { create } from '../core/parser';
 import { map } from './map';
 
 /**
+ * Consume input but discard the result (return null).
+ *
  * @example
- * consume input but discard the result (return null)
  * consume(literal('hello'))('hello world') // { ok: true, value: null, remaining: ' world' }
  */
 export const consume = <T>(parser: Parser<T>) => {

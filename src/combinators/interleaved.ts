@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Parse items with interleaved separators.
+ *
  * @example
- * parse items with interleaved separators
  * interleaved(literal('a'), literal(','))('a,a,a') // { ok: true, value: ['a', ',', 'a', ',', 'a'], remaining: '' }
  */
 export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {

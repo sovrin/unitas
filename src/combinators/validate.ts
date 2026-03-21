@@ -4,8 +4,9 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 
 /**
+ * Validate parsed value with a predicate.
+ *
  * @example
- * validate parsed value with a predicate
  * validate(digit, (n) => n > 5)('7') // { ok: true, value: 7, remaining: '' }
  * validate(digit, (n) => n > 5)('3') // { ok: false }
  */

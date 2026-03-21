@@ -6,8 +6,9 @@ import { success } from '../core/success';
 import { separatedBy1 } from './separatedBy1';
 
 /**
+ * One or more items separated by and ending with a terminator.
+ *
  * @example
- * one or more items separated by and ending with a terminator
  * separatedEndBy1(literal('a'), literal(';'))('a;a;a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedEndBy1 = <T>(parser: Parser<T>, separator: Parser) => {

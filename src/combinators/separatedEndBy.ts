@@ -3,8 +3,9 @@ import { type Success, success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 /**
+ * Zero or more items separated by and ending with a terminator.
+ *
  * @example
- * zero or more items separated by and ending with a terminator
  * separatedEndBy(literal('a'), literal(';'))('a;a;a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {

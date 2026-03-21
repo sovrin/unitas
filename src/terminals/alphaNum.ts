@@ -8,6 +8,13 @@ export type AlphaNum = Letter | Digit;
 
 const parser = satisfy<AlphaNum>((c) => /[a-zA-Z0-9]/.test(c));
 
+/**
+ * Parse a single alphanumeric character.
+ *
+ * @example
+ * alphaNum('a1') // { ok: true, value: 'a', remaining: '1' }
+ * alphaNum('1a') // { ok: true, value: '1', remaining: 'a' }
+ */
 export function alphaNum<S extends `${AlphaNum}${string}`>(
     input: S,
 ): Result<Head<S> & AlphaNum>;

@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Skip a parser n times.
+ *
  * @example
- * skip a parser n times
  * skip(literal('a'), 2)('aabc') // { ok: true, value: null, remaining: 'bc' }
  */
 export const skip = <T>(parser: Parser<T>, count: number) => {

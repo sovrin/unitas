@@ -5,8 +5,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
+ * Chain left-associative operations (fails on empty input).
+ *
  * @example
- * chain left-associative operations (fails on empty input)
  * chainLeft1(digits, operation)('1+2+3') // { ok: true, value: 6, remaining: '' }
  * chainLeft1(digits, operation)('8/2*3') // { ok: true, value: 12, remaining: '' }
  */

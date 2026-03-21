@@ -1,6 +1,7 @@
 /**
+ * Join array elements into a string.
+ *
  * @example
- * join array elements into a string
  * join()([1, 2, 3])       // '123'
  * join('-')([1, 2, 3])    // '1-2-3'
  */

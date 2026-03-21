@@ -4,8 +4,9 @@ import { surrounded } from '../combinators/surrounded';
 import { literal } from '../terminals/literal';
 
 /**
+ * Parse content surrounded by parentheses.
+ *
  * @example
- * parse content surrounded by parentheses
  * parenthesized(literal('hi'))('(hi)') // { ok: true, value: 'hi', remaining: '' }
  */
 export const parenthesized = <T>(content: Parser<T>) => {

@@ -7,8 +7,9 @@ import { chainRight1 } from './chainRight1';
 import { optional } from './optional';
 
 /**
+ * Chain right-associative operations (right-to-left grouping).
+ *
  * @example
- * chain right-associative operations (right-to-left grouping)
  * chainRight(digits, operation)('2-1-1') // { ok: true, value: 2, remaining: '' }
  * chainRight(digits, operation)('4/2/2') // { ok: true, value: 4, remaining: '' }
  */

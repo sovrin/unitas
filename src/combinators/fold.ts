@@ -3,8 +3,9 @@ import { type Success, success } from '../core/success';
 import { many } from './many';
 
 /**
+ * Parse zero or more and fold into a single value.
+ *
  * @example
- * parse zero or more and fold into a single value
  * fold(digit, [], (acc, d) => [...acc, d])('123') // { ok: true, value: [1, 2, 3], remaining: '' }
  */
 export const fold = <T, U>(

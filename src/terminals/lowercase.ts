@@ -32,6 +32,12 @@ export type LowercaseLetter =
 
 const parser = satisfy<LowercaseLetter>((c) => /[a-z]/.test(c));
 
+/**
+ * Parse a single lowercase letter.
+ *
+ * @example
+ * lowercase('abc') // { ok: true, value: 'a', remaining: 'bc' }
+ */
 export function lowercase<S extends `${LowercaseLetter}${string}`>(
     input: S,
 ): Result<Head<S> & LowercaseLetter>;

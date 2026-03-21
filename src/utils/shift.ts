@@ -1,6 +1,7 @@
 /**
+ * Get the first element of an array.
+ *
  * @example
- * get the first element of an array
  * shift()([1, 2, 3]) // 1
  */
 export const shift = () => {

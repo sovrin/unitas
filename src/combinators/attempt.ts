@@ -4,8 +4,9 @@ import { forward } from '../core/forward';
 import { create } from '../core/parser';
 
 /**
+ * Attempt wraps a parser to handle backtracking on failure.
+ *
  * @example
- * attempt wraps a parser to handle backtracking on failure
  * attempt(literal('hello'))('hello world') // { ok: true, value: 'hello', remaining: ' world' }
  */
 export const attempt = <T>(parser: Parser<T>) => {

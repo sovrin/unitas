@@ -1,6 +1,7 @@
 /**
+ * Collect spread arguments into an array.
+ *
  * @example
- * collect spread arguments into an array
  * spread()(1, 2, 3) // [1, 2, 3]
  */
 export const spread = () => {

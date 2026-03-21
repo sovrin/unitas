@@ -7,8 +7,9 @@ import { chainLeft1 } from './chainLeft1';
 import { optional } from './optional';
 
 /**
+ * Chain left-associative operations (right-to-left for same precedence).
+ *
  * @example
- * chain left-associative operations (right-to-left for same precedence)
  * chainLeft(digits, operation)('1+2+3') // { ok: true, value: 6, remaining: '' }
  * chainLeft(digits, operation)('10-3+2') // { ok: true, value: 9, remaining: '' }
  */
