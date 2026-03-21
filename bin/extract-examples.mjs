@@ -1,5 +1,5 @@
 import fs from 'node:fs';
-import path from 'node:path';
+import path, { basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -92,23 +92,13 @@ function parseExample(example) {
     return { description, codeWithComments };
 }
 
-function getRelativeImport(filePath) {
-    const relPath = path.relative(rootDir, filePath).replace(/\.ts$/, '');
-    return '../' + relPath.replace(/[\\\/]/g, '/');
-}
-
 function generateTestFile(examples) {
-    const fileGroups = {};
     const testCases = [];
 
     for (const { content, file } of examples) {
         const { description, codeWithComments } = parseExample(content);
 
         if (codeWithComments.length === 0) continue;
-
-        if (!fileGroups[file]) {
-            fileGroups[file] = new Set();
-        }
 
         const assertionLines = codeWithComments
             .map(({ code, expected }, j) => {
@@ -118,38 +108,24 @@ function generateTestFile(examples) {
             })
             .join('\n');
 
-        for (const { code } of codeWithComments) {
-            const fnMatches = code.matchAll(/(\w+)\(/g);
-            for (const match of fnMatches) {
-                fileGroups[file].add(match[1]);
-            }
-        }
+        const name = basename(file, '.ts');
 
-        testCases.push({ description, assertionLines, file });
+        testCases.push({ name, description, assertionLines, file });
     }
 
-    const importStatements = [];
-    for (const [file, fns] of Object.entries(fileGroups)) {
-        const importPath = getRelativeImport(file);
-        const fnList = [...fns].filter(
-            (fn) => !['expect', 'describe', 'it', 'const', 'let'].includes(fn),
-        );
-        if (fnList.length > 0) {
-            importStatements.push(
-                `import { ${fnList.join(', ')} } from '${importPath}';`,
-            );
-        }
-    }
+    let output = `// @ts-nocheck
+import { describe, it, expect } from 'vitest';
+import * as utils from '../src/utils';
+import * as combinators from '../src/combinators';
+import * as terminals from '../src/terminals';
 
-    let output = `import { describe, it, expect } from 'vitest';
-
-${importStatements.join('\n')}
+Object.assign(globalThis, utils, combinators, terminals);
 
 describe('examples from source', () => {
 `;
 
     for (const tc of testCases) {
-        output += `    it('${tc.description}', () => {
+        output += `    it('${tc.name}: ${tc.description}', () => {
 ${tc.assertionLines}
     });
 
