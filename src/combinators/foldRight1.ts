@@ -4,9 +4,9 @@ import { type Success, success } from '../core/success';
 import { many } from './many';
 
 /**
- * parses one or more occurrences of parser (right-to-left)
- * fails if there are no matches
- * on success, folds all items (plus the initial) with the folder
+ * @example
+ * parse one or more and fold right-to-left
+ * foldRight1(digit, [], (acc, d) => [...acc, d])('123') // { ok: true, value: [3, 2, 1], remaining: '' }
  */
 export const foldRight1 = <T, U>(
     parser: Parser<T>,

@@ -6,7 +6,9 @@ import { map } from './map';
 import { sequence } from './sequence';
 
 /**
- * one or more
+ * @example
+ * one or more items separated and ending with terminator
+ * endBy1(literal('item'), literal(';'))('item;item;item;') // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
  */
 export const endBy1 = <T>(parser: Parser<T>, terminator: Parser) => {
     return create<T[]>(

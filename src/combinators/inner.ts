@@ -4,6 +4,11 @@ import { create } from '../core/parser';
 import { map } from './map';
 import { sequence } from './sequence';
 
+/**
+ * @example
+ * extract inner value from surrounded content (like inner of braced)
+ * inner(literal('('), literal('hi'), literal(')'))('(hi)') // { ok: true, value: 'hi', remaining: '' }
+ */
 export const inner = <A, B, C>(
     parserA: Parser<A>,
     parserB: Parser<B>,

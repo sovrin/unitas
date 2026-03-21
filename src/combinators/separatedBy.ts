@@ -4,7 +4,9 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
- * zero or more
+ * @example
+ * zero or more items separated by a separator
+ * separatedBy(literal('a'), literal(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedBy = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {

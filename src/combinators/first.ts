@@ -3,6 +3,11 @@ import type { Parser } from '../core/parser';
 import { create } from '../core/parser';
 import { map } from './map';
 
+/**
+ * @example
+ * extract the first element from a parser result array
+ * first(sequence(literal('a'), digit))('a1bc') // { ok: true, value: 'a', remaining: 'bc' }
+ */
 export type First<T extends readonly unknown[]> = T extends readonly [
     infer F,
     ...unknown[],

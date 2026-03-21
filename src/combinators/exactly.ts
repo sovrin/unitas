@@ -4,6 +4,11 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
+/**
+ * @example
+ * parse exactly n occurrences
+ * exactly(literal('a'), 3)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ */
 export const exactly = <T>(parser: Parser<T>, n: number) => {
     return create<T[]>((input) => {
         const results: T[] = [];

@@ -3,6 +3,11 @@ import type { Parser } from '../core/parser';
 import { create } from '../core/parser';
 import { map } from './map';
 
+/**
+ * @example
+ * extract the nth element from a parser result array
+ * nth(sequence(literal('a'), literal('b'), literal('c')), 1)('abc') // { ok: true, value: 'b', remaining: '' }
+ */
 type IsWidenedNumber<N extends number> = number extends N ? true : false;
 
 type IsInvalidIndex<N extends number> = `${N}` extends

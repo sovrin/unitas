@@ -4,7 +4,9 @@ import { type Success, success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 /**
- * one or more
+ * @example
+ * one or more items separated by a separator
+ * separatedBy1(literal('a'), literal(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedBy1 = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {

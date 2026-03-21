@@ -4,6 +4,11 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
+/**
+ * @example
+ * parse a sequence of parsers and return all results as an array
+ * sequence(literal('a'), literal('b'), literal('c'))('abc') // { ok: true, value: ['a', 'b', 'c'], remaining: '' }
+ */
 export const sequence = <T extends readonly unknown[]>(
     ...parsers: { [K in keyof T]: Parser<T[K]> }
 ) => {

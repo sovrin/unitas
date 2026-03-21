@@ -4,7 +4,9 @@ import { type Success, success } from '../core/success';
 import { many } from './many';
 
 /**
- * one or more occurrences with failure on zero
+ * @example
+ * one or more occurrences (fails if no matches)
+ * many1(literal('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const many1 = <T>(parser: Parser<T>) => {
     return create<T[]>((input) => {

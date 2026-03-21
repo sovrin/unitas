@@ -4,6 +4,11 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
+/**
+ * @example
+ * transform the parsed value
+ * map(literal('hello'), (v) => v.toUpperCase())('hello') // { ok: true, value: 'HELLO', remaining: '' }
+ */
 export function map<A, B>(
     parser: Parser<A>,
     transform: (value: A) => B,

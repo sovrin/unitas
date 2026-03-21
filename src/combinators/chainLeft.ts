@@ -8,8 +8,9 @@ import { optional } from './optional';
 
 /**
  * @example
- * chain left-associative operations like 1+2+3 => ((1+2)+3)
- * chainLeft(digit, operation)('1+2+3') // { ok: true, value: 6, remaining: '' }
+ * chain left-associative operations (right-to-left for same precedence)
+ * chainLeft(digits, operation)('1+2+3') // { ok: true, value: 6, remaining: '' }
+ * chainLeft(digits, operation)('10-3+2') // { ok: true, value: 9, remaining: '' }
  */
 export const chainLeft = <T>(
     parser: Parser<T>,

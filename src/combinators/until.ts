@@ -4,6 +4,12 @@ import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
+/**
+ * @example
+ * parse until terminator matches (fails if terminator never matches)
+ * until(literal('a'), literal('b'))('baaa') // { ok: true, value: [], remaining: 'baaa' }
+ * until(literal('a'), literal('b'))('aaba') // { ok: true, value: ['a', 'a'], remaining: 'ba' }
+ */
 export const until = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
     return create<T[]>((input) => {
         const results: T[] = [];

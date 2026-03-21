@@ -3,6 +3,11 @@ import { create, type Parser } from '../core/parser';
 import { success, type Success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
+/**
+ * @example
+ * parse items separated by separator until terminator matches
+ * separatedUntil(literal('a'), literal(','), literal(';'))('a,a,a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ */
 export const separatedUntil = <T>(
     parser: Parser<T>,
     separator: Parser,

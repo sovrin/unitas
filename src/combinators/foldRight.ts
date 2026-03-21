@@ -3,9 +3,9 @@ import { type Success, success } from '../core/success';
 import { many } from './many';
 
 /**
- * parses zero or more occurrences of parser (right-to-left)
- * never fails
- * on zero matches, returns the initial value
+ * @example
+ * parse zero or more and fold right-to-left
+ * foldRight(digit, [], (acc, d) => [...acc, d])('123') // { ok: true, value: [3, 2, 1], remaining: '' }
  */
 export const foldRight = <T, U>(
     parser: Parser<T>,
