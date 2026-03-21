@@ -6,7 +6,7 @@ import {
     assertFailure,
     assertSuccess,
     createTestParser,
-} from '../../test/utils.test';
+} from '../../test/utils';
 import { failure } from './failure';
 import { lazy } from './lazy';
 import { create } from './parser';

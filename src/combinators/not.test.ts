@@ -4,7 +4,7 @@ import {
     assertFailure,
     assertSuccess,
     createTestParser,
-} from '../../test/utils.test';
+} from '../../test/utils';
 import { not } from './not';
 
 describe('not', () => {

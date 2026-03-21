@@ -4,7 +4,7 @@ import {
     assertFailure,
     assertSuccess,
     createTestParser,
-} from '../../test/utils.test';
+} from '../../test/utils';
 import { peek } from './peek';
 
 describe('peek', () => {

@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertFailure } from '../../test/utils.test';
+import { assertFailure } from '../../test/utils';
 import { failure } from './failure';
 
 describe('failure', () => {

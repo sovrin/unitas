@@ -4,7 +4,7 @@ import {
     assertFailure,
     assertSuccess,
     createTestParser,
-} from '../../test/utils.test';
+} from '../../test/utils';
 import { separatedEndBy1 } from './separatedEndBy1';
 
 describe('separatedEndBy1', () => {

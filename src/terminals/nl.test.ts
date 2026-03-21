@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertFailure, assertSuccess } from '../../test/utils.test';
+import { assertFailure, assertSuccess } from '../../test/utils';
 import { nl } from './nl';
 
 describe('nl', () => {

@@ -1,6 +1,6 @@
 import { describe, expect, it } from 'vitest';
 
-import { createTestParser } from '../../test/utils.test';
+import { createTestParser } from '../../test/utils';
 import { run } from './run';
 
 describe('run', () => {

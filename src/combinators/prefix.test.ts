@@ -2,11 +2,8 @@ import { describe, it } from 'vitest';
 
 import type { Parser } from '../core/parser';
 
-import {
-    assertFailure,
-    assertSuccess,
-    numberParser,
-} from '../../test/utils.test';
+import { digits } from '../../test/helpers';
+import { assertFailure, assertSuccess } from '../../test/utils';
 import { failure } from '../core/failure';
 import { success } from '../core/success';
 import { prefix } from './prefix';
@@ -23,14 +20,14 @@ describe('prefix', () => {
     };
 
     it('should handle atom without prefix operators', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         const result = parser('42');
 
         assertSuccess<number>(result, 42, '');
     });
 
     it('should apply single prefix operator', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         {
             const result = parser('-5');
 
@@ -44,7 +41,7 @@ describe('prefix', () => {
     });
 
     it('should apply multiple prefix operators right-to-left', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         {
             const result = parser('--5');
 
@@ -58,21 +55,21 @@ describe('prefix', () => {
     });
 
     it('should fail when atom parser fails', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         const result = parser('-abc');
 
         assertFailure<number>(result);
     });
 
     it('should handle long chains of prefix operators', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         const result = parser('---5');
 
         assertSuccess<number>(result, -5, ''); // -(-(- 5)) = -5
     });
 
     it('should handle operators that consume no input when none match', () => {
-        const parser = prefix(unaryOps, numberParser);
+        const parser = prefix(unaryOps, digits);
         const result = parser('123*');
 
         assertSuccess<number>(result, 123, '*');

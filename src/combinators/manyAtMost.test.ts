@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertSuccess, createTestParser } from '../../test/utils.test';
+import { assertSuccess, createTestParser } from '../../test/utils';
 import { manyAtMost } from './manyAtMost';
 
 describe('manyAtMost', () => {

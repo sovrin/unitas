@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertSuccess } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils';
 import { takeUntil } from './takeUntil';
 
 describe('takeUntil', () => {

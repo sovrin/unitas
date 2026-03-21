@@ -1,6 +1,6 @@
 import { describe, it } from 'vitest';
 
-import { assertSuccess } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { last } from './last';

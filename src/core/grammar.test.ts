@@ -1,6 +1,6 @@
 import { assertType, describe, expect, it } from 'vitest';
 
-import { assertSuccess } from '../../test/utils.test';
+import { assertSuccess } from '../../test/utils';
 import { choice } from '../combinators/choice';
 import { map } from '../combinators/map';
 import { sequence } from '../combinators/sequence';

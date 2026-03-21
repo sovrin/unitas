@@ -4,7 +4,7 @@ import {
     assertFailure,
     assertSuccess,
     createTestParser,
-} from '../../test/utils.test';
+} from '../../test/utils';
 import { skipMany1 } from './skipMany1';
 
 describe('skipMany1', () => {

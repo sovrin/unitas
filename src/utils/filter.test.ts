@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 
-import { literal } from '../terminals';
 import { filter } from './filter';
 
 describe('filter', () => {
@@ -61,15 +60,6 @@ describe('filter', () => {
     it('should handle duplicate values in haystack', () => {
         const values = ['a'] as const;
         const result = filter(values)(['a', 'a', 'a', 'b', 'a']);
-        expect(result).toEqual(['b']);
-    });
-
-    it('foo', () => {
-        const a = literal('a');
-        const b = literal('b');
-
-        const values = [a, b] as const;
-        const result = filter(values)(['a', a, 'a', 'b', 'a']);
         expect(result).toEqual(['b']);
     });
 });
