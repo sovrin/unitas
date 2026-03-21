@@ -93,7 +93,7 @@ function parseExample(example) {
 }
 
 function generateTestFile(examples) {
-    const testCases = [];
+    const groups = {};
 
     for (const { content, file } of examples) {
         const { description, codeWithComments } = parseExample(content);
@@ -103,14 +103,19 @@ function generateTestFile(examples) {
         const assertionLines = codeWithComments
             .map(({ code, expected }, j) => {
                 const varName = `__result${j}`;
-                return `        const ${varName} = ${code};
-        expect(${varName}).toEqual(${expected});`;
+                return `            const ${varName} = ${code};
+            expect(${varName}).toEqual(${expected});`;
             })
             .join('\n');
 
         const name = basename(file, '.ts');
+        const namespace = path.basename(path.dirname(file));
 
-        testCases.push({ name, description, assertionLines, file });
+        if (!groups[namespace]) {
+            groups[namespace] = [];
+        }
+
+        groups[namespace].push({ name, description, assertionLines });
     }
 
     let output = `// @ts-nocheck
@@ -125,10 +130,17 @@ Object.assign(globalThis, utils, combinators, terminals, helpers);
 describe('examples from source', () => {
 `;
 
-    for (const tc of testCases) {
-        output += `    it('${tc.name}: ${tc.description}', () => {
+    for (const [namespace, testCases] of Object.entries(groups)) {
+        output += `    describe('${namespace}', () => {
+`;
+        for (const tc of testCases) {
+            output += `        it('${tc.name}: ${tc.description}', () => {
 ${tc.assertionLines}
-    });
+        });
+
+`;
+        }
+        output += `    });
 
 `;
     }
