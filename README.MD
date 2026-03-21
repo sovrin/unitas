@@ -1,134 +1,108 @@
 # unitas — composing parsers into a unified whole
 
-##
-the spiritual successor to [onia](https://github.com/sovrin/onia)
+<img src="doc/logo.png" width="60" height="64" align="right" alt="Unitas logo">
 
-<p align="center">
-    <a href="https://github.com/sovrin/unitas" target="_blank"><img src="./doc/logo.png" width="60" alt="unitas Logo"/></a>
-</p>
+A lightweight, TypeScript-first parser combinator library for building expressive and composable parsers.
 
-`unitas` is a simple, type-safe monadic parser combinator library for TypeScript. It allows you to build complex parsers by composing smaller, reusable components.
+## Features
 
-### Core Concepts
+- **Parser Combinators**: Compose small parsers into complex ones using combinators like `many`, `choice`, `sequence`, and more
+- **Terminals**: Ready-to-use parsers for common patterns (`char`, `string`, `regex`, `digit`, `letter`, etc.)
+- **TypeScript**: Full TypeScript support with generic types and inference
+- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, and `utils`
+- **No dependencies**: Zero external runtime dependencies
 
-A `Parser<T>` is a function that takes an input string and returns a `Result<T>`.
-A `Result<T>` is either:
--   `Success<T>`: A tuple containing the parsed value and the remaining input.
--   `Failure`: `null`, indicating the parser did not match.
+## Installation
 
-```typescript
-type Parser<T> = (input: string) => [T, string] | null;
+```bash
+npm install unitas
 ```
 
-### Terminals
+## Core Concepts
 
-Terminals are the basic building blocks that match specific parts of the input.
+### The Parser Type
 
-#### `char(c)`
-Matches a single character.
+A `Parser<T>` is a function that takes an input string and returns a `Result<T>`. The generic `T` represents the type of value the parser produces.
+
 ```typescript
-import { char } from 'unitas/terminals';
-
-const a = char('a');
-a('abc'); // ['a', 'bc']
-a('bbc'); // null
+type Parser<T> = (input: string) => Result<T>;
 ```
 
-#### `literal(str)`
-Matches an exact string.
-```typescript
-import { literal } from 'unitas/terminals';
+### The Result Type
 
-const hello = literal('hello');
-hello('hello world'); // ['hello', ' world']
+Every parser returns a `Result<T>` which is either:
+
+- **Success** — The parser matched and produced a value
+- **Failure** — The parser did not match
+
+```typescript
+type Success<T> = { ok: true; value: T; remaining: string };
+type Failure = { ok: false; error?: string };
+type Result<T> = Success<T> | Failure;
 ```
 
-#### `regex(re)`
-Matches a regular expression at the start of the input.
-```typescript
-import { regex } from 'unitas/terminals';
+The `remaining` string is crucial — it represents what input is left after the parser has done its work. This is how we "consume" input and chain parsers together.
 
-const digits = regex(/\d+/);
-digits('123abc'); // ['123', 'abc']
-```
+### Creating a Parser
 
-### Combinators
-
-Combinators take one or more parsers and return a new parser.
-
-#### `sequence(...parsers)`
-Runs multiple parsers in order and returns an array of their results.
-```typescript
-import { sequence } from 'unitas/combinators';
-import { char } from 'unitas/terminals';
-
-const ab = sequence(char('a'), char('b'));
-ab('abc'); // [['a', 'b'], 'c']
-```
-
-#### `choice(...parsers)`
-Tries each parser in order and returns the result of the first one that succeeds.
-```typescript
-import { choice } from 'unitas/combinators';
-import { char } from 'unitas/terminals';
-
-const ab = choice(char('a'), char('b'));
-ab('a'); // ['a', '']
-ab('b'); // ['b', '']
-```
-
-#### `many(parser)`
-Matches zero or more occurrences of the given parser.
-```typescript
-import { many } from 'unitas/combinators';
-import { char } from 'unitas/terminals';
-
-const as = many(char('a'));
-as('aaab'); // [['a', 'a', 'a'], 'b']
-as('bbb');  // [[], 'bbb']
-```
-
-#### `surrounded(left, content, right?)`
-Matches content surrounded by other parsers (e.g., brackets).
-```typescript
-import { surrounded } from 'unitas/combinators';
-import { char } from 'unitas/terminals';
-
-const inBrackets = surrounded(char('['), many(char('a')), char(']'));
-inBrackets('[aaa]'); // [['a', 'a', 'a'], '']
-```
-
-#### `map(parser, ...transforms)`
-Applies transformations to the result of a parser.
-```typescript
-import { map } from 'unitas/combinators';
-import { regex } from 'unitas/terminals';
-
-const num = map(regex(/\d+/), (s) => parseInt(s, 10));
-num('123'); // [123, '']
-```
-
-### Grammars
-
-Use `grammar` to define complex, recursive parsers.
+Use `create` to wrap a parsing function:
 
 ```typescript
-import { grammar } from 'unitas';
-import { choice, sequence, map, surrounded } from 'unitas/combinators';
-import { char, regex } from 'unitas/terminals';
+import { create, success, failure } from 'unitas';
 
-const { expr } = grammar({
-    expr: (p) => choice(p.term, p.add),
-    add: (p) => map(
-        sequence(p.term, char('+'), p.expr),
-        ([left, , right]) => (left as number) + (right as number)
-    ),
-    term: (p) => choice(
-        p.number,
-        surrounded(char('('), p.expr, char(')'))
-    ),
-    number: () => map(regex(/\d+/), (d) => parseInt(d, 10))
+const parser = create<string>((input) => {
+    if (input.startsWith('hello')) {
+        return success('hello', input.slice(5));
+    }
+    return failure('expected "hello"');
 });
-
-expr('1+(2+3)'); // [6, '']
 ```
+
+### Understanding the Monadic Nature
+
+Parsers are monadic, which means they follow certain laws that make them composable:
+
+1. **Left identity**: `create(success(a, input))` behaves like `a`
+2. **Right identity**: `parser` composed with `success` returns equivalent result
+3. **Associativity**: Composition order doesn't affect final result
+
+The practical implication is that you can chain and combine parsers predictably.
+
+### Success Results
+
+When a parser successfully matches, it returns:
+
+```typescript
+{ ok: true, value: 'hello', remaining: ' world' }
+       │           │                   │
+       │           │                   └── What's left to parse
+       │           └── The parsed value
+       └── Always true for success
+```
+
+### Failure Results
+
+When a parser fails, it returns:
+
+```typescript
+{ ok: false }                      // Generic failure
+{ ok: false, error: 'expected a' } // Failure with message
+```
+
+The `error` field is optional — you can always add meaningful error messages later using `label`.
+
+## Utils (`unitas/utils`)
+
+Utility functions and helpers.
+
+## Terminals (`unitas/terminals`)
+
+Low-level, atomic parsers that consume input. Available terminals include `char`, `string`, `regex`, `digit`, `letter`, `whitespace`, and more.
+
+## Combinators (`unitas/combinators`)
+
+Functions that combine or transform parsers. Available combinators include `many`, `choice`, `sequence`, `chainLeft`, `surrounded`, `separatedBy`, and more.
+
+## License
+
+MIT
