@@ -20,7 +20,7 @@ function extractDocs(filePath) {
         if (comment.includes('@example')) {
             const lines = comment.split('\n');
             const exampleLines = [];
-            let description = '';
+            const descriptionParts = [];
             let capturing = false;
 
             for (const line of lines) {
@@ -37,14 +37,14 @@ function extractDocs(filePath) {
                 } else {
                     const trimmed = line.replace(/^\s*\*\s?/, '').trim();
                     if (trimmed && !trimmed.startsWith('@')) {
-                        description = trimmed;
+                        descriptionParts.push(trimmed);
                     }
                 }
             }
 
             if (exampleLines.length > 0) {
                 docs.push({
-                    description,
+                    description: descriptionParts.join(' '),
                     example: exampleLines.join('\n'),
                     name: basename(filePath, '.ts'),
                 });

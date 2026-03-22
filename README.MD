@@ -372,7 +372,7 @@ match(success('hello', ''), { success: (v) => v, failure: () => 'failed' }); // 
 
 </details>
 <details id="memoize">
-<summary><code>memoize</code> — exponential backtracking.</summary>
+<summary><code>memoize</code> — Memoizes a parser to cache results by input string. Useful for expensive parsers and recursive grammars to avoid exponential backtracking.</summary>
 
 ```typescript
 const memoDigits = memoize(digits);
