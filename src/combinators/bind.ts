@@ -1,6 +1,6 @@
-import { create } from '../core/create';
 import { failure } from '../core/failure';
-import { Parser } from '../core/Parser';
+import { create } from '../core/parser';
+import { type Parser } from '../core/parser';
 
 /**
  * Chain parsers where the second parser depends on the first result.

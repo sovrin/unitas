@@ -8,7 +8,9 @@ export type First<T extends readonly unknown[]> = T extends readonly [
     ...unknown[],
 ]
     ? F
-    : never;
+    : T extends readonly (infer F)[]
+      ? F
+      : never;
 
 /**
  * Extract the first element from a parser result array.

@@ -21,6 +21,6 @@ describe('last', () => {
         const parser = last(parser1);
         const result = parser('ABC');
 
-        assertSuccess<undefined>(result, undefined, 'ABC');
+        assertSuccess<unknown>(result, undefined, 'ABC');
     });
 });
