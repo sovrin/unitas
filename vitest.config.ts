@@ -5,6 +5,7 @@ export default defineConfig({
         globals: true,
         environment: 'node',
         coverage: {
+            exclude: ['dist/*', 'test/*'],
             reporter: ['text', 'html', 'lcov'],
             provider: 'istanbul',
         },
@@ -12,6 +13,6 @@ export default defineConfig({
             enabled: true,
             include: ['src/**/*.test.ts'],
         },
-        include: ['src/**/*.test.ts', 'test/examples.test.ts'],
+        include: ['src/**/*.test.ts', 'test/*.test.ts'],
     },
 });

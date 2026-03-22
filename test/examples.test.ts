@@ -82,7 +82,7 @@ describe('examples from source', () => {
         it('endBy: Zero or more items separated and ending with terminator.', () => {
             const __result0 = endBy(
                 literal('item'),
-                literal(';'),
+                char(';'),
             )('item;item;item;');
             expect(__result0).toEqual({
                 ok: true,
@@ -94,7 +94,7 @@ describe('examples from source', () => {
         it('endBy1: One or more items separated and ending with terminator.', () => {
             const __result0 = endBy1(
                 literal('item'),
-                literal(';'),
+                char(';'),
             )('item;item;item;');
             expect(__result0).toEqual({
                 ok: true,
@@ -104,7 +104,7 @@ describe('examples from source', () => {
         });
 
         it('exactly: Parse exactly n occurrences.', () => {
-            const __result0 = exactly(literal('a'), 3)('aaa');
+            const __result0 = exactly(char('a'), 3)('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -113,7 +113,7 @@ describe('examples from source', () => {
         });
 
         it('first: Extract the first element from a parser result array.', () => {
-            const __result0 = first(sequence(literal('a'), digit))('a1bc');
+            const __result0 = first(sequence(char('a'), digit))('a1bc');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'a',
@@ -170,15 +170,15 @@ describe('examples from source', () => {
 
         it('inner: Extract inner value from surrounded content (like inner of braced).', () => {
             const __result0 = inner(
-                literal('('),
+                char('('),
                 literal('hi'),
-                literal(')'),
+                char(')'),
             )('(hi)');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('interleaved: Parse items with interleaved separators.', () => {
-            const __result0 = interleaved(literal('a'), literal(','))('a,a,a');
+            const __result0 = interleaved(char('a'), char(','))('a,a,a');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', ',', 'a', ',', 'a'],
@@ -187,7 +187,7 @@ describe('examples from source', () => {
         });
 
         it('last: Extract the last element from a parser result array.', () => {
-            const __result0 = last(sequence(literal('a'), literal('b')))('ab');
+            const __result0 = last(sequence(char('a'), char('b')))('ab');
             expect(__result0).toEqual({ ok: true, value: 'b', remaining: '' });
         });
 
@@ -213,7 +213,7 @@ describe('examples from source', () => {
         });
 
         it('many: Zero or more occurrences (never fails).', () => {
-            const __result0 = many(literal('a'))('aaa');
+            const __result0 = many(char('a'))('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -222,7 +222,7 @@ describe('examples from source', () => {
         });
 
         it('many1: One or more occurrences (fails if no matches).', () => {
-            const __result0 = many1(literal('a'))('aaa');
+            const __result0 = many1(char('a'))('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -231,7 +231,7 @@ describe('examples from source', () => {
         });
 
         it('manyAtLeast: Parse at least n occurrences.', () => {
-            const __result0 = manyAtLeast(literal('a'), 2)('aaa');
+            const __result0 = manyAtLeast(char('a'), 2)('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -240,7 +240,7 @@ describe('examples from source', () => {
         });
 
         it('manyAtMost: Parse at most n occurrences.', () => {
-            const __result0 = manyAtMost(literal('a'), 2)('aaa');
+            const __result0 = manyAtMost(char('a'), 2)('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a'],
@@ -249,7 +249,7 @@ describe('examples from source', () => {
         });
 
         it('manyBetween: Parse between min and max occurrences.', () => {
-            const __result0 = manyBetween(literal('a'), 2, 3)('aaa');
+            const __result0 = manyBetween(char('a'), 2, 3)('aaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -258,7 +258,7 @@ describe('examples from source', () => {
         });
 
         it('manyTill: Parse zero or more until terminator matches.', () => {
-            const __result0 = manyTill(literal('a'), literal('b'))('aaab');
+            const __result0 = manyTill(char('a'), char('b'))('aaab');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -288,7 +288,7 @@ describe('examples from source', () => {
 
         it('nth: Extract the nth element from a parser result array.', () => {
             const __result0 = nth(
-                sequence(literal('a'), literal('b'), literal('c')),
+                sequence(char('a'), char('b'), char('c')),
                 1,
             )('abc');
             expect(__result0).toEqual({ ok: true, value: 'b', remaining: '' });
@@ -326,9 +326,9 @@ describe('examples from source', () => {
 
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
             const __result0 = outer(
-                literal('('),
+                char('('),
                 literal('hi'),
-                literal(')'),
+                char(')'),
             )('(hi)');
             expect(__result0).toEqual({
                 ok: true,
@@ -358,15 +358,15 @@ describe('examples from source', () => {
 
         it('postfix: Parse postfix operators (chains atom with operators that return functions).', () => {
             const __result0 = postfix(
-                literal('a'),
-                map(literal('!'), () => (x) => x),
+                char('a'),
+                map(char('!'), () => (x) => x),
             )('a!');
             expect(__result0).toEqual({ ok: true, value: 'a', remaining: '' });
         });
 
         it('prefix: Parse prefix operators (like - in -5).', () => {
             const __result0 = prefix(
-                map(literal('-'), () => (x) => -x),
+                map(char('-'), () => (x) => -x),
                 digit,
             )('-5');
             expect(__result0).toEqual({ ok: true, value: -5, remaining: '' });
@@ -403,7 +403,7 @@ describe('examples from source', () => {
         });
 
         it('separatedBy: Zero or more items separated by a separator.', () => {
-            const __result0 = separatedBy(literal('a'), literal(','))('a,a,a');
+            const __result0 = separatedBy(char('a'), char(','))('a,a,a');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -412,7 +412,7 @@ describe('examples from source', () => {
         });
 
         it('separatedBy1: One or more items separated by a separator.', () => {
-            const __result0 = separatedBy1(literal('a'), literal(','))('a,a,a');
+            const __result0 = separatedBy1(char('a'), char(','))('a,a,a');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -421,10 +421,7 @@ describe('examples from source', () => {
         });
 
         it('separatedEndBy: Zero or more items separated by and ending with a terminator.', () => {
-            const __result0 = separatedEndBy(
-                literal('a'),
-                literal(';'),
-            )('a;a;a;');
+            const __result0 = separatedEndBy(char('a'), char(';'))('a;a;a;');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -433,10 +430,7 @@ describe('examples from source', () => {
         });
 
         it('separatedEndBy1: One or more items separated by and ending with a terminator.', () => {
-            const __result0 = separatedEndBy1(
-                literal('a'),
-                literal(';'),
-            )('a;a;a;');
+            const __result0 = separatedEndBy1(char('a'), char(';'))('a;a;a;');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
@@ -446,9 +440,9 @@ describe('examples from source', () => {
 
         it('separatedUntil: Parse items separated by separator until terminator matches.', () => {
             const __result0 = separatedUntil(
-                literal('a'),
-                literal(','),
-                literal(';'),
+                char('a'),
+                char(','),
+                char(';'),
             )('a,a,a;');
             expect(__result0).toEqual({
                 ok: true,
@@ -458,11 +452,7 @@ describe('examples from source', () => {
         });
 
         it('sequence: Parse a sequence of parsers and return all results as an array.', () => {
-            const __result0 = sequence(
-                literal('a'),
-                literal('b'),
-                literal('c'),
-            )('abc');
+            const __result0 = sequence(char('a'), char('b'), char('c'))('abc');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['a', 'b', 'c'],
@@ -471,7 +461,7 @@ describe('examples from source', () => {
         });
 
         it('skip: Skip a parser n times.', () => {
-            const __result0 = skip(literal('a'), 2)('aabc');
+            const __result0 = skip(char('a'), 2)('aabc');
             expect(__result0).toEqual({
                 ok: true,
                 value: null,
@@ -480,7 +470,7 @@ describe('examples from source', () => {
         });
 
         it('skipMany: Skip zero or more occurrences (never fails, returns null).', () => {
-            const __result0 = skipMany(literal('a'))('aaabc');
+            const __result0 = skipMany(char('a'))('aaabc');
             expect(__result0).toEqual({
                 ok: true,
                 value: null,
@@ -489,7 +479,7 @@ describe('examples from source', () => {
         });
 
         it('skipMany1: Skip one or more occurrences (fails if no matches).', () => {
-            const __result0 = skipMany1(literal('a'))('aaabc');
+            const __result0 = skipMany1(char('a'))('aaabc');
             expect(__result0).toEqual({
                 ok: true,
                 value: null,
@@ -499,15 +489,15 @@ describe('examples from source', () => {
 
         it('surrounded: Parse content surrounded by delimiters.', () => {
             const __result0 = surrounded(
-                literal('['),
+                char('['),
                 literal('hi'),
-                literal(']'),
+                char(']'),
             )('[hi]');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
             const __result1 = surrounded(
-                literal('a'),
-                literal('b'),
-                literal('c'),
+                char('a'),
+                char('b'),
+                char('c'),
             )('abc');
             expect(__result1).toEqual({ ok: true, value: 'b', remaining: '' });
         });
@@ -528,13 +518,13 @@ describe('examples from source', () => {
         });
 
         it('until: Parse until terminator matches (fails if terminator never matches).', () => {
-            const __result0 = until(literal('a'), literal('b'))('baaa');
+            const __result0 = until(char('a'), char('b'))('baaa');
             expect(__result0).toEqual({
                 ok: true,
                 value: [],
                 remaining: 'baaa',
             });
-            const __result1 = until(literal('a'), literal('b'))('aaba');
+            const __result1 = until(char('a'), char('b'))('aaba');
             expect(__result1).toEqual({
                 ok: true,
                 value: ['a', 'a'],
@@ -660,6 +650,23 @@ describe('examples from source', () => {
                 ok: true,
                 value: 'a',
                 remaining: 'bc',
+            });
+        });
+
+        it('bool: Parse a boolean literal.', () => {
+            const __result0 = bool('true');
+            expect(__result0).toEqual({ ok: true, value: true, remaining: '' });
+            const __result1 = bool('false');
+            expect(__result1).toEqual({
+                ok: true,
+                value: false,
+                remaining: '',
+            });
+            const __result2 = bool('trueABC');
+            expect(__result2).toEqual({
+                ok: true,
+                value: true,
+                remaining: 'ABC',
             });
         });
 
@@ -930,6 +937,15 @@ describe('examples from source', () => {
             });
         });
 
+        it('uppercase: Parses a single uppercase letter.', () => {
+            const __result0 = uppercase('ABC');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'A',
+                remaining: 'BC',
+            });
+        });
+
         it('uppercases: Parses one or more uppercase letters.', () => {
             const __result0 = uppercases('ABCdef');
             expect(__result0).toEqual({
@@ -987,6 +1003,22 @@ describe('examples from source', () => {
             expect(__result0).toEqual('123');
             const __result1 = join('-')([1, 2, 3]);
             expect(__result1).toEqual('1-2-3');
+        });
+
+        it('pick: Pick elements from an array by index.', () => {
+            const __result0 = pick(0, 2)(['a', 'b', 'c']);
+            expect(__result0).toEqual(['a', 'c']);
+            const __result1 = pick(2, 4)(['a', 'b', 'c', 'd', 'e']);
+            expect(__result1).toEqual(['c', 'e']);
+        });
+
+        it('pipe: Pipe parser functions together.', () => {
+            const __result0 = pipe(lexeme)(letters)('xyz   abc');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'xyz',
+                remaining: 'abc',
+            });
         });
 
         it('pop: Get the last element of an array.', () => {
