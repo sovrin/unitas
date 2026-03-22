@@ -15,11 +15,17 @@ jobs:
               uses: actions/setup-node@v1
               with:
                   node-version: 25.x
-            - run: npm i
-            - run: npm run test:types
-            - run: npm run coverage
 
-            - name: publish coverage
+            - name: Install dependencies
+              run: npm i
+
+            - name: Test exported types
+              run: npm run test:types
+
+            - name: Test coverage
+              run: npm run coverage
+
+            - name: Publish coverage
               uses: coverallsapp/github-action@master
               with:
                   github-token: ${{ secrets.GITHUB_TOKEN }}

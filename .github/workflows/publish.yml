@@ -1,8 +1,8 @@
 name: publish
 
 on:
-  release:
-    types: [created]
+    release:
+        types: [created]
 
 permissions:
     id-token: write
@@ -23,15 +23,14 @@ jobs:
                   node-version: 25
                   registry-url: https://registry.npmjs.org
 
-            - run: npm install -g npm@latest
-            - run: npm i
-            - run: npm run build
+            - name: Install latest npm
+              run: npm install -g npm@latest
 
-            - name: Verify OIDC environment
-              run: |
-                  echo "ACTIONS_ID_TOKEN_REQUEST_URL: ${ACTIONS_ID_TOKEN_REQUEST_URL:+SET}"
-                  echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+SET}"
-                  npm config list
+            - name: Install dependencies
+              run: npm i
+
+            - name: Build project
+              run: npm run build
 
             - name: Publish Package
               run: npm publish --provenance --access public
