@@ -1,6 +1,7 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { assertSuccess, createTestParser } from '../../test/utils';
+import { success } from '../core';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { many } from './many';
@@ -44,5 +45,23 @@ describe('many', () => {
         const result = parser('AB');
 
         assertSuccess<unknown[]>(result, [], 'AB');
+    });
+
+    it('should stop after partial progress when parser later stalls', () => {
+        let callCount = 0;
+        const partiallyConsumingParser = create((input: string) => {
+            callCount++;
+            if (input.startsWith('A')) {
+                return success('A', input.slice(1));
+            }
+
+            return success('X', input);
+        });
+
+        const parser = many(partiallyConsumingParser);
+        const result = parser('ABCD');
+
+        assertSuccess(result, ['A'], 'BCD');
+        expect(callCount).toBe(2);
     });
 });

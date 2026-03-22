@@ -1,6 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { createTestParser } from '../../test/utils';
+import { failure } from './failure';
+import { create } from './parser';
 import { run } from './run';
 
 describe('run', () => {
@@ -22,5 +24,14 @@ describe('run', () => {
         expect(() => {
             run(parser, 'AB');
         }).toThrowError('Not all input consumed');
+    });
+
+    it('should throw error with message', () => {
+        expect(() => {
+            run(
+                create(() => failure('Something weird happened')),
+                'AB',
+            );
+        }).toThrowError('Something weird happened');
     });
 });
