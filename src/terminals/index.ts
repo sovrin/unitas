@@ -1,6 +1,7 @@
 export * from './alphaNum';
 export * from './alphaNums';
 export * from './anyChar';
+export * from './bool';
 export * from './char';
 export * from './charOf';
 export * from './crlf';
