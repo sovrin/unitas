@@ -16,6 +16,7 @@ jobs:
               with:
                   node-version: 25.x
             - run: npm i
+            - run: npm run test:types
             - run: npm run coverage
 
             - name: publish coverage

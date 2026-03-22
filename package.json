@@ -8,7 +8,7 @@
         "email": "oleg.kamlowski@thomann.io"
     },
     "files": [
-        "src",
+        "dist",
         "README.md"
     ],
     "type": "module",
@@ -62,7 +62,7 @@
         "watch": "tsdown --watch",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:types": "attw --pack .",
+        "test:types": "attw --pack . --profile node16",
         "test:extract": "tsx bin/extract-examples.mjs && oxfmt ./test/examples.test.ts",
         "generate:index": "tsx bin/generate-index.mjs",
         "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md",
@@ -73,6 +73,7 @@
         "fix:imports": "npx jscodeshift -t bin/split-imports.mjs src --extensions=ts --parser=tsx"
     },
     "devDependencies": {
+        "@arethetypeswrong/cli": "^0.18",
         "@types/node": "^25",
         "@vitest/coverage-istanbul": "^4.0.16",
         "@vitest/coverage-v8": "^4",
