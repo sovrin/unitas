@@ -19,4 +19,10 @@ export default defineConfig([
         minify: true,
         dts: true,
     },
+    {
+        entry: { utils: './src/utils/index.ts' },
+        format: ['esm', 'cjs'],
+        minify: true,
+        dts: true,
+    },
 ]);
