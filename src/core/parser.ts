@@ -9,7 +9,5 @@ export type Parser<T = unknown> = (input: string) => Result<T>;
  * create((input) => success('parsed', input.slice(6)))('hello world') // { ok: true, value: 'parsed', remaining: 'world' }
  */
 export const create = <T>(parserFn: Parser<T>): Parser<T> => {
-    return (input) => {
-        return parserFn(input);
-    };
+    return parserFn;
 };
