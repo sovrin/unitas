@@ -1,4 +1,4 @@
-import { type Parser } from '../core';
+import type { Parser } from '../core/parser';
 
 type ExcludeValues<
     T extends readonly unknown[],
