@@ -169,6 +169,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`word`](#word)
 - [Combinators](#combinators)
     - [`attempt`](#attempt)
+    - [`bind`](#bind)
     - [`braced`](#braced)
     - [`bracketed`](#bracketed)
     - [`chainLeft`](#chainLeft)
@@ -743,6 +744,14 @@ word('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
 
 ```typescript
 attempt(literal('hello'))('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+```
+
+</details>
+<details id="bind">
+<summary><code>bind</code> — Chain parsers where the second parser depends on the first result.</summary>
+
+```typescript
+bind(digits, (n) => take(n))('3abc'); // { ok: true, value: 'abc', remaining: '' }
 ```
 
 </details>

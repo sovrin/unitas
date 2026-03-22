@@ -20,6 +20,15 @@ describe('examples from source', () => {
             });
         });
 
+        it('bind: Chain parsers where the second parser depends on the first result.', () => {
+            const __result0 = bind(digits, (n) => take(n))('3abc');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'abc',
+                remaining: '',
+            });
+        });
+
         it('braced: Parse content surrounded by braces.', () => {
             const __result0 = braced(literal('hi'))('{hi}');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
