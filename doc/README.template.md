@@ -38,8 +38,8 @@ const csv = grammar({
     unquoted: () => letters,
 });
 
-run(csv.row, 'a,b,c');         // ['a', 'b', 'c']
-run(csv.row, '"a,b",c');       // ['a,b', 'c']
+run(csv.row, 'a,b,c'); // ['a', 'b', 'c']
+run(csv.row, '"a,b",c'); // ['a,b', 'c']
 ```
 
 **JSON value parser** — parsing simple json values
@@ -57,10 +57,10 @@ const json = grammar({
     null: () => map(literal('null'), () => null),
 });
 
-run(json.value, '"hello"');     // 'hello'
-run(json.value, '42');          // 42
-run(json.value, 'true');        // true
-run(json.value, 'null');        // null
+run(json.value, '"hello"'); // 'hello'
+run(json.value, '42'); // 42
+run(json.value, 'true'); // true
+run(json.value, 'null'); // null
 ```
 
 **Query string parser** — parsing URL query parameters
@@ -87,7 +87,7 @@ const query = grammar<Query>({
     value: () => letters,
 });
 
-run(query.params, 'foo=bar&baz=qux');   // { foo: 'bar', baz: 'qux' }
+run(query.params, 'foo=bar&baz=qux'); // { foo: 'bar', baz: 'qux' }
 ```
 
 **INI file section** — parsing section headers and key-value pairs
@@ -111,7 +111,7 @@ const ini = grammar({
     value: () => regex(/^[^\n]+/),
 });
 
-run(ini.section, '[database]\nhost=localhost');     // { name: 'database', entry: ['host', 'localhost'] }
+run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['host', 'localhost'] }
 ```
 
 ## Table of Contents
@@ -192,21 +192,25 @@ When a parser fails, it returns:
 The `error` field is optional — you can always add meaningful error messages later using `label`.
 
 ## Core (`unitas`)
+
 **Core** provides the fundamental types and functions for building parsers.
 
 <$core>
 
 ## Terminals (`unitas/terminals`)
+
 **Terminals** are the basic building blocks that match specific parts of the input. They don't combine other parsers — they directly inspect the input string.
 
 <$terminals>
 
 ## Combinators (`unitas/combinators`)
+
 **Combinators** are functions that take one or more parsers and return a new parser. They are the "glue" that lets you compose complex parsers from simple ones.
 
 <$combinators>
 
 ## Utils (`unitas/utils`)
+
 **Utils** are utility functions for working with parser results, arrays, and function composition.
 
 <$utils>

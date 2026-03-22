@@ -5,7 +5,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const rootDir = path.resolve(__dirname, '..');
 const srcDir = path.join(rootDir, 'src');
-const templatePath = path.join(__dirname, 'README.template.md');
+const templatePath = path.join(rootDir, 'doc', 'README.template.md');
 const readmePath = path.join(rootDir, 'README.md');
 
 const COMMENT_REGEX = /\/\*\*([\s\S]*?)\*\//g;
