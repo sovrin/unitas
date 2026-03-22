@@ -1,7 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
-import { failure, success } from '../..';
+import { failure } from './failure';
 import { match } from './match';
+import { success } from './success';
 
 describe('match', () => {
     it('should call success branch with value and remaining', () => {
