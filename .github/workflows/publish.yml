@@ -1,24 +1,37 @@
 name: publish
 
 on:
-    push:
-        tags:
-            - 'v*'
+  release:
+    types: [created]
 
 permissions:
+    id-token: write
     contents: read
 
 jobs:
     publish:
-        environment: production
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v4
-            - uses: actions/setup-node@v4
+            - name: Checkout
+              uses: actions/checkout@v6
+
+            - name: Set up Node environment
+              uses: actions/setup-node@v6
+              env:
+                  NPM_CONFIG_PROVENANCE: true
               with:
-                  node-version: 25.x
-                  token: ${{ secrets.GITHUB_TOKEN }}
-                  oidc: true
+                  node-version: 25
+                  registry-url: https://registry.npmjs.org
+
+            - run: npm install -g npm@latest
             - run: npm i
             - run: npm run build
-            - run: npm publish
+
+            - name: Verify OIDC environment
+              run: |
+                  echo "ACTIONS_ID_TOKEN_REQUEST_URL: ${ACTIONS_ID_TOKEN_REQUEST_URL:+SET}"
+                  echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN: ${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+SET}"
+                  npm config list
+
+            - name: Publish Package
+              run: npm publish --provenance --access public
