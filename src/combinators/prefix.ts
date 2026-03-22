@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Parse prefix operators (like - in -5).
  *
  * @example
- * prefix(map(literal('-'), () => (x) => -x), digit)('-5') // { ok: true, value: -5, remaining: '' }
+ * prefix(map(char('-'), () => (x) => -x), digit)('-5') // { ok: true, value: -5, remaining: '' }
  */
 export const prefix = <T>(
     operator: Parser<(value: T) => T>,

@@ -8,7 +8,7 @@ import { map } from './map';
  * Skip zero or more occurrences (never fails, returns null).
  *
  * @example
- * skipMany(literal('a'))('aaabc') // { ok: true, value: null, remaining: 'bc' }
+ * skipMany(char('a'))('aaabc') // { ok: true, value: null, remaining: 'bc' }
  */
 export const skipMany = <T>(parser: Parser<T>) => {
     return create<null>(map(many(parser), () => null));

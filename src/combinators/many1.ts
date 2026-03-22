@@ -7,7 +7,7 @@ import { many } from './many';
  * One or more occurrences (fails if no matches).
  *
  * @example
- * many1(literal('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * many1(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const many1 = <T>(parser: Parser<T>) => {
     return create<T[]>((input) => {

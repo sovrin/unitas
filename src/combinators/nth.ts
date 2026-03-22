@@ -29,7 +29,7 @@ export type Nth<T extends readonly unknown[], N extends number> =
  * Extract the nth element from a parser result array.
  *
  * @example
- * nth(sequence(literal('a'), literal('b'), literal('c')), 1)('abc') // { ok: true, value: 'b', remaining: '' }
+ * nth(sequence(char('a'), char('b'), char('c')), 1)('abc') // { ok: true, value: 'b', remaining: '' }
  */
 export const nth = <T extends readonly unknown[], N extends number>(
     parser: Parser<T>,

@@ -7,7 +7,7 @@ import { separatedBy } from './separatedBy';
  * Parse items separated by separator until terminator matches.
  *
  * @example
- * separatedUntil(literal('a'), literal(','), literal(';'))('a,a,a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * separatedUntil(char('a'), char(','), char(';'))('a,a,a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedUntil = <T>(
     parser: Parser<T>,

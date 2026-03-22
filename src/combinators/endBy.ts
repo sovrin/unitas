@@ -9,7 +9,7 @@ import { sequence } from './sequence';
  * Zero or more items separated and ending with terminator.
  *
  * @example
- * endBy(literal('item'), literal(';'))('item;item;item;') // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
+ * endBy(literal('item'), char(';'))('item;item;item;') // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
  */
 export const endBy = <T>(parser: Parser<T>, terminator: Parser) => {
     return create<T[]>(

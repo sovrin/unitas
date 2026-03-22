@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Parse postfix operators (chains atom with operators that return functions).
  *
  * @example
- * postfix(literal('a'), map(literal('!'), () => (x) => x))('a!') // { ok: true, value: 'a', remaining: '' }
+ * postfix(char('a'), map(char('!'), () => (x) => x))('a!') // { ok: true, value: 'a', remaining: '' }
  */
 export const postfix = <T>(
     atom: Parser<T>,

@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Parse a sequence of parsers and return all results as an array.
  *
  * @example
- * sequence(literal('a'), literal('b'), literal('c'))('abc') // { ok: true, value: ['a', 'b', 'c'], remaining: '' }
+ * sequence(char('a'), char('b'), char('c'))('abc') // { ok: true, value: ['a', 'b', 'c'], remaining: '' }
  */
 export const sequence = <T extends readonly unknown[]>(
     ...parsers: { [K in keyof T]: Parser<T[K]> }

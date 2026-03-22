@@ -7,7 +7,7 @@ import { separatedBy } from './separatedBy';
  * One or more items separated by a separator.
  *
  * @example
- * separatedBy1(literal('a'), literal(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * separatedBy1(char('a'), char(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedBy1 = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {

@@ -7,8 +7,8 @@ import { inner } from './inner';
  * Parse content surrounded by delimiters.
  *
  * @example
- * surrounded(literal('['), literal('hi'), literal(']'))('[hi]') // { ok: true, value: 'hi', remaining: '' }
- * surrounded(literal('a'), literal('b'), literal('c'))('abc') // { ok: true, value: 'b', remaining: '' }
+ * surrounded(char('['), literal('hi'), char(']'))('[hi]') // { ok: true, value: 'hi', remaining: '' }
+ * surrounded(char('a'), char('b'), char('c'))('abc') // { ok: true, value: 'b', remaining: '' }
  */
 export const surrounded = <T>(
     first: Parser,

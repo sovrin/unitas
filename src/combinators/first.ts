@@ -14,7 +14,7 @@ export type First<T extends readonly unknown[]> = T extends readonly [
  * Extract the first element from a parser result array.
  *
  * @example
- * first(sequence(literal('a'), digit))('a1bc') // { ok: true, value: 'a', remaining: 'bc' }
+ * first(sequence(char('a'), digit))('a1bc') // { ok: true, value: 'a', remaining: 'bc' }
  */
 export const first = <T extends readonly unknown[]>(
     parser: Parser<T>,

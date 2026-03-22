@@ -8,7 +8,7 @@ import { sequence } from './sequence';
  * Extract outer values from a sequence of 3 parsers (skip middle).
  *
  * @example
- * outer(literal('('), literal('hi'), literal(')'))('(hi)') // { ok: true, value: ['(', ')'], remaining: '' }
+ * outer(char('('), literal('hi'), char(')'))('(hi)') // { ok: true, value: ['(', ')'], remaining: '' }
  */
 export const outer = <A, B, C>(
     parserA: Parser<A>,

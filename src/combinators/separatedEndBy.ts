@@ -6,7 +6,7 @@ import { separatedBy } from './separatedBy';
  * Zero or more items separated by and ending with a terminator.
  *
  * @example
- * separatedEndBy(literal('a'), literal(';'))('a;a;a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * separatedEndBy(char('a'), char(';'))('a;a;a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input) => {

@@ -65,7 +65,7 @@ describe('grammar', () => {
             term: (p) => {
                 return choice(
                     p.number,
-                    surrounded(literal('('), p.expr, literal(')')),
+                    surrounded(char('('), p.expr, literal(')')),
                 );
             },
             number: () => map(regex(/\d+/), (d) => parseInt(d, 10)),

@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Skip a parser n times.
  *
  * @example
- * skip(literal('a'), 2)('aabc') // { ok: true, value: null, remaining: 'bc' }
+ * skip(char('a'), 2)('aabc') // { ok: true, value: null, remaining: 'bc' }
  */
 export const skip = <T>(parser: Parser<T>, count: number) => {
     return create<null>((input) => {

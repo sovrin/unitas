@@ -7,7 +7,7 @@ import { success } from '../core/success';
  * Parse at most n occurrences.
  *
  * @example
- * manyAtMost(literal('a'), 2)('aaa') // { ok: true, value: ['a', 'a'], remaining: 'a' }
+ * manyAtMost(char('a'), 2)('aaa') // { ok: true, value: ['a', 'a'], remaining: 'a' }
  */
 export const manyAtMost = <T>(parser: Parser<T>, n: number) => {
     return create<T[]>((input) => {

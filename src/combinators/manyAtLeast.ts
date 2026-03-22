@@ -8,7 +8,7 @@ import { many } from './many';
  * Parse at least n occurrences.
  *
  * @example
- * manyAtLeast(literal('a'), 2)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * manyAtLeast(char('a'), 2)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
  */
 export const manyAtLeast = <T>(parser: Parser<T>, n: number) => {
     return create<T[]>((input) => {
