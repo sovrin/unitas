@@ -185,6 +185,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`fold1`](#fold1)
     - [`foldRight`](#foldRight)
     - [`foldRight1`](#foldRight1)
+    - [`fuse`](#fuse)
     - [`guard`](#guard)
     - [`inner`](#inner)
     - [`interleaved`](#interleaved)
@@ -874,6 +875,15 @@ foldRight(digit, [], (acc, d) => [...acc, d])('123'); // { ok: true, value: [3, 
 
 ```typescript
 foldRight1(digit, [], (acc, d) => [...acc, d])('123'); // { ok: true, value: [3, 2, 1], remaining: '' }
+```
+
+</details>
+<details id="fuse">
+<summary><code>fuse</code> — Fuse multiple string parsers into a single one. The fused parser concatenates all string results.</summary>
+
+```typescript
+fuse(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'abc', remaining: '' }
+fuse(literal('hello'), char(' '), literal('world'))('hello world'); // { ok: true, value: 'hello world', remaining: '' }
 ```
 
 </details>

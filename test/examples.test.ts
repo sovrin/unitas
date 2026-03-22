@@ -157,6 +157,25 @@ describe('examples from source', () => {
             });
         });
 
+        it('fuse: The fused parser concatenates all string results.', () => {
+            const __result0 = fuse(char('a'), char('b'), char('c'))('abc');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'abc',
+                remaining: '',
+            });
+            const __result1 = fuse(
+                literal('hello'),
+                char(' '),
+                literal('world'),
+            )('hello world');
+            expect(__result1).toEqual({
+                ok: true,
+                value: 'hello world',
+                remaining: '',
+            });
+        });
+
         it('guard: Conditionally apply parser based on a condition.', () => {
             const __result0 = guard(true, literal('hello'))('hello');
             expect(__result0).toEqual({

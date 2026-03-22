@@ -15,6 +15,7 @@ export * from './fold';
 export * from './fold1';
 export * from './foldRight';
 export * from './foldRight1';
+export * from './fuse';
 export * from './guard';
 export * from './inner';
 export * from './interleaved';
