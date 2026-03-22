@@ -601,6 +601,12 @@ describe('examples from source', () => {
             expect(__result0).toEqual('hello');
         });
 
+        it('memoize: exponential backtracking.', () => {
+            const memoDigits = memoize(digits);
+            const __result0 = memoDigits('123');
+            expect(__result0).toEqual({ ok: true, value: 123, remaining: '' });
+        });
+
         it('parser: Creates a parser from a parser function.', () => {
             const __result0 = create((input) =>
                 success('parsed', input.slice(6)),

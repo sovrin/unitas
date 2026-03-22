@@ -4,6 +4,7 @@ export * from './grammar';
 export * from './label';
 export * from './lazy';
 export * from './match';
+export * from './memoize';
 export * from './parser';
 export * from './result';
 export * from './run';

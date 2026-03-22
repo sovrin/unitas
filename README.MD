@@ -122,6 +122,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`label`](#label)
     - [`lazy`](#lazy)
     - [`match`](#match)
+    - [`memoize`](#memoize)
     - [`parser`](#parser)
     - [`run`](#run)
     - [`success`](#success)
@@ -367,6 +368,15 @@ lazy(() => char('a'))('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 
 ```typescript
 match(success('hello', ''), { success: (v) => v, failure: () => 'failed' }); // 'hello'
+```
+
+</details>
+<details id="memoize">
+<summary><code>memoize</code> — exponential backtracking.</summary>
+
+```typescript
+const memoDigits = memoize(digits);
+memoDigits('123'); // { ok: true, value: 123, remaining: '' }
 ```
 
 </details>
