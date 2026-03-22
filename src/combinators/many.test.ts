@@ -1,9 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import { assertSuccess, createTestParser } from '../../test/utils';
-import { success } from '../core';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
+import { success } from '../core/success';
 import { many } from './many';
 
 describe('many', () => {
