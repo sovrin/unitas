@@ -192,18 +192,22 @@ When a parser fails, it returns:
 The `error` field is optional — you can always add meaningful error messages later using `label`.
 
 ## Core (`unitas`)
+**Core** provides the fundamental types and functions for building parsers.
 
 <$core>
 
 ## Terminals (`unitas/terminals`)
+**Terminals** are the basic building blocks that match specific parts of the input. They don't combine other parsers — they directly inspect the input string.
 
 <$terminals>
 
 ## Combinators (`unitas/combinators`)
+**Combinators** are functions that take one or more parsers and return a new parser. They are the "glue" that lets you compose complex parsers from simple ones.
 
 <$combinators>
 
 ## Utils (`unitas/utils`)
+**Utils** are utility functions for working with parser results, arrays, and function composition.
 
 <$utils>
 

@@ -118,7 +118,7 @@ function generateDocsSection(namespace, items) {
 
     const lines = items.map(({ name, description, example }) => {
         const formatted = formatExample(example);
-        return `<details>
+        return `<details id="${name}">
 <summary><code>${name}</code> — ${description}</summary>
 
 ${formatted}
