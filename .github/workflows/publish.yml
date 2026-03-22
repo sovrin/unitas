@@ -5,22 +5,20 @@ on:
         tags:
             - 'v*'
 
-env:
-    CI: true
+permissions:
+    contents: read
 
 jobs:
     publish:
         environment: production
         runs-on: ubuntu-latest
         steps:
-            - uses: actions/checkout@v2
-            - name: Use Node.js 25.x
-              uses: actions/setup-node@v1
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
               with:
                   node-version: 25.x
-                  registry-url: https://registry.npmjs.org/
+                  token: ${{ secrets.GITHUB_TOKEN }}
+                  oidc: true
             - run: npm i
             - run: npm run build
             - run: npm publish
-              env:
-                  NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
