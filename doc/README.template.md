@@ -1,6 +1,6 @@
 # unitas — composing parsers into a unified whole
 
-<img src="doc/logo.png" width="60" height="64" align="right" alt="Unitas logo">
+<img src="doc/logo.png" height="64" align="right" alt="Unitas logo">
 
 [![npm version](https://img.shields.io/npm/v/unitas)](https://www.npmjs.com/package/unitas)
 [![Coverage](https://coveralls.io/repos/github/sovrin/unitas/badge.svg?branch=master)](https://coveralls.io/github/sovrin/unitas?branch=master)
