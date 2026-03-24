@@ -9,6 +9,7 @@ export * from './digit';
 export * from './digits';
 export * from './eof';
 export * from './eol';
+export * from './float';
 export * from './hexDigit';
 export * from './hexDigits';
 export * from './identifier';

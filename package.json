@@ -1,6 +1,6 @@
 {
     "name": "unitas",
-    "version": "0.1.0",
+    "version": "0.1.1",
     "keywords": [],
     "license": "MIT",
     "author": {
@@ -86,8 +86,8 @@
         "@vitest/coverage-istanbul": "^4.0.16",
         "@vitest/coverage-v8": "^4",
         "jscodeshift": "^17",
-        "oxfmt": "^0.41.0",
-        "oxlint": "^1.56.0",
+        "oxfmt": "^0.42",
+        "oxlint": "^1.57",
         "tsdown": "^0.21",
         "tsx": "^4",
         "typescript": "^5",

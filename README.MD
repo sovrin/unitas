@@ -138,6 +138,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`digits`](#digits)
     - [`eof`](#eof)
     - [`eol`](#eol)
+    - [`float`](#float)
     - [`hexDigit`](#hexDigit)
     - [`hexDigits`](#hexDigits)
     - [`identifier`](#identifier)
@@ -499,6 +500,16 @@ eof(''); // { ok: true, value: null, remaining: '' }
 
 ```typescript
 eol('\nabc'); // { ok: true, value: '\n', remaining: 'abc' }
+```
+
+</details>
+<details id="float">
+<summary><code>float</code> — Parse a floating point number.</summary>
+
+```typescript
+float()('1.23'); // { ok: true, value: 1.23, remaining: '' }
+float()('-2.5'); // { ok: true, value: -2.5, remaining: '' }
+float()('1.23abc'); // { ok: true, value: 1.23, remaining: 'abc' }
 ```
 
 </details>

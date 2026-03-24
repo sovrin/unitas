@@ -759,6 +759,19 @@ describe('examples from source', () => {
             });
         });
 
+        it('float: Parse a floating point number.', () => {
+            const __result0 = float()('1.23');
+            expect(__result0).toEqual({ ok: true, value: 1.23, remaining: '' });
+            const __result1 = float()('-2.5');
+            expect(__result1).toEqual({ ok: true, value: -2.5, remaining: '' });
+            const __result2 = float()('1.23abc');
+            expect(__result2).toEqual({
+                ok: true,
+                value: 1.23,
+                remaining: 'abc',
+            });
+        });
+
         it('hexDigit: Parse a single hexadecimal digit.', () => {
             const __result0 = hexDigit('fF9');
             expect(__result0).toEqual({
