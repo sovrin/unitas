@@ -1,7 +1,11 @@
 {
     "name": "unitas",
-    "version": "0.1.1",
-    "keywords": [],
+    "version": "0.2.0",
+    "keywords": [
+        "combinator",
+        "functional",
+        "parser"
+    ],
     "license": "MIT",
     "author": {
         "name": "Oleg Kamlowski",
