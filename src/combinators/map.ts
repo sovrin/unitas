@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Transform the parsed value.
  *
  * @example
- * map(literal('hello'), (v) => v.toUpperCase())('hello') // { ok: true, value: 'HELLO', remaining: '' }
+ * map(string('hello'), (v) => v.toUpperCase())('hello') // { ok: true, value: 'HELLO', remaining: '' }
  */
 export function map<A, B>(
     parser: Parser<A>,

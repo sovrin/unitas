@@ -10,16 +10,10 @@ import {
     separatedBy,
     sequence,
 } from '../src/combinators';
-import {
-    bool,
-    char,
-    digits,
-    letters,
-    literal,
-    nl,
-    regex,
-} from '../src/terminals';
+import { bool, letters, nl } from '../src/primitives';
+import { char, string, regex } from '../src/terminals';
 import { pick } from '../src/utils';
+import { digits } from './helpers';
 
 describe('quick start', () => {
     describe('csv parser', () => {
@@ -52,7 +46,7 @@ describe('quick start', () => {
             string: () => quoted(letters),
             number: () => digits,
             bool: () => bool,
-            null: () => map(literal('null'), () => null),
+            null: () => map(string('null'), () => null),
         });
 
         it('parse correctly', () => {

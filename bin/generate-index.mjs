@@ -9,7 +9,7 @@ const __dirname = dirname(__filename);
 
 const srcDir = join(__dirname, '..', 'src');
 
-const dirs = ['combinators', 'terminals', 'core', 'utils'];
+const dirs = ['combinators', 'terminals', 'core', 'utils', 'primitives'];
 
 for (const dir of dirs) {
     const dirPath = join(srcDir, dir);

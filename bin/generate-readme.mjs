@@ -132,6 +132,7 @@ function generateTOC(docsByNamespace) {
     const sections = [
         { key: 'core', title: 'Core' },
         { key: 'terminals', title: 'Terminals' },
+        { key: 'primitives', title: 'Primitives' },
         { key: 'combinators', title: 'Combinators' },
         { key: 'utils', title: 'Utils' },
     ];
@@ -157,6 +158,7 @@ function generateReadme(docsByNamespace) {
     const placeholderMap = {
         '<$core>': 'core',
         '<$terminals>': 'terminals',
+        '<$primitives>': 'primitives',
         '<$combinators>': 'combinators',
         '<$utils>': 'utils',
     };

@@ -12,6 +12,7 @@ import { type Char } from './char';
 export function satisfy<T extends string>(predicate: (c: Char<T>) => boolean) {
     return create<T>((input) => {
         const c = input[0] as Char<T>;
+
         return input.length > 0 && predicate(c)
             ? success(c as T, input.slice(1))
             : failure();

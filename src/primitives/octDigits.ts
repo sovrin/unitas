@@ -2,16 +2,18 @@ import { many1 } from '../combinators/many1';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
-import { whitespace } from './whitespace';
+import { octDigit } from './octDigit';
+
+const parser = many1(octDigit);
 
 /**
- * Parses one or more whitespace characters.
+ * Parse one or more octal digits.
  *
  * @example
- * whitespaces('  abc') // { ok: true, value: '  ', remaining: 'abc' }
+ * octDigits('0777abc') // { ok: true, value: '0777', remaining: 'abc' }
  */
-export const whitespaces = create<string>((input) => {
-    const result = many1(whitespace)(input);
+export const octDigits = create<string>((input) => {
+    const result = parser(input);
     if (!result.ok) {
         return failure();
     }

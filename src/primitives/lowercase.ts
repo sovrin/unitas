@@ -1,5 +1,6 @@
+import { create } from '../core/parser';
 import { type Result } from '../core/result';
-import { satisfy } from './satisfy';
+import { satisfy } from '../terminals/satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
 export type LowercaseLetter =
@@ -43,5 +44,5 @@ export function lowercase<S extends `${LowercaseLetter}${string}`>(
 ): Result<Head<S> & LowercaseLetter>;
 export function lowercase(input: string): Result<LowercaseLetter>;
 export function lowercase(input: string) {
-    return parser(input);
+    return create<LowercaseLetter>(parser)(input);
 }

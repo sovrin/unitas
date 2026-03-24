@@ -2,7 +2,7 @@ import { describe, it } from 'vitest';
 
 import { assertFailure, assertSuccess } from '../../test/utils';
 import { char } from '../terminals/char';
-import { literal } from '../terminals/literal';
+import { string } from '../terminals/string';
 import { fuse } from './fuse';
 
 describe('fuse', () => {
@@ -20,8 +20,8 @@ describe('fuse', () => {
         assertFailure(result);
     });
 
-    it('should fuse literal parsers into string', () => {
-        const hello = fuse(literal('hello'), char(' '), literal('world'));
+    it('should fuse string parsers into string', () => {
+        const hello = fuse(string('hello'), char(' '), string('world'));
         const result = hello('hello world');
 
         assertSuccess<string>(result, 'hello world', '');

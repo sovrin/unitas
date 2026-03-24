@@ -6,8 +6,8 @@ import { map } from '../combinators/map';
 import { sequence } from '../combinators/sequence';
 import { surrounded } from '../combinators/surrounded';
 import { char } from '../terminals/char';
-import { literal } from '../terminals/literal';
 import { regex } from '../terminals/regex';
+import { string } from '../terminals/string';
 import { grammar } from './grammar';
 import { run } from './run';
 
@@ -20,8 +20,8 @@ describe('grammar', () => {
         };
 
         const { expression } = grammar<Grammar>({
-            foo: () => literal('foo'),
-            bar: () => literal('bar'),
+            foo: () => string('foo'),
+            bar: () => string('bar'),
             expression: ({ foo, bar }) => sequence(foo, bar),
         });
 
@@ -38,8 +38,8 @@ describe('grammar', () => {
         };
 
         const { a, b } = grammar<Grammar>({
-            a: () => literal('a'),
-            b: () => literal('b'),
+            a: () => string('a'),
+            b: () => string('b'),
         });
 
         {
@@ -65,7 +65,7 @@ describe('grammar', () => {
             term: (p) => {
                 return choice(
                     p.number,
-                    surrounded(char('('), p.expr, literal(')')),
+                    surrounded(char('('), p.expr, string(')')),
                 );
             },
             number: () => map(regex(/\d+/), (d) => parseInt(d, 10)),

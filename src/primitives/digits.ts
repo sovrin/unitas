@@ -4,6 +4,8 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 import { digit } from './digit';
 
+const parser = many1(digit);
+
 /**
  * Parse one or more digits and return as number.
  *
@@ -11,7 +13,7 @@ import { digit } from './digit';
  * digits('123abc') // { ok: true, value: 123, remaining: 'abc' }
  */
 export const digits = create<number>((input) => {
-    const result = many1(digit)(input);
+    const result = parser(input);
     if (!result.ok) {
         return failure();
     }

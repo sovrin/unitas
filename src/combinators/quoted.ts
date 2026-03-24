@@ -2,17 +2,17 @@ import type { Parser } from '../core/parser';
 
 import { choice } from '../combinators/choice';
 import { surrounded } from '../combinators/surrounded';
-import { literal } from '../terminals/literal';
+import { string } from '../terminals/string';
 
 /**
  * Parse content surrounded by single or double quotes.
  *
  * @example
- * quoted(literal('hello'))('"hello"') // { ok: true, value: 'hello', remaining: '' }
+ * quoted(string('hello'))('"hello"') // { ok: true, value: 'hello', remaining: '' }
  */
 export const quoted = <T>(content: Parser<T>) => {
     return choice(
-        surrounded(literal('"'), content),
-        surrounded(literal("'"), content),
+        surrounded(string('"'), content),
+        surrounded(string("'"), content),
     );
 };

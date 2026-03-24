@@ -1,4 +1,4 @@
-const BARRELS = ['core', 'combinators', 'terminals'];
+const BARRELS = ['core', 'combinators', 'terminals', 'primitives'];
 const BARREL_RE = new RegExp(`^(.*/)?(${BARRELS.join('|')})$`);
 
 function getBarrelBase(source) {

@@ -1,5 +1,6 @@
+import { create } from '../core/parser';
 import { type Result } from '../core/result';
-import { satisfy } from './satisfy';
+import { satisfy } from '../terminals/satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
 export type OctDigit = '0' | '1' | '2' | '3' | '4' | '5' | '6' | '7';
@@ -17,5 +18,5 @@ export function octDigit<S extends `${OctDigit}${string}`>(
 ): Result<Head<S> & OctDigit>;
 export function octDigit(input: string): Result<OctDigit>;
 export function octDigit(input: string) {
-    return parser(input);
+    return create<OctDigit>(parser)(input);
 }

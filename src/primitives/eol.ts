@@ -5,16 +5,16 @@ import { crlf } from './crlf';
 import { eof } from './eof';
 import { nl } from './nl';
 
+const parser = choice(
+    nl,
+    crlf,
+    map(eof, () => ''),
+);
+
 /**
  * Parse end of line (\\n, \\r\\n, or EOF).
  *
  * @example
  * eol('\nabc') // { ok: true, value: '\n', remaining: 'abc' }
  */
-export const eol = create<string>(
-    choice(
-        nl,
-        crlf,
-        map(eof, () => ''),
-    ),
-);
+export const eol = create<string>(parser);

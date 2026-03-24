@@ -2,16 +2,18 @@ import { many1 } from '../combinators/many1';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
-import { octDigit } from './octDigit';
+import { lowercase } from './lowercase';
+
+const parser = many1(lowercase);
 
 /**
- * Parse one or more octal digits.
+ * Parses one or more lowercase letters.
  *
  * @example
- * octDigits('0777abc') // { ok: true, value: '0777', remaining: 'abc' }
+ * lowercases('abcDEF') // { ok: true, value: 'abc', remaining: 'DEF' }
  */
-export const octDigits = create<string>((input) => {
-    const result = many1(octDigit)(input);
+export const lowercases = create<string>((input) => {
+    const result = parser(input);
     if (!result.ok) {
         return failure();
     }

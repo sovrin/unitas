@@ -1,6 +1,7 @@
+import { create } from '../core/parser';
 import { type Result } from '../core/result';
+import { satisfy } from '../terminals/satisfy';
 import { type Digit } from './digit';
-import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
 export type HexDigit =
@@ -31,5 +32,5 @@ export function hexDigit<S extends `${HexDigit}${string}`>(
 ): Result<Head<S> & HexDigit>;
 export function hexDigit(input: string): Result<HexDigit>;
 export function hexDigit(input: string) {
-    return parser(input);
+    return create<HexDigit>(parser)(input);
 }

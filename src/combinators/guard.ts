@@ -8,8 +8,8 @@ import { create } from '../core/parser';
  * Conditionally apply parser based on a condition.
  *
  * @example
- * guard(true, literal('hello'))('hello') // { ok: true, value: 'hello', remaining: '' }
- * guard(false, literal('hello'))('hello') // { ok: false }
+ * guard(true, string('hello'))('hello') // { ok: true, value: 'hello', remaining: '' }
+ * guard(false, string('hello'))('hello') // { ok: false }
  */
 export const guard = <T>(condition: boolean, parser: Parser<T>) => {
     return create<T | null>((input) => {

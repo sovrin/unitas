@@ -1,6 +1,6 @@
 # unitas — composing parsers into a unified whole
 
-<img src="doc/logo.png" height="64" align="right" alt="Unitas logo">
+<img src="doc/logo.png" style="margin-left: 16px" height="64" align="right" alt="Unitas logo">
 
 [![npm version](https://img.shields.io/npm/v/unitas)](https://www.npmjs.com/package/unitas)
 [![Coverage](https://coveralls.io/repos/github/sovrin/unitas/badge.svg?branch=master)](https://coveralls.io/github/sovrin/unitas?branch=master)
@@ -11,9 +11,10 @@ A lightweight, TypeScript-first parser combinator library for building expressiv
 ## Features
 
 - **Parser Combinators**: Compose small parsers into complex ones using combinators like `many`, `choice`, `sequence`, and more
-- **Terminals**: Ready-to-use parsers for common patterns (`char`, `string`, `regex`, `digit`, `letter`, etc.)
+- **Terminals**: Factory functions for common patterns (`char`, `string`, `regex`, etc.)
+- **Primitives**: Pre-built parser instances ready to use (`digit`, `letter`, `whitespace`, etc.)
 - **TypeScript**: Full TypeScript support with generic types and inference
-- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, and `utils`
+- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, `primitives`, and `utils`
 - **No dependencies**: Zero external runtime dependencies
 
 ## Installation
@@ -29,7 +30,8 @@ npm install unitas
 ```typescript
 import { grammar, run } from 'unitas';
 import { choice, inner, separatedBy } from 'unitas/combinators';
-import { char, letters, regex } from 'unitas/terminals';
+import { char, regex } from 'unitas/terminals';
+import { letters } from 'unitas/primitives';
 
 const csv = grammar({
     row: (p) => separatedBy(p.value, char(',')),
@@ -47,14 +49,15 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 ```typescript
 import { grammar, run } from 'unitas';
 import { choice, map, quoted } from 'unitas/combinators';
-import { bool, digits, letters, literal } from 'unitas/terminals';
+import { string } from 'unitas/terminals';
+import { bool, digits, letters } from 'unitas/primitives';
 
 const json = grammar({
     value: (p) => choice(p.string, p.number, p.bool, p.null),
     string: () => quoted(letters),
     number: () => digits,
     bool: () => bool,
-    null: () => map(literal('null'), () => null),
+    null: () => map(string('null'), () => null),
 });
 
 run(json.value, '"hello"'); // 'hello'
@@ -68,7 +71,8 @@ run(json.value, 'null'); // null
 ```typescript
 import { grammar, run } from 'unitas';
 import { map, outer, separatedBy } from 'unitas/combinators';
-import { char, letters } from 'unitas/terminals';
+import { char } from 'unitas/terminals';
+import { letters } from 'unitas/primitives';
 
 type Query = {
     params: Record<string, string>;
@@ -95,7 +99,8 @@ run(query.params, 'foo=bar&baz=qux'); // { foo: 'bar', baz: 'qux' }
 ```typescript
 import { grammar, run } from 'unitas';
 import { map, outer, sequence } from 'unitas/combinators';
-import { char, letters, nl, regex } from 'unitas/terminals';
+import { char, regex } from 'unitas/terminals';
+import { letters, nl } from 'unitas/primitives';
 import { pick } from 'unitas/utils';
 
 const ini = grammar({
@@ -127,12 +132,23 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`run`](#run)
     - [`success`](#success)
 - [Terminals](#terminals)
+    - [`char`](#char)
+    - [`charOf`](#charOf)
+    - [`noneOf`](#noneOf)
+    - [`oneOf`](#oneOf)
+    - [`regex`](#regex)
+    - [`satisfy`](#satisfy)
+    - [`string`](#string)
+    - [`stringOf`](#stringOf)
+    - [`take`](#take)
+    - [`takeWhile`](#takeWhile)
+    - [`token`](#token)
+    - [`word`](#word)
+- [Primitives](#primitives)
     - [`alphaNum`](#alphaNum)
     - [`alphaNums`](#alphaNums)
     - [`anyChar`](#anyChar)
     - [`bool`](#bool)
-    - [`char`](#char)
-    - [`charOf`](#charOf)
     - [`crlf`](#crlf)
     - [`digit`](#digit)
     - [`digits`](#digits)
@@ -145,29 +161,18 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`letter`](#letter)
     - [`letters`](#letters)
     - [`line`](#line)
-    - [`literal`](#literal)
     - [`lowercase`](#lowercase)
     - [`lowercases`](#lowercases)
     - [`nl`](#nl)
-    - [`noneOf`](#noneOf)
     - [`octDigit`](#octDigit)
     - [`octDigits`](#octDigits)
-    - [`oneOf`](#oneOf)
     - [`position`](#position)
-    - [`regex`](#regex)
     - [`rest`](#rest)
-    - [`satisfy`](#satisfy)
-    - [`stringOf`](#stringOf)
     - [`tab`](#tab)
-    - [`take`](#take)
-    - [`takeUntil`](#takeUntil)
-    - [`takeWhile`](#takeWhile)
-    - [`token`](#token)
     - [`uppercase`](#uppercase)
     - [`uppercases`](#uppercases)
     - [`whitespace`](#whitespace)
     - [`whitespaces`](#whitespaces)
-    - [`word`](#word)
 - [Combinators](#combinators)
     - [`attempt`](#attempt)
     - [`bind`](#bind)
@@ -395,7 +400,7 @@ create((input) => success('parsed', input.slice(6)))('hello world'); // { ok: tr
 <summary><code>run</code> — Runs a parser and returns the value, throws on failure or unconsumed input.</summary>
 
 ```typescript
-run(literal('hello'), 'hello'); // 'hello'
+run(string('hello'), 'hello'); // 'hello'
 ```
 
 </details>
@@ -411,6 +416,111 @@ success('hello', ' world'); // { ok: true, value: 'hello', remaining: ' world' }
 ## Terminals (`unitas/terminals`)
 
 **Terminals** are the basic building blocks that match specific parts of the input. They don't combine other parsers — they directly inspect the input string.
+
+<details id="char">
+<summary><code>char</code> — Parse a specific character.</summary>
+
+```typescript
+char('A')('ABC'); // { ok: true, value: 'A', remaining: 'BC' }
+```
+
+</details>
+<details id="charOf">
+<summary><code>charOf</code> — Parse any character from a set.</summary>
+
+```typescript
+charOf(['a', 'b', 'c'])('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+```
+
+</details>
+<details id="noneOf">
+<summary><code>noneOf</code> — Parse any character not in the set.</summary>
+
+```typescript
+noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', remaining: 'yz' }
+```
+
+</details>
+<details id="oneOf">
+<summary><code>oneOf</code> — Parse one string from a set of strings (longest match wins).</summary>
+
+```typescript
+oneOf(['hello', 'hell', 'help'])('helpful'); // { ok: true, value: 'help', remaining: 'ful' }
+```
+
+</details>
+<details id="regex">
+<summary><code>regex</code> — Parse with a regular expression.</summary>
+
+```typescript
+regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+```
+
+</details>
+<details id="satisfy">
+<summary><code>satisfy</code> — Parse a character satisfying a predicate.</summary>
+
+```typescript
+satisfy((c) => c === 'a')('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+```
+
+</details>
+<details id="string">
+<summary><code>string</code> — Parse a specific string.</summary>
+
+```typescript
+string('hello')('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+```
+
+</details>
+<details id="stringOf">
+<summary><code>stringOf</code> — Parse first character that exists in string (like charOf but for a string).</summary>
+
+```typescript
+stringOf('abc')('abcdef'); // { ok: true, value: 'a', remaining: 'bcdef' }
+```
+
+</details>
+<details id="take">
+<summary><code>take</code> — Take n characters.</summary>
+
+```typescript
+take(3)('abcdef'); // { ok: true, value: 'abc', remaining: 'def' }
+```
+
+</details>
+<details id="takeWhile">
+<summary><code>takeWhile</code> — Takes characters while the predicate returns true.</summary>
+
+```typescript
+takeWhile((c) => c !== 'x')('abcx'); // { ok: true, value: 'abc', remaining: 'x' }
+```
+
+</details>
+<details id="token">
+<summary><code>token</code> — Parses a string as a token, skipping trailing whitespace. Unlike word, it does not enforce word boundaries - useful for parsing strings that might be followed by any character.</summary>
+
+```typescript
+token('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
+token('let')('let1'); // { ok: true, value: 'let', remaining: '1' }
+token('let')('let  x'); // { ok: true, value: 'let', remaining: 'x' }
+```
+
+</details>
+<details id="word">
+<summary><code>word</code> — Parses a specific word and ensures it is not followed by word characters. Use this when parsing keywords that should not be part of a longer identifier.</summary>
+
+```typescript
+word('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
+word('let')('let1'); // { ok: false }
+word('if')('if (x)'); // { ok: true, value: 'if', remaining: '(x)' }
+```
+
+</details>
+
+## Primitives (`unitas/primitives`)
+
+**Primitives** are pre-built parser instances ready to use. Unlike terminals which are factory functions (like `char('x')`), primitives are constants you can pass directly to combinators.
 
 <details id="alphaNum">
 <summary><code>alphaNum</code> — Parse a single alphanumeric character.</summary>
@@ -444,22 +554,6 @@ anyChar('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 bool('true'); // { ok: true, value: true, remaining: '' }
 bool('false'); // { ok: true, value: false, remaining: '' }
 bool('trueABC'); // { ok: true, value: true, remaining: 'ABC' }
-```
-
-</details>
-<details id="char">
-<summary><code>char</code> — Parse a specific character.</summary>
-
-```typescript
-char('A')('ABC'); // { ok: true, value: 'A', remaining: 'BC' }
-```
-
-</details>
-<details id="charOf">
-<summary><code>charOf</code> — Parse any character from a set.</summary>
-
-```typescript
-charOf(['a', 'b', 'c'])('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 ```
 
 </details>
@@ -507,9 +601,9 @@ eol('\nabc'); // { ok: true, value: '\n', remaining: 'abc' }
 <summary><code>float</code> — Parse a floating point number.</summary>
 
 ```typescript
-float()('1.23'); // { ok: true, value: 1.23, remaining: '' }
-float()('-2.5'); // { ok: true, value: -2.5, remaining: '' }
-float()('1.23abc'); // { ok: true, value: 1.23, remaining: 'abc' }
+float('1.23'); // { ok: true, value: 1.23, remaining: '' }
+float('-2.5'); // { ok: true, value: -2.5, remaining: '' }
+float('1.23abc'); // { ok: true, value: 1.23, remaining: 'abc' }
 ```
 
 </details>
@@ -561,14 +655,6 @@ line('hello\nworld'); // { ok: true, value: 'hello', remaining: '\nworld' }
 ```
 
 </details>
-<details id="literal">
-<summary><code>literal</code> — Parse a specific string.</summary>
-
-```typescript
-literal('hello')('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
-```
-
-</details>
 <details id="lowercase">
 <summary><code>lowercase</code> — Parse a single lowercase letter.</summary>
 
@@ -593,14 +679,6 @@ nl('\ntext'); // { ok: true, value: '\n', remaining: 'text' }
 ```
 
 </details>
-<details id="noneOf">
-<summary><code>noneOf</code> — Parse any character not in the set.</summary>
-
-```typescript
-noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', remaining: 'yz' }
-```
-
-</details>
 <details id="octDigit">
 <summary><code>octDigit</code> — Parse a single octal digit.</summary>
 
@@ -617,27 +695,11 @@ octDigits('0777abc'); // { ok: true, value: '0777', remaining: 'abc' }
 ```
 
 </details>
-<details id="oneOf">
-<summary><code>oneOf</code> — Parse one string from a set of strings (longest match wins).</summary>
-
-```typescript
-oneOf(['hello', 'hell', 'help'])('helpful'); // { ok: true, value: 'help', remaining: 'ful' }
-```
-
-</details>
 <details id="position">
 <summary><code>position</code> — Get current position (remaining input length).</summary>
 
 ```typescript
 position('abc'); // { ok: true, value: 3, remaining: 'abc' }
-```
-
-</details>
-<details id="regex">
-<summary><code>regex</code> — Parse with a regular expression.</summary>
-
-```typescript
-regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
 ```
 
 </details>
@@ -649,59 +711,11 @@ rest('hello'); // { ok: true, value: 'hello', remaining: '' }
 ```
 
 </details>
-<details id="satisfy">
-<summary><code>satisfy</code> — Parse a character satisfying a predicate.</summary>
-
-```typescript
-satisfy((c) => c === 'a')('abc'); // { ok: true, value: 'a', remaining: 'bc' }
-```
-
-</details>
-<details id="stringOf">
-<summary><code>stringOf</code> — Parse first character that exists in string (like charOf but for a string).</summary>
-
-```typescript
-stringOf('abc')('abcdef'); // { ok: true, value: 'a', remaining: 'bcdef' }
-```
-
-</details>
 <details id="tab">
 <summary><code>tab</code> — Parse tab character.</summary>
 
 ```typescript
 tab('\ttext'); // { ok: true, value: '\t', remaining: 'text' }
-```
-
-</details>
-<details id="take">
-<summary><code>take</code> — Take n characters.</summary>
-
-```typescript
-take(3)('abcdef'); // { ok: true, value: 'abc', remaining: 'def' }
-```
-
-</details>
-<details id="takeUntil">
-<summary><code>takeUntil</code> — Takes characters until the predicate returns true.</summary>
-
-```typescript
-takeUntil((c) => c === 'x')('abcx'); // { ok: true, value: 'abc', remaining: 'x' }
-```
-
-</details>
-<details id="takeWhile">
-<summary><code>takeWhile</code> — Takes characters while the predicate returns true.</summary>
-
-```typescript
-takeWhile((c) => c !== 'x')('abcx'); // { ok: true, value: 'abc', remaining: 'x' }
-```
-
-</details>
-<details id="token">
-<summary><code>token</code> — Parses a literal string as a token, skipping trailing whitespace.</summary>
-
-```typescript
-token('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
 ```
 
 </details>
@@ -737,14 +751,6 @@ whitespaces('  abc'); // { ok: true, value: '  ', remaining: 'abc' }
 ```
 
 </details>
-<details id="word">
-<summary><code>word</code> — Parses a specific word and ensures it is not followed by word characters.</summary>
-
-```typescript
-word('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
-```
-
-</details>
 
 ## Combinators (`unitas/combinators`)
 
@@ -754,7 +760,7 @@ word('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
 <summary><code>attempt</code> — Attempt wraps a parser to handle backtracking on failure.</summary>
 
 ```typescript
-attempt(literal('hello'))('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+attempt(string('hello'))('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
 ```
 
 </details>
@@ -770,7 +776,7 @@ bind(digits, (n) => take(n))('3abc'); // { ok: true, value: 'abc', remaining: ''
 <summary><code>braced</code> — Parse content surrounded by braces.</summary>
 
 ```typescript
-braced(literal('hi'))('{hi}'); // { ok: true, value: 'hi', remaining: '' }
+braced(string('hi'))('{hi}'); // { ok: true, value: 'hi', remaining: '' }
 ```
 
 </details>
@@ -778,7 +784,7 @@ braced(literal('hi'))('{hi}'); // { ok: true, value: 'hi', remaining: '' }
 <summary><code>bracketed</code> — Parse content surrounded by brackets.</summary>
 
 ```typescript
-bracketed(literal('hi'))('[hi]'); // { ok: true, value: 'hi', remaining: '' }
+bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', remaining: '' }
 ```
 
 </details>
@@ -822,7 +828,7 @@ chainRight1(digits, operation)('4/2/2'); // { ok: true, value: 4, remaining: '' 
 <summary><code>choice</code> — Try each parser in order, return first success.</summary>
 
 ```typescript
-choice(literal('hello'), literal('world'))('hello'); // { ok: true, value: 'hello', remaining: '' }
+choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello', remaining: '' }
 ```
 
 </details>
@@ -830,7 +836,7 @@ choice(literal('hello'), literal('world'))('hello'); // { ok: true, value: 'hell
 <summary><code>consume</code> — Consume input but discard the result (return null).</summary>
 
 ```typescript
-consume(literal('hello'))('hello world'); // { ok: true, value: null, remaining: ' world' }
+consume(string('hello'))('hello world'); // { ok: true, value: null, remaining: ' world' }
 ```
 
 </details>
@@ -838,7 +844,7 @@ consume(literal('hello'))('hello world'); // { ok: true, value: null, remaining:
 <summary><code>endBy</code> — Zero or more items separated and ending with terminator.</summary>
 
 ```typescript
-endBy(literal('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
+endBy(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
 ```
 
 </details>
@@ -846,7 +852,7 @@ endBy(literal('item'), char(';'))('item;item;item;'); // { ok: true, value: ['it
 <summary><code>endBy1</code> — One or more items separated and ending with terminator.</summary>
 
 ```typescript
-endBy1(literal('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
+endBy1(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], remaining: '' }
 ```
 
 </details>
@@ -903,7 +909,7 @@ foldRight1(digit, [], (acc, d) => [...acc, d])('123'); // { ok: true, value: [3,
 
 ```typescript
 fuse(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'abc', remaining: '' }
-fuse(literal('hello'), char(' '), literal('world'))('hello world'); // { ok: true, value: 'hello world', remaining: '' }
+fuse(string('hello'), char(' '), string('world'))('hello world'); // { ok: true, value: 'hello world', remaining: '' }
 ```
 
 </details>
@@ -911,8 +917,8 @@ fuse(literal('hello'), char(' '), literal('world'))('hello world'); // { ok: tru
 <summary><code>guard</code> — Conditionally apply parser based on a condition.</summary>
 
 ```typescript
-guard(true, literal('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
-guard(false, literal('hello'))('hello'); // { ok: false }
+guard(true, string('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
+guard(false, string('hello'))('hello'); // { ok: false }
 ```
 
 </details>
@@ -920,7 +926,7 @@ guard(false, literal('hello'))('hello'); // { ok: false }
 <summary><code>inner</code> — Extract inner value from surrounded content (like inner of braced).</summary>
 
 ```typescript
-inner(char('('), literal('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', remaining: '' }
+inner(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', remaining: '' }
 ```
 
 </details>
@@ -944,7 +950,7 @@ last(sequence(char('a'), char('b')))('ab'); // { ok: true, value: 'b', remaining
 <summary><code>left</code> — Keep only the left result from a sequence.</summary>
 
 ```typescript
-left(literal('hello'), literal('world'))('helloworld'); // { ok: true, value: 'hello', remaining: '' }
+left(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'hello', remaining: '' }
 ```
 
 </details>
@@ -952,7 +958,7 @@ left(literal('hello'), literal('world'))('helloworld'); // { ok: true, value: 'h
 <summary><code>lexeme</code> — Parser that consumes trailing whitespace.</summary>
 
 ```typescript
-lexeme(literal('hello'))('hello   world'); // { ok: true, value: 'hello', remaining: 'world' }
+lexeme(string('hello'))('hello   world'); // { ok: true, value: 'hello', remaining: 'world' }
 ```
 
 </details>
@@ -1008,7 +1014,7 @@ manyTill(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], r
 <summary><code>map</code> — Transform the parsed value.</summary>
 
 ```typescript
-map(literal('hello'), (v) => v.toUpperCase())('hello'); // { ok: true, value: 'HELLO', remaining: '' }
+map(string('hello'), (v) => v.toUpperCase())('hello'); // { ok: true, value: 'HELLO', remaining: '' }
 ```
 
 </details>
@@ -1016,7 +1022,7 @@ map(literal('hello'), (v) => v.toUpperCase())('hello'); // { ok: true, value: 'H
 <summary><code>not</code> — Succeed if parser fails (without consuming input).</summary>
 
 ```typescript
-not(literal('hello'))('world'); // { ok: true, value: null, remaining: 'world' }
+not(string('hello'))('world'); // { ok: true, value: null, remaining: 'world' }
 ```
 
 </details>
@@ -1032,8 +1038,8 @@ nth(sequence(char('a'), char('b'), char('c')), 1)('abc'); // { ok: true, value: 
 <summary><code>optional</code> — Make parser optional (return null on failure, without consuming input).</summary>
 
 ```typescript
-optional(literal('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
-optional(literal('hello'))('world'); // { ok: true, value: null, remaining: 'world' }
+optional(string('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
+optional(string('hello'))('world'); // { ok: true, value: null, remaining: 'world' }
 ```
 
 </details>
@@ -1041,8 +1047,8 @@ optional(literal('hello'))('world'); // { ok: true, value: null, remaining: 'wor
 <summary><code>optionalConsume</code> — Optionally consume input (always succeeds, returns void).</summary>
 
 ```typescript
-optionalConsume(literal('hello'))('hello world'); // { ok: true, value: undefined, remaining: ' world' }
-optionalConsume(literal('hello'))('world'); // { ok: true, value: undefined, remaining: 'world' }
+optionalConsume(string('hello'))('hello world'); // { ok: true, value: undefined, remaining: ' world' }
+optionalConsume(string('hello'))('world'); // { ok: true, value: undefined, remaining: 'world' }
 ```
 
 </details>
@@ -1050,7 +1056,7 @@ optionalConsume(literal('hello'))('world'); // { ok: true, value: undefined, rem
 <summary><code>outer</code> — Extract outer values from a sequence of 3 parsers (skip middle).</summary>
 
 ```typescript
-outer(char('('), literal('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', ')'], remaining: '' }
+outer(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', ')'], remaining: '' }
 ```
 
 </details>
@@ -1058,7 +1064,7 @@ outer(char('('), literal('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', 
 <summary><code>padded</code> — Parse content with optional whitespace on both sides.</summary>
 
 ```typescript
-padded(literal('hi'))('   hi   '); // { ok: true, value: 'hi', remaining: '' }
+padded(string('hi'))('   hi   '); // { ok: true, value: 'hi', remaining: '' }
 ```
 
 </details>
@@ -1066,7 +1072,7 @@ padded(literal('hi'))('   hi   '); // { ok: true, value: 'hi', remaining: '' }
 <summary><code>parenthesized</code> — Parse content surrounded by parentheses.</summary>
 
 ```typescript
-parenthesized(literal('hi'))('(hi)'); // { ok: true, value: 'hi', remaining: '' }
+parenthesized(string('hi'))('(hi)'); // { ok: true, value: 'hi', remaining: '' }
 ```
 
 </details>
@@ -1074,7 +1080,7 @@ parenthesized(literal('hi'))('(hi)'); // { ok: true, value: 'hi', remaining: '' 
 <summary><code>peek</code> — Parse without consuming input.</summary>
 
 ```typescript
-peek(literal('hello'))('hello world'); // { ok: true, value: 'hello', remaining: 'hello world' }
+peek(string('hello'))('hello world'); // { ok: true, value: 'hello', remaining: 'hello world' }
 ```
 
 </details>
@@ -1104,7 +1110,7 @@ prefix(
 <summary><code>quoted</code> — Parse content surrounded by single or double quotes.</summary>
 
 ```typescript
-quoted(literal('hello'))('"hello"'); // { ok: true, value: 'hello', remaining: '' }
+quoted(string('hello'))('"hello"'); // { ok: true, value: 'hello', remaining: '' }
 ```
 
 </details>
@@ -1112,7 +1118,7 @@ quoted(literal('hello'))('"hello"'); // { ok: true, value: 'hello', remaining: '
 <summary><code>recover</code> — Use fallback value when parser fails.</summary>
 
 ```typescript
-recover(literal('hello'), 'default')('world'); // { ok: true, value: 'default', remaining: 'world' }
+recover(string('hello'), 'default')('world'); // { ok: true, value: 'default', remaining: 'world' }
 ```
 
 </details>
@@ -1120,7 +1126,7 @@ recover(literal('hello'), 'default')('world'); // { ok: true, value: 'default', 
 <summary><code>right</code> — Keep only the right result from a sequence.</summary>
 
 ```typescript
-right(literal('hello'), literal('world'))('helloworld'); // { ok: true, value: 'world', remaining: '' }
+right(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'world', remaining: '' }
 ```
 
 </details>
@@ -1200,7 +1206,7 @@ skipMany1(char('a'))('aaabc'); // { ok: true, value: null, remaining: 'bc' }
 <summary><code>surrounded</code> — Parse content surrounded by delimiters.</summary>
 
 ```typescript
-surrounded(char('['), literal('hi'), char(']'))('[hi]'); // { ok: true, value: 'hi', remaining: '' }
+surrounded(char('['), string('hi'), char(']'))('[hi]'); // { ok: true, value: 'hi', remaining: '' }
 surrounded(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'b', remaining: '' }
 ```
 
@@ -1209,8 +1215,8 @@ surrounded(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'b', r
 <summary><code>unless</code> — Parse unless condition is true (inverse of guard).</summary>
 
 ```typescript
-unless(false, literal('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
-unless(true, literal('hello'))('hello'); // { ok: true, value: null, remaining: 'hello' }
+unless(false, string('hello'))('hello'); // { ok: true, value: 'hello', remaining: '' }
+unless(true, string('hello'))('hello'); // { ok: true, value: null, remaining: 'hello' }
 ```
 
 </details>

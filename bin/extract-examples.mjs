@@ -140,9 +140,10 @@ import * as utils from '../src/utils';
 import * as combinators from '../src/combinators';
 import * as terminals from '../src/terminals';
 import * as core from '../src/core';
+import * as primitives from '../src/primitives';
 import * as helpers from './helpers';
 
-Object.assign(globalThis, utils, combinators, terminals, core, helpers);
+Object.assign(globalThis, utils, combinators, terminals, core, primitives, helpers);
 
 describe('examples from source', () => {
 `;

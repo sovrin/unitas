@@ -1,6 +1,12 @@
 import { choice } from '../combinators/choice';
 import { map } from '../combinators/map';
-import { literal } from './literal';
+import { create } from '../core/parser';
+import { string } from '../terminals/string';
+
+const parser = choice(
+    map(string('true'), () => true),
+    map(string('false'), () => false),
+);
 
 /**
  * Parse a boolean literal.
@@ -10,7 +16,4 @@ import { literal } from './literal';
  * bool('false') // { ok: true, value: false, remaining: '' }
  * bool('trueABC') // { ok: true, value: true, remaining: 'ABC' }
  */
-export const bool = choice(
-    map(literal('true'), () => true),
-    map(literal('false'), () => false),
-);
+export const bool = create<boolean>(parser);

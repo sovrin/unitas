@@ -1,8 +1,8 @@
 import { describe, expect, it } from 'vitest';
 
 import { assertSuccess } from '../../test/utils';
+import { digits } from '../primitives/digits';
 import { char } from '../terminals/char';
-import { digits } from '../terminals/digits';
 import { memoize } from './memoize';
 
 describe('memoize', () => {

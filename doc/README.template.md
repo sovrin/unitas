@@ -1,6 +1,6 @@
 # unitas — composing parsers into a unified whole
 
-<img src="doc/logo.png" height="64" align="right" alt="Unitas logo">
+<img src="doc/logo.png" style="margin-left: 16px" height="64" align="right" alt="Unitas logo">
 
 [![npm version](https://img.shields.io/npm/v/unitas)](https://www.npmjs.com/package/unitas)
 [![Coverage](https://coveralls.io/repos/github/sovrin/unitas/badge.svg?branch=master)](https://coveralls.io/github/sovrin/unitas?branch=master)
@@ -11,9 +11,10 @@ A lightweight, TypeScript-first parser combinator library for building expressiv
 ## Features
 
 - **Parser Combinators**: Compose small parsers into complex ones using combinators like `many`, `choice`, `sequence`, and more
-- **Terminals**: Ready-to-use parsers for common patterns (`char`, `string`, `regex`, `digit`, `letter`, etc.)
+- **Terminals**: Factory functions for common patterns (`char`, `string`, `regex`, etc.)
+- **Primitives**: Pre-built parser instances ready to use (`digit`, `letter`, `whitespace`, etc.)
 - **TypeScript**: Full TypeScript support with generic types and inference
-- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, and `utils`
+- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, `primitives`, and `utils`
 - **No dependencies**: Zero external runtime dependencies
 
 ## Installation
@@ -29,7 +30,8 @@ npm install unitas
 ```typescript
 import { grammar, run } from 'unitas';
 import { choice, inner, separatedBy } from 'unitas/combinators';
-import { char, letters, regex } from 'unitas/terminals';
+import { char, regex } from 'unitas/terminals';
+import { letters } from 'unitas/primitives';
 
 const csv = grammar({
     row: (p) => separatedBy(p.value, char(',')),
@@ -47,14 +49,15 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 ```typescript
 import { grammar, run } from 'unitas';
 import { choice, map, quoted } from 'unitas/combinators';
-import { bool, digits, letters, literal } from 'unitas/terminals';
+import { string } from 'unitas/terminals';
+import { bool, digits, letters } from 'unitas/primitives';
 
 const json = grammar({
     value: (p) => choice(p.string, p.number, p.bool, p.null),
     string: () => quoted(letters),
     number: () => digits,
     bool: () => bool,
-    null: () => map(literal('null'), () => null),
+    null: () => map(string('null'), () => null),
 });
 
 run(json.value, '"hello"'); // 'hello'
@@ -68,7 +71,8 @@ run(json.value, 'null'); // null
 ```typescript
 import { grammar, run } from 'unitas';
 import { map, outer, separatedBy } from 'unitas/combinators';
-import { char, letters } from 'unitas/terminals';
+import { char } from 'unitas/terminals';
+import { letters } from 'unitas/primitives';
 
 type Query = {
     params: Record<string, string>;
@@ -95,7 +99,8 @@ run(query.params, 'foo=bar&baz=qux'); // { foo: 'bar', baz: 'qux' }
 ```typescript
 import { grammar, run } from 'unitas';
 import { map, outer, sequence } from 'unitas/combinators';
-import { char, letters, nl, regex } from 'unitas/terminals';
+import { char, regex } from 'unitas/terminals';
+import { letters, nl } from 'unitas/primitives';
 import { pick } from 'unitas/utils';
 
 const ini = grammar({
@@ -202,6 +207,12 @@ The `error` field is optional — you can always add meaningful error messages l
 **Terminals** are the basic building blocks that match specific parts of the input. They don't combine other parsers — they directly inspect the input string.
 
 <$terminals>
+
+## Primitives (`unitas/primitives`)
+
+**Primitives** are pre-built parser instances ready to use. Unlike terminals which are factory functions (like `char('x')`), primitives are constants you can pass directly to combinators.
+
+<$primitives>
 
 ## Combinators (`unitas/combinators`)
 

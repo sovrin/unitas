@@ -2,16 +2,18 @@ import { many1 } from '../combinators/many1';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
-import { lowercase } from './lowercase';
+import { hexDigit } from './hexDigit';
+
+const parser = many1(hexDigit);
 
 /**
- * Parses one or more lowercase letters.
+ * Parse one or more hexadecimal digits.
  *
  * @example
- * lowercases('abcDEF') // { ok: true, value: 'abc', remaining: 'DEF' }
+ * hexDigits('deadbeef') // { ok: true, value: 'deadbeef', remaining: '' }
  */
-export const lowercases = create<string>((input) => {
-    const result = many1(lowercase)(input);
+export const hexDigits = create<string>((input) => {
+    const result = parser(input);
     if (!result.ok) {
         return failure();
     }

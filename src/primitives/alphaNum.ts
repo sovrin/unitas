@@ -1,7 +1,8 @@
+import { create } from '../core/parser';
 import { type Result } from '../core/result';
+import { satisfy } from '../terminals/satisfy';
 import { type Digit } from './digit';
 import { type Letter } from './letter';
-import { satisfy } from './satisfy';
 
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
 export type AlphaNum = Letter | Digit;
@@ -20,5 +21,5 @@ export function alphaNum<S extends `${AlphaNum}${string}`>(
 ): Result<Head<S> & AlphaNum>;
 export function alphaNum(input: string): Result<AlphaNum>;
 export function alphaNum(input: string) {
-    return parser(input);
+    return create<AlphaNum>(parser)(input);
 }

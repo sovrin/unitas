@@ -7,7 +7,7 @@ import { success } from '../core/success';
  *
  * @example
  * fuse(char('a'), char('b'), char('c'))('abc') // { ok: true, value: 'abc', remaining: '' }
- * fuse(literal('hello'), char(' '), literal('world'))('hello world') // { ok: true, value: 'hello world', remaining: '' }
+ * fuse(string('hello'), char(' '), string('world'))('hello world') // { ok: true, value: 'hello world', remaining: '' }
  */
 export const fuse = <T extends Parser<string>[]>(...parsers: T) => {
     return create<string>((input) => {

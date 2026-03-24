@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Succeed if parser fails (without consuming input).
  *
  * @example
- * not(literal('hello'))('world') // { ok: true, value: null, remaining: 'world' }
+ * not(string('hello'))('world') // { ok: true, value: null, remaining: 'world' }
  */
 export const not = <T>(parser: Parser<T>) => {
     return create<null>((input) => {

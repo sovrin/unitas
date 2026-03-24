@@ -2,16 +2,18 @@ import { many1 } from '../combinators/many1';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
-import { hexDigit } from './hexDigit';
+import { uppercase } from './uppercase';
+
+const parser = many1(uppercase);
 
 /**
- * Parse one or more hexadecimal digits.
+ * Parses one or more uppercase letters.
  *
  * @example
- * hexDigits('deadbeef') // { ok: true, value: 'deadbeef', remaining: '' }
+ * uppercases('ABCdef') // { ok: true, value: 'ABC', remaining: 'def' }
  */
-export const hexDigits = create<string>((input) => {
-    const result = many1(hexDigit)(input);
+export const uppercases = create<string>((input) => {
+    const result = parser(input);
     if (!result.ok) {
         return failure();
     }

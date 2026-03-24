@@ -3,16 +3,25 @@ import { describe, it, expect } from 'vitest';
 
 import * as combinators from '../src/combinators';
 import * as core from '../src/core';
+import * as primitives from '../src/primitives';
 import * as terminals from '../src/terminals';
 import * as utils from '../src/utils';
 import * as helpers from './helpers';
 
-Object.assign(globalThis, utils, combinators, terminals, core, helpers);
+Object.assign(
+    globalThis,
+    utils,
+    combinators,
+    terminals,
+    core,
+    primitives,
+    helpers,
+);
 
 describe('examples from source', () => {
     describe('combinators', () => {
         it('attempt: Attempt wraps a parser to handle backtracking on failure.', () => {
-            const __result0 = attempt(literal('hello'))('hello world');
+            const __result0 = attempt(string('hello'))('hello world');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
@@ -30,12 +39,12 @@ describe('examples from source', () => {
         });
 
         it('braced: Parse content surrounded by braces.', () => {
-            const __result0 = braced(literal('hi'))('{hi}');
+            const __result0 = braced(string('hi'))('{hi}');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('bracketed: Parse content surrounded by brackets.', () => {
-            const __result0 = bracketed(literal('hi'))('[hi]');
+            const __result0 = bracketed(string('hi'))('[hi]');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
@@ -68,10 +77,7 @@ describe('examples from source', () => {
         });
 
         it('choice: Try each parser in order, return first success.', () => {
-            const __result0 = choice(
-                literal('hello'),
-                literal('world'),
-            )('hello');
+            const __result0 = choice(string('hello'), string('world'))('hello');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
@@ -80,7 +86,7 @@ describe('examples from source', () => {
         });
 
         it('consume: Consume input but discard the result (return null).', () => {
-            const __result0 = consume(literal('hello'))('hello world');
+            const __result0 = consume(string('hello'))('hello world');
             expect(__result0).toEqual({
                 ok: true,
                 value: null,
@@ -90,7 +96,7 @@ describe('examples from source', () => {
 
         it('endBy: Zero or more items separated and ending with terminator.', () => {
             const __result0 = endBy(
-                literal('item'),
+                string('item'),
                 char(';'),
             )('item;item;item;');
             expect(__result0).toEqual({
@@ -102,7 +108,7 @@ describe('examples from source', () => {
 
         it('endBy1: One or more items separated and ending with terminator.', () => {
             const __result0 = endBy1(
-                literal('item'),
+                string('item'),
                 char(';'),
             )('item;item;item;');
             expect(__result0).toEqual({
@@ -174,9 +180,9 @@ describe('examples from source', () => {
                 remaining: '',
             });
             const __result1 = fuse(
-                literal('hello'),
+                string('hello'),
                 char(' '),
-                literal('world'),
+                string('world'),
             )('hello world');
             expect(__result1).toEqual({
                 ok: true,
@@ -186,22 +192,18 @@ describe('examples from source', () => {
         });
 
         it('guard: Conditionally apply parser based on a condition.', () => {
-            const __result0 = guard(true, literal('hello'))('hello');
+            const __result0 = guard(true, string('hello'))('hello');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = guard(false, literal('hello'))('hello');
+            const __result1 = guard(false, string('hello'))('hello');
             expect(__result1).toEqual({ ok: false });
         });
 
         it('inner: Extract inner value from surrounded content (like inner of braced).', () => {
-            const __result0 = inner(
-                char('('),
-                literal('hi'),
-                char(')'),
-            )('(hi)');
+            const __result0 = inner(char('('), string('hi'), char(')'))('(hi)');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
@@ -221,8 +223,8 @@ describe('examples from source', () => {
 
         it('left: Keep only the left result from a sequence.', () => {
             const __result0 = left(
-                literal('hello'),
-                literal('world'),
+                string('hello'),
+                string('world'),
             )('helloworld');
             expect(__result0).toEqual({
                 ok: true,
@@ -232,7 +234,7 @@ describe('examples from source', () => {
         });
 
         it('lexeme: Parser that consumes trailing whitespace.', () => {
-            const __result0 = lexeme(literal('hello'))('hello   world');
+            const __result0 = lexeme(string('hello'))('hello   world');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
@@ -295,7 +297,7 @@ describe('examples from source', () => {
         });
 
         it('map: Transform the parsed value.', () => {
-            const __result0 = map(literal('hello'), (v) => v.toUpperCase())(
+            const __result0 = map(string('hello'), (v) => v.toUpperCase())(
                 'hello',
             );
             expect(__result0).toEqual({
@@ -306,7 +308,7 @@ describe('examples from source', () => {
         });
 
         it('not: Succeed if parser fails (without consuming input).', () => {
-            const __result0 = not(literal('hello'))('world');
+            const __result0 = not(string('hello'))('world');
             expect(__result0).toEqual({
                 ok: true,
                 value: null,
@@ -323,13 +325,13 @@ describe('examples from source', () => {
         });
 
         it('optional: Make parser optional (return null on failure, without consuming input).', () => {
-            const __result0 = optional(literal('hello'))('hello');
+            const __result0 = optional(string('hello'))('hello');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = optional(literal('hello'))('world');
+            const __result1 = optional(string('hello'))('world');
             expect(__result1).toEqual({
                 ok: true,
                 value: null,
@@ -338,13 +340,13 @@ describe('examples from source', () => {
         });
 
         it('optionalConsume: Optionally consume input (always succeeds, returns void).', () => {
-            const __result0 = optionalConsume(literal('hello'))('hello world');
+            const __result0 = optionalConsume(string('hello'))('hello world');
             expect(__result0).toEqual({
                 ok: true,
                 value: undefined,
                 remaining: ' world',
             });
-            const __result1 = optionalConsume(literal('hello'))('world');
+            const __result1 = optionalConsume(string('hello'))('world');
             expect(__result1).toEqual({
                 ok: true,
                 value: undefined,
@@ -353,11 +355,7 @@ describe('examples from source', () => {
         });
 
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
-            const __result0 = outer(
-                char('('),
-                literal('hi'),
-                char(')'),
-            )('(hi)');
+            const __result0 = outer(char('('), string('hi'), char(')'))('(hi)');
             expect(__result0).toEqual({
                 ok: true,
                 value: ['(', ')'],
@@ -366,17 +364,17 @@ describe('examples from source', () => {
         });
 
         it('padded: Parse content with optional whitespace on both sides.', () => {
-            const __result0 = padded(literal('hi'))('   hi   ');
+            const __result0 = padded(string('hi'))('   hi   ');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('parenthesized: Parse content surrounded by parentheses.', () => {
-            const __result0 = parenthesized(literal('hi'))('(hi)');
+            const __result0 = parenthesized(string('hi'))('(hi)');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('peek: Parse without consuming input.', () => {
-            const __result0 = peek(literal('hello'))('hello world');
+            const __result0 = peek(string('hello'))('hello world');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
@@ -401,7 +399,7 @@ describe('examples from source', () => {
         });
 
         it('quoted: Parse content surrounded by single or double quotes.', () => {
-            const __result0 = quoted(literal('hello'))('"hello"');
+            const __result0 = quoted(string('hello'))('"hello"');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
@@ -410,7 +408,7 @@ describe('examples from source', () => {
         });
 
         it('recover: Use fallback value when parser fails.', () => {
-            const __result0 = recover(literal('hello'), 'default')('world');
+            const __result0 = recover(string('hello'), 'default')('world');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'default',
@@ -420,8 +418,8 @@ describe('examples from source', () => {
 
         it('right: Keep only the right result from a sequence.', () => {
             const __result0 = right(
-                literal('hello'),
-                literal('world'),
+                string('hello'),
+                string('world'),
             )('helloworld');
             expect(__result0).toEqual({
                 ok: true,
@@ -518,7 +516,7 @@ describe('examples from source', () => {
         it('surrounded: Parse content surrounded by delimiters.', () => {
             const __result0 = surrounded(
                 char('['),
-                literal('hi'),
+                string('hi'),
                 char(']'),
             )('[hi]');
             expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
@@ -531,13 +529,13 @@ describe('examples from source', () => {
         });
 
         it('unless: Parse unless condition is true (inverse of guard).', () => {
-            const __result0 = unless(false, literal('hello'))('hello');
+            const __result0 = unless(false, string('hello'))('hello');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = unless(true, literal('hello'))('hello');
+            const __result1 = unless(true, string('hello'))('hello');
             expect(__result1).toEqual({
                 ok: true,
                 value: null,
@@ -647,7 +645,7 @@ describe('examples from source', () => {
         });
 
         it('run: Runs a parser and returns the value, throws on failure or unconsumed input.', () => {
-            const __result0 = run(literal('hello'), 'hello');
+            const __result0 = run(string('hello'), 'hello');
             expect(__result0).toEqual('hello');
         });
 
@@ -661,7 +659,7 @@ describe('examples from source', () => {
         });
     });
 
-    describe('terminals', () => {
+    describe('primitives', () => {
         it('alphaNum: Parse a single alphanumeric character.', () => {
             const __result0 = alphaNum('a1');
             expect(__result0).toEqual({ ok: true, value: 'a', remaining: '1' });
@@ -704,24 +702,6 @@ describe('examples from source', () => {
             });
         });
 
-        it('char: Parse a specific character.', () => {
-            const __result0 = char('A')('ABC');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'A',
-                remaining: 'BC',
-            });
-        });
-
-        it('charOf: Parse any character from a set.', () => {
-            const __result0 = charOf(['a', 'b', 'c'])('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
-        });
-
         it('crlf: Parse CRLF line ending.', () => {
             const __result0 = crlf('\r\nabc');
             expect(__result0).toEqual({
@@ -760,11 +740,11 @@ describe('examples from source', () => {
         });
 
         it('float: Parse a floating point number.', () => {
-            const __result0 = float()('1.23');
+            const __result0 = float('1.23');
             expect(__result0).toEqual({ ok: true, value: 1.23, remaining: '' });
-            const __result1 = float()('-2.5');
+            const __result1 = float('-2.5');
             expect(__result1).toEqual({ ok: true, value: -2.5, remaining: '' });
-            const __result2 = float()('1.23abc');
+            const __result2 = float('1.23abc');
             expect(__result2).toEqual({
                 ok: true,
                 value: 1.23,
@@ -826,15 +806,6 @@ describe('examples from source', () => {
             });
         });
 
-        it('literal: Parse a specific string.', () => {
-            const __result0 = literal('hello')('hello world');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'hello',
-                remaining: ' world',
-            });
-        });
-
         it('lowercase: Parse a single lowercase letter.', () => {
             const __result0 = lowercase('abc');
             expect(__result0).toEqual({
@@ -862,15 +833,6 @@ describe('examples from source', () => {
             });
         });
 
-        it('noneOf: Parse any character not in the set.', () => {
-            const __result0 = noneOf(['a', 'b', 'c'])('xyz');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'x',
-                remaining: 'yz',
-            });
-        });
-
         it('octDigit: Parse a single octal digit.', () => {
             const __result0 = octDigit('7abc');
             expect(__result0).toEqual({
@@ -889,27 +851,9 @@ describe('examples from source', () => {
             });
         });
 
-        it('oneOf: Parse one string from a set of strings (longest match wins).', () => {
-            const __result0 = oneOf(['hello', 'hell', 'help'])('helpful');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'help',
-                remaining: 'ful',
-            });
-        });
-
         it('position: Get current position (remaining input length).', () => {
             const __result0 = position('abc');
             expect(__result0).toEqual({ ok: true, value: 3, remaining: 'abc' });
-        });
-
-        it('regex: Parse with a regular expression.', () => {
-            const __result0 = regex(/^\w+/)('hello world');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'hello',
-                remaining: ' world',
-            });
         });
 
         it('rest: Parse the rest of the input.', () => {
@@ -921,66 +865,12 @@ describe('examples from source', () => {
             });
         });
 
-        it('satisfy: Parse a character satisfying a predicate.', () => {
-            const __result0 = satisfy((c) => c === 'a')('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
-        });
-
-        it('stringOf: Parse first character that exists in string (like charOf but for a string).', () => {
-            const __result0 = stringOf('abc')('abcdef');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bcdef',
-            });
-        });
-
         it('tab: Parse tab character.', () => {
             const __result0 = tab('\ttext');
             expect(__result0).toEqual({
                 ok: true,
                 value: '\t',
                 remaining: 'text',
-            });
-        });
-
-        it('take: Take n characters.', () => {
-            const __result0 = take(3)('abcdef');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: 'def',
-            });
-        });
-
-        it('takeUntil: Takes characters until the predicate returns true.', () => {
-            const __result0 = takeUntil((c) => c === 'x')('abcx');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: 'x',
-            });
-        });
-
-        it('takeWhile: Takes characters while the predicate returns true.', () => {
-            const __result0 = takeWhile((c) => c !== 'x')('abcx');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: 'x',
-            });
-        });
-
-        it('token: Parses a literal string as a token, skipping trailing whitespace.', () => {
-            const __result0 = token('let')('let x');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'let',
-                remaining: 'x',
             });
         });
 
@@ -1019,13 +909,134 @@ describe('examples from source', () => {
                 remaining: 'abc',
             });
         });
+    });
 
-        it('word: Parses a specific word and ensures it is not followed by word characters.', () => {
+    describe('terminals', () => {
+        it('char: Parse a specific character.', () => {
+            const __result0 = char('A')('ABC');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'A',
+                remaining: 'BC',
+            });
+        });
+
+        it('charOf: Parse any character from a set.', () => {
+            const __result0 = charOf(['a', 'b', 'c'])('abc');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'a',
+                remaining: 'bc',
+            });
+        });
+
+        it('noneOf: Parse any character not in the set.', () => {
+            const __result0 = noneOf(['a', 'b', 'c'])('xyz');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'x',
+                remaining: 'yz',
+            });
+        });
+
+        it('oneOf: Parse one string from a set of strings (longest match wins).', () => {
+            const __result0 = oneOf(['hello', 'hell', 'help'])('helpful');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'help',
+                remaining: 'ful',
+            });
+        });
+
+        it('regex: Parse with a regular expression.', () => {
+            const __result0 = regex(/^\w+/)('hello world');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'hello',
+                remaining: ' world',
+            });
+        });
+
+        it('satisfy: Parse a character satisfying a predicate.', () => {
+            const __result0 = satisfy((c) => c === 'a')('abc');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'a',
+                remaining: 'bc',
+            });
+        });
+
+        it('string: Parse a specific string.', () => {
+            const __result0 = string('hello')('hello world');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'hello',
+                remaining: ' world',
+            });
+        });
+
+        it('stringOf: Parse first character that exists in string (like charOf but for a string).', () => {
+            const __result0 = stringOf('abc')('abcdef');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'a',
+                remaining: 'bcdef',
+            });
+        });
+
+        it('take: Take n characters.', () => {
+            const __result0 = take(3)('abcdef');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'abc',
+                remaining: 'def',
+            });
+        });
+
+        it('takeWhile: Takes characters while the predicate returns true.', () => {
+            const __result0 = takeWhile((c) => c !== 'x')('abcx');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'abc',
+                remaining: 'x',
+            });
+        });
+
+        it('token: strings that might be followed by any character.', () => {
+            const __result0 = token('let')('let x');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'let',
+                remaining: 'x',
+            });
+            const __result1 = token('let')('let1');
+            expect(__result1).toEqual({
+                ok: true,
+                value: 'let',
+                remaining: '1',
+            });
+            const __result2 = token('let')('let  x');
+            expect(__result2).toEqual({
+                ok: true,
+                value: 'let',
+                remaining: 'x',
+            });
+        });
+
+        it('word: Use this when parsing keywords that should not be part of a longer identifier.', () => {
             const __result0 = word('let')('let x');
             expect(__result0).toEqual({
                 ok: true,
                 value: 'let',
                 remaining: 'x',
+            });
+            const __result1 = word('let')('let1');
+            expect(__result1).toEqual({ ok: false });
+            const __result2 = word('if')('if (x)');
+            expect(__result2).toEqual({
+                ok: true,
+                value: 'if',
+                remaining: '(x)',
             });
         });
     });

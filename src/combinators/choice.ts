@@ -10,7 +10,7 @@ type ParserOutput<P> = P extends Parser<infer T> ? T : never;
  * Try each parser in order, return first success.
  *
  * @example
- * choice(literal('hello'), literal('world'))('hello') // { ok: true, value: 'hello', remaining: '' }
+ * choice(string('hello'), string('world'))('hello') // { ok: true, value: 'hello', remaining: '' }
  */
 export const choice = <const P extends readonly Parser<any>[]>(
     ...parsers: P

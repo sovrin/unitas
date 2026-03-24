@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Parse without consuming input.
  *
  * @example
- * peek(literal('hello'))('hello world') // { ok: true, value: 'hello', remaining: 'hello world' }
+ * peek(string('hello'))('hello world') // { ok: true, value: 'hello', remaining: 'hello world' }
  */
 export const peek = <T>(parser: Parser<T>) => {
     return create<T>((input) => {

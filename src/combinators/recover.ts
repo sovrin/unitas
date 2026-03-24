@@ -8,7 +8,7 @@ import { success } from '../core/success';
  * Use fallback value when parser fails.
  *
  * @example
- * recover(literal('hello'), 'default')('world') // { ok: true, value: 'default', remaining: 'world' }
+ * recover(string('hello'), 'default')('world') // { ok: true, value: 'default', remaining: 'world' }
  */
 export const recover = <T>(parser: Parser<T>, fallback: T) => {
     return create<T>((input) => {

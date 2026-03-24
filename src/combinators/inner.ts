@@ -8,7 +8,7 @@ import { sequence } from './sequence';
  * Extract inner value from surrounded content (like inner of braced).
  *
  * @example
- * inner(char('('), literal('hi'), char(')'))('(hi)') // { ok: true, value: 'hi', remaining: '' }
+ * inner(char('('), string('hi'), char(')'))('(hi)') // { ok: true, value: 'hi', remaining: '' }
  */
 export const inner = <A, B, C>(
     parserA: Parser<A>,
