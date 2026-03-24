@@ -17,6 +17,8 @@ A lightweight, TypeScript-first parser combinator library for building expressiv
 - **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, `primitives`, and `utils`
 - **No dependencies**: Zero external runtime dependencies
 
+> **Note:** This library is in active development. The API may change before v1.0.0.
+
 ## Installation
 
 ```bash
