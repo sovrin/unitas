@@ -1,6 +1,6 @@
 {
     "name": "unitas",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "keywords": [
         "combinator",
         "functional",
@@ -54,14 +54,14 @@
                 "default": "./dist/utils.cjs"
             }
         },
-        "./terminals": {
+        "./primitives": {
             "import": {
-                "types": "./dist/terminals.d.mts",
-                "default": "./dist/terminals.mjs"
+                "types": "./dist/primitives.d.mts",
+                "default": "./dist/primitives.mjs"
             },
             "require": {
-                "types": "./dist/terminals.d.cts",
-                "default": "./dist/terminals.cjs"
+                "types": "./dist/primitives.d.cts",
+                "default": "./dist/primitives.cjs"
             }
         }
     },
