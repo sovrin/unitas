@@ -12,8 +12,7 @@
         "@typescript-eslint/consistent-type-imports": "error",
         "@typescript-eslint/consistent-type-definitions": ["error", "type"],
         "no-continue": "off",
-        "sort-imports": "off",
-        "import/order": "off"
+        "sort-imports": "off"
     },
     "settings": {
         "jsdoc": {

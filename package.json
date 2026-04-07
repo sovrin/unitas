@@ -1,6 +1,6 @@
 {
     "name": "unitas",
-    "version": "0.2.1",
+    "version": "0.2.2",
     "keywords": [
         "combinator",
         "functional",
@@ -20,48 +20,38 @@
         "README.md"
     ],
     "type": "module",
-    "main": "./dist/index.cjs",
-    "module": "./dist/index.js",
+    "main": "./dist/index.mjs",
+    "module": "./dist/index.mjs",
     "types": "./dist/index.d.mts",
     "exports": {
         ".": {
             "import": {
                 "types": "./dist/index.d.mts",
                 "default": "./dist/index.mjs"
-            },
-            "require": {
-                "types": "./dist/index.d.cts",
-                "default": "./dist/index.cjs"
             }
         },
         "./combinators": {
             "import": {
                 "types": "./dist/combinators.d.mts",
                 "default": "./dist/combinators.mjs"
-            },
-            "require": {
-                "types": "./dist/combinators.d.cts",
-                "default": "./dist/combinators.cjs"
             }
         },
-        "./utils": {
+        "./terminals": {
             "import": {
-                "types": "./dist/utils.d.mts",
-                "default": "./dist/utils.mjs"
-            },
-            "require": {
-                "types": "./dist/utils.d.cts",
-                "default": "./dist/utils.cjs"
+                "types": "./dist/terminals.d.mts",
+                "default": "./dist/terminals.mjs"
             }
         },
         "./primitives": {
             "import": {
                 "types": "./dist/primitives.d.mts",
                 "default": "./dist/primitives.mjs"
-            },
-            "require": {
-                "types": "./dist/primitives.d.cts",
-                "default": "./dist/primitives.cjs"
+            }
+        },
+        "./utils": {
+            "import": {
+                "types": "./dist/utils.d.mts",
+                "default": "./dist/utils.mjs"
             }
         }
     },
@@ -74,7 +64,7 @@
         "watch": "tsdown --watch",
         "test": "vitest run",
         "test:watch": "vitest",
-        "test:types": "attw --pack . --profile node16",
+        "test:types": "attw --pack .",
         "test:extract": "tsx bin/extract-examples.mjs && oxfmt ./test/examples.test.ts",
         "generate:index": "tsx bin/generate-index.mjs",
         "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md",
