@@ -49,10 +49,6 @@ export const optionalSeparatedBy = <T>(
             remaining = nextResult.remaining;
         }
 
-        if (results.length === 0) {
-            return success([], input);
-        }
-
         return success(results, remaining);
     });
 };
