@@ -1,6 +1,6 @@
 {
     "name": "unitas",
-    "version": "0.2.2",
+    "version": "0.2.3",
     "keywords": [
         "combinator",
         "functional",
@@ -80,8 +80,8 @@
         "@vitest/coverage-istanbul": "^4.0.16",
         "@vitest/coverage-v8": "^4",
         "jscodeshift": "^17",
-        "oxfmt": "^0.42",
-        "oxlint": "^1.57",
+        "oxfmt": "^0.44",
+        "oxlint": "^1.59",
         "tsdown": "^0.21",
         "tsx": "^4",
         "typescript": "^5",
