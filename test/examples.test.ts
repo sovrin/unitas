@@ -787,7 +787,7 @@ describe('examples from source', () => {
             });
         });
 
-        it('identifier: Parse a programming identifier.', () => {
+        it('identifier: Parse an identifier — starts with letter or underscore, no leading digit, no hyphen.', () => {
             const __result0 = identifier('variable_name');
             expect(__result0).toEqual({
                 ok: true,

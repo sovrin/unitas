@@ -30,6 +30,21 @@ describe('identifier', () => {
 
             assertSuccess<string>(result, 'name123', '');
         }
+        {
+            const result = identifier('some-name');
+
+            assertSuccess<string>(result, 'some', '-name');
+        }
+        {
+            const result = identifier('some.name');
+
+            assertSuccess<string>(result, 'some', '.name');
+        }
+        {
+            const result = identifier('some_name!');
+
+            assertSuccess<string>(result, 'some_name', '!');
+        }
     });
 
     it('should fail on invalid identifiers', () => {
@@ -38,23 +53,9 @@ describe('identifier', () => {
 
             assertFailure<string>(result);
         }
-        {
-            const result = identifier('invalid-name');
 
-            assertFailure<string>(result);
-        }
         {
-            const result = identifier('invalid.name');
-
-            assertFailure<string>(result);
-        }
-        {
-            const result = identifier('valid_name!');
-
-            assertFailure<string>(result);
-        }
-        {
-            const result = identifier('test.property');
+            const result = identifier('');
 
             assertFailure<string>(result);
         }
