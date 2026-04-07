@@ -34,6 +34,7 @@ export * from './not';
 export * from './nth';
 export * from './optional';
 export * from './optionalConsume';
+export * from './optionalSeparatedBy';
 export * from './outer';
 export * from './padded';
 export * from './parenthesized';

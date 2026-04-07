@@ -354,6 +354,23 @@ describe('examples from source', () => {
             });
         });
 
+        it('optionalSeparatedBy: - Trailing separator: stops parsing (no null at end)', () => {
+            const __result0 = optionalSeparatedBy(digits, char(','))('1,2');
+            expect(__result0).toEqual({
+                ok: true,
+                value: [1, 2],
+                remaining: '',
+            });
+            const __result1 = optionalSeparatedBy(digits, char(','))(',1');
+            expect(__result1).toEqual({
+                ok: true,
+                value: [null, 1],
+                remaining: '',
+            });
+            const __result2 = optionalSeparatedBy(digits, char(','))('1,');
+            expect(__result2).toEqual({ ok: true, value: [1], remaining: '' });
+        });
+
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
             const __result0 = outer(char('('), string('hi'), char(')'))('(hi)');
             expect(__result0).toEqual({

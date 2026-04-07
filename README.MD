@@ -212,6 +212,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`nth`](#nth)
     - [`optional`](#optional)
     - [`optionalConsume`](#optionalConsume)
+    - [`optionalSeparatedBy`](#optionalSeparatedBy)
     - [`outer`](#outer)
     - [`padded`](#padded)
     - [`parenthesized`](#parenthesized)
@@ -1051,6 +1052,16 @@ optional(string('hello'))('world'); // { ok: true, value: null, remaining: 'worl
 ```typescript
 optionalConsume(string('hello'))('hello world'); // { ok: true, value: undefined, remaining: ' world' }
 optionalConsume(string('hello'))('world'); // { ok: true, value: undefined, remaining: 'world' }
+```
+
+</details>
+<details id="optionalSeparatedBy">
+<summary><code>optionalSeparatedBy</code> — Zero or more items separated by a separator, with optional null values.</summary>
+
+```typescript
+optionalSeparatedBy(digits, char(','))('1,2'); // { ok: true, value: [1, 2], remaining: '' }
+optionalSeparatedBy(digits, char(','))(',1'); // { ok: true, value: [null, 1], remaining: '' }
+optionalSeparatedBy(digits, char(','))('1,'); // { ok: true, value: [1], remaining: '' }
 ```
 
 </details>
