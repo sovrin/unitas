@@ -163,6 +163,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`letter`](#letter)
     - [`letters`](#letters)
     - [`line`](#line)
+    - [`literal`](#literal)
     - [`lowercase`](#lowercase)
     - [`lowercases`](#lowercases)
     - [`nl`](#nl)
@@ -627,7 +628,7 @@ hexDigits('deadbeef'); // { ok: true, value: 'deadbeef', remaining: '' }
 
 </details>
 <details id="identifier">
-<summary><code>identifier</code> — Parse a programming identifier.</summary>
+<summary><code>identifier</code> — Parse an identifier — starts with letter or underscore, no leading digit, no hyphen.</summary>
 
 ```typescript
 identifier('variable_name'); // { ok: true, value: 'variable_name', remaining: '' }
@@ -655,6 +656,15 @@ letters('abc123'); // { ok: true, value: 'abc', remaining: '123' }
 
 ```typescript
 line('hello\nworld'); // { ok: true, value: 'hello', remaining: '\nworld' }
+```
+
+</details>
+<details id="literal">
+<summary><code>literal</code> — Parse a word-like value including hyphens.</summary>
+
+```typescript
+literal('foo-bar'); // { ok: true, value: 'foo-bar', remaining: '' }
+literal('123abc'); // { ok: true, value: '123abc', remaining: '' }
 ```
 
 </details>

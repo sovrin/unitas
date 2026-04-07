@@ -14,6 +14,7 @@ export * from './identifier';
 export * from './letter';
 export * from './letters';
 export * from './line';
+export * from './literal';
 export * from './lowercase';
 export * from './lowercases';
 export * from './nl';

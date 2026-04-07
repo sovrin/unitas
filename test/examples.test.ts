@@ -823,6 +823,21 @@ describe('examples from source', () => {
             });
         });
 
+        it('literal: Parse a word-like value including hyphens.', () => {
+            const __result0 = literal('foo-bar');
+            expect(__result0).toEqual({
+                ok: true,
+                value: 'foo-bar',
+                remaining: '',
+            });
+            const __result1 = literal('123abc');
+            expect(__result1).toEqual({
+                ok: true,
+                value: '123abc',
+                remaining: '',
+            });
+        });
+
         it('lowercase: Parse a single lowercase letter.', () => {
             const __result0 = lowercase('abc');
             expect(__result0).toEqual({
