@@ -30,6 +30,7 @@ export * from './manyAtMost';
 export * from './manyBetween';
 export * from './manyTill';
 export * from './map';
+export * from './node';
 export * from './not';
 export * from './nth';
 export * from './optional';

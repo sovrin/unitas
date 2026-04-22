@@ -307,6 +307,25 @@ describe('examples from source', () => {
             });
         });
 
+        it('node: Create a node from parser fields.', () => {
+            const __result0 = node('binop', {
+                left: digits,
+                op: char('+'),
+                right: digits,
+            })('1+2');
+            expect(__result0).toEqual({
+                ok: true,
+                value: { type: 'binop', left: 1, op: '+', right: 2 },
+                remaining: '',
+            });
+            const __result1 = node('number', { value: digits })('123');
+            expect(__result1).toEqual({
+                ok: true,
+                value: { type: 'number', value: 123 },
+                remaining: '',
+            });
+        });
+
         it('not: Succeed if parser fails (without consuming input).', () => {
             const __result0 = not(string('hello'))('world');
             expect(__result0).toEqual({
@@ -354,7 +373,7 @@ describe('examples from source', () => {
             });
         });
 
-        it('optionalSeparatedBy: - Trailing separator: stops parsing (no null at end)', () => {
+        it('optionalSeparatedBy: Zero or more items separated by a separator, with optional null values.', () => {
             const __result0 = optionalSeparatedBy(digits, char(','))('1,2');
             expect(__result0).toEqual({
                 ok: true,

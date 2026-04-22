@@ -209,6 +209,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`manyBetween`](#manyBetween)
     - [`manyTill`](#manyTill)
     - [`map`](#map)
+    - [`node`](#node)
     - [`not`](#not)
     - [`nth`](#nth)
     - [`optional`](#optional)
@@ -1028,6 +1029,15 @@ manyTill(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], r
 
 ```typescript
 map(string('hello'), (v) => v.toUpperCase())('hello'); // { ok: true, value: 'HELLO', remaining: '' }
+```
+
+</details>
+<details id="node">
+<summary><code>node</code> — Create a node from parser fields.</summary>
+
+```typescript
+node('binop', { left: digits, op: char('+'), right: digits })('1+2'); // { ok: true, value: { type: 'binop', left: 1, op: '+', right: 2 }, remaining: '' }
+node('number', { value: digits })('123'); // { ok: true, value: { type: 'number', value: 123 }, remaining: '' }
 ```
 
 </details>
