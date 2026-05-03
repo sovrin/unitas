@@ -24,6 +24,8 @@ export * from './octDigit';
 export * from './octDigits';
 export * from './position';
 export * from './rest';
+export * from './space';
+export * from './spaces';
 export * from './tab';
 export * from './uppercase';
 export * from './uppercases';

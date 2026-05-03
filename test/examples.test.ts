@@ -922,6 +922,20 @@ describe('examples from source', () => {
             });
         });
 
+        it('space: Parse a single space character.', () => {
+            const result0 = space(' abc');
+            expect(result0).toEqual({ ok: true, value: ' ', remaining: 'abc' });
+        });
+
+        it('spaces: Parse one or more space characters.', () => {
+            const result0 = spaces('   abc');
+            expect(result0).toEqual({
+                ok: true,
+                value: '   ',
+                remaining: 'abc',
+            });
+        });
+
         it('tab: Parse tab character.', () => {
             const result0 = tab('\ttext');
             expect(result0).toEqual({

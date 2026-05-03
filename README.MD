@@ -173,6 +173,8 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`octDigits`](#octDigits)
     - [`position`](#position)
     - [`rest`](#rest)
+    - [`space`](#space)
+    - [`spaces`](#spaces)
     - [`tab`](#tab)
     - [`uppercase`](#uppercase)
     - [`uppercases`](#uppercases)
@@ -749,6 +751,22 @@ position('abc'); // { ok: true, value: 3, remaining: 'abc' }
 
 ```typescript
 rest('hello'); // { ok: true, value: 'hello', remaining: '' }
+```
+
+</details>
+<details id="space">
+<summary><code>space</code> — Parse a single space character.</summary>
+
+```typescript
+space(' abc'); // { ok: true, value: ' ', remaining: 'abc' }
+```
+
+</details>
+<details id="spaces">
+<summary><code>spaces</code> — Parse one or more space characters.</summary>
+
+```typescript
+spaces('   abc'); // { ok: true, value: '   ', remaining: 'abc' }
 ```
 
 </details>
