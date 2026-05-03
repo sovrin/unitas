@@ -2,6 +2,7 @@ import { describe, it, expect } from 'vitest';
 
 import { grammar, run } from '../src';
 import {
+    bracketed,
     choice,
     inner,
     map,
@@ -9,6 +10,7 @@ import {
     quoted,
     separatedBy,
     sequence,
+    value,
 } from '../src/combinators';
 import { bool, letters, nl } from '../src/primitives';
 import { char, string, regex } from '../src/terminals';
@@ -46,7 +48,7 @@ describe('quick start', () => {
             string: () => quoted(letters),
             number: () => digits,
             bool: () => bool,
-            null: () => map(string('null'), () => null),
+            null: () => value(string('null'), null),
         });
 
         it('parse correctly', () => {
@@ -97,8 +99,8 @@ describe('quick start', () => {
         const ini = grammar({
             section: (p) =>
                 map(
-                    sequence(char('['), p.name, char(']'), nl, p.entry),
-                    pick(1, 4),
+                    sequence(bracketed(p.name), nl, p.entry),
+                    pick(0, 2),
                     ([name, entry]) => ({ name, entry }),
                 ),
             name: () => letters,

@@ -50,7 +50,7 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 
 ```typescript
 import { grammar, run } from 'unitas';
-import { choice, map, quoted } from 'unitas/combinators';
+import { choice, map, quoted, value } from 'unitas/combinators';
 import { string } from 'unitas/terminals';
 import { bool, digits, letters } from 'unitas/primitives';
 
@@ -59,7 +59,7 @@ const json = grammar({
     string: () => quoted(letters),
     number: () => digits,
     bool: () => bool,
-    null: () => map(string('null'), () => null),
+    null: () => value(string('null'), null),
 });
 
 run(json.value, '"hello"'); // 'hello'
@@ -100,7 +100,7 @@ run(query.params, 'foo=bar&baz=qux'); // { foo: 'bar', baz: 'qux' }
 
 ```typescript
 import { grammar, run } from 'unitas';
-import { map, outer, sequence } from 'unitas/combinators';
+import { map, outer, sequence, bracketed } from 'unitas/combinators';
 import { char, regex } from 'unitas/terminals';
 import { letters, nl } from 'unitas/primitives';
 import { pick } from 'unitas/utils';
@@ -108,8 +108,8 @@ import { pick } from 'unitas/utils';
 const ini = grammar({
     section: (p) =>
         map(
-            sequence(char('['), p.name, char(']'), nl, p.entry),
-            pick(1, 4),
+            sequence(bracketed(p.name), nl, p.entry),
+            pick(0, 2),
             ([name, entry]) => ({ name, entry }),
         ),
     name: () => letters,
