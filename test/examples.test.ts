@@ -445,6 +445,13 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: -5, remaining: '' });
         });
 
+        it('pure: Always return a value without consuming input.', () => {
+            const result0 = pure(42)('abc');
+            expect(result0).toEqual({ ok: true, value: 42, remaining: 'abc' });
+            const result1 = pure('ok')('');
+            expect(result1).toEqual({ ok: true, value: 'ok', remaining: '' });
+        });
+
         it('quoted: Parse content surrounded by single or double quotes.', () => {
             const result0 = quoted(string('hello'))('"hello"');
             expect(result0).toEqual({

@@ -225,6 +225,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`peek`](#peek)
     - [`postfix`](#postfix)
     - [`prefix`](#prefix)
+    - [`pure`](#pure)
     - [`quoted`](#quoted)
     - [`recover`](#recover)
     - [`right`](#right)
@@ -1180,6 +1181,15 @@ prefix(
     map(char('-'), () => (x) => -x),
     digit,
 )('-5'); // { ok: true, value: -5, remaining: '' }
+```
+
+</details>
+<details id="pure">
+<summary><code>pure</code> — Always return a value without consuming input.</summary>
+
+```typescript
+pure(42)('abc'); // { ok: true, value: 42, remaining: 'abc' }
+pure('ok')(''); // { ok: true, value: 'ok', remaining: '' }
 ```
 
 </details>

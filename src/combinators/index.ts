@@ -44,6 +44,7 @@ export * from './parenthesized';
 export * from './peek';
 export * from './postfix';
 export * from './prefix';
+export * from './pure';
 export * from './quoted';
 export * from './recover';
 export * from './right';
