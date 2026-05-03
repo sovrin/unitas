@@ -19,6 +19,7 @@ export * from './literal';
 export * from './lowercase';
 export * from './lowercases';
 export * from './nl';
+export * from './number';
 export * from './octDigit';
 export * from './octDigits';
 export * from './position';

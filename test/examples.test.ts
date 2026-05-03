@@ -876,6 +876,17 @@ describe('examples from source', () => {
             });
         });
 
+        it('number: Parse an integer or float.', () => {
+            const result0 = number('42');
+            expect(result0).toEqual({ ok: true, value: 42, remaining: '' });
+            const result1 = number('3.14');
+            expect(result1).toEqual({ ok: true, value: 3.14, remaining: '' });
+            const result2 = number('-7');
+            expect(result2).toEqual({ ok: true, value: -7, remaining: '' });
+            const result3 = number('-2.5');
+            expect(result3).toEqual({ ok: true, value: -2.5, remaining: '' });
+        });
+
         it('octDigit: Parse a single octal digit.', () => {
             const result0 = octDigit('7abc');
             expect(result0).toEqual({ ok: true, value: '7', remaining: 'abc' });

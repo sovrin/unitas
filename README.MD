@@ -168,6 +168,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`lowercase`](#lowercase)
     - [`lowercases`](#lowercases)
     - [`nl`](#nl)
+    - [`number`](#number)
     - [`octDigit`](#octDigit)
     - [`octDigits`](#octDigits)
     - [`position`](#position)
@@ -704,6 +705,17 @@ lowercases('abcDEF'); // { ok: true, value: 'abc', remaining: 'DEF' }
 
 ```typescript
 nl('\ntext'); // { ok: true, value: '\n', remaining: 'text' }
+```
+
+</details>
+<details id="number">
+<summary><code>number</code> — Parse an integer or float.</summary>
+
+```typescript
+number('42'); // { ok: true, value: 42, remaining: '' }
+number('3.14'); // { ok: true, value: 3.14, remaining: '' }
+number('-7'); // { ok: true, value: -7, remaining: '' }
+number('-2.5'); // { ok: true, value: -2.5, remaining: '' }
 ```
 
 </details>
