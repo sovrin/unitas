@@ -599,6 +599,13 @@ describe('examples from source', () => {
             expect(result1).toEqual({ ok: false });
         });
 
+        it('value: Replace parsed value with a constant.', () => {
+            const result0 = value(string('true'), true)('true');
+            expect(result0).toEqual({ ok: true, value: true, remaining: '' });
+            const result1 = value(string('null'), null)('null');
+            expect(result1).toEqual({ ok: true, value: null, remaining: '' });
+        });
+
         it('when: Branch on a boolean parser result.', () => {
             const result0 = when(
                 flag(char('*')),

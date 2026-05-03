@@ -244,6 +244,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`unless`](#unless)
     - [`until`](#until)
     - [`validate`](#validate)
+    - [`value`](#value)
     - [`when`](#when)
 - [Utils](#utils)
     - [`filter`](#filter)
@@ -1340,6 +1341,15 @@ until(char('a'), char('b'))('aaba'); // { ok: true, value: ['a', 'a'], remaining
 ```typescript
 validate(digit, (n) => n > 5)('7'); // { ok: true, value: 7, remaining: '' }
 validate(digit, (n) => n > 5)('3'); // { ok: false }
+```
+
+</details>
+<details id="value">
+<summary><code>value</code> — Replace parsed value with a constant.</summary>
+
+```typescript
+value(string('true'), true)('true'); // { ok: true, value: true, remaining: '' }
+value(string('null'), null)('null'); // { ok: true, value: null, remaining: '' }
 ```
 
 </details>
