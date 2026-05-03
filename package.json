@@ -70,7 +70,7 @@
         "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md",
         "coverage": "vitest run --coverage",
         "format": "oxfmt",
-        "lint": "oxlint",
+        "lint": "oxlint && node bin/check-test-imports.mjs",
         "lint:fix": "oxlint --fix",
         "fix:imports": "npx jscodeshift -t bin/split-imports.mjs src --extensions=ts --parser=tsx"
     },

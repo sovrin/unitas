@@ -1,42 +1,56 @@
 import { describe, it } from 'vitest';
 
-import { assertFailure, assertSuccess } from '../../test/utils';
-import { char } from '../terminals/char';
-import { string } from '../terminals/string';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils';
 import { fuse } from './fuse';
 
 describe('fuse', () => {
-    it('should fuse char parsers into string', () => {
-        const abc = fuse(char('a'), char('b'), char('c'));
-        const result = abc('abc');
+    it('should fuse single-char parsers into string', () => {
+        const parser = fuse(
+            createTestParser('a'),
+            createTestParser('b'),
+            createTestParser('c'),
+        );
+        const result = parser('abc');
 
         assertSuccess<string>(result, 'abc', '');
     });
 
     it('should fail on non-matching input', () => {
-        const abc = fuse(char('a'), char('b'), char('c'));
-        const result = abc('abd');
+        const parser = fuse(
+            createTestParser('a'),
+            createTestParser('b'),
+            createTestParser('c'),
+        );
+        const result = parser('axc');
 
         assertFailure(result);
     });
 
-    it('should fuse string parsers into string', () => {
-        const hello = fuse(string('hello'), char(' '), string('world'));
-        const result = hello('hello world');
+    it('should fuse multi-char parsers into string', () => {
+        const parser = fuse(
+            createTestParser('hello'),
+            createTestParser(' '),
+            createTestParser('world'),
+        );
+        const result = parser('hello world');
 
         assertSuccess<string>(result, 'hello world', '');
     });
 
-    it('should fuse two chars into string', () => {
-        const ab = fuse(char('a'), char('b'));
-        const result = ab('ab');
+    it('should fuse two parsers into string', () => {
+        const parser = fuse(createTestParser('a'), createTestParser('b'));
+        const result = parser('ab');
 
         assertSuccess<string>(result, 'ab', '');
     });
 
     it('should work with single parser', () => {
-        const a = fuse(char('a'));
-        const result = a('a');
+        const parser = fuse(createTestParser('a'));
+        const result = parser('a');
 
         assertSuccess<string>(result, 'a', '');
     });

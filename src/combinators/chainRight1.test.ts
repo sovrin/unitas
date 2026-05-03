@@ -2,7 +2,6 @@ import { describe, it } from 'vitest';
 
 import { operation, digits } from '../../test/helpers';
 import { assertFailure, assertSuccess } from '../../test/utils';
-import { chainLeft1 } from './chainLeft1';
 import { chainRight1 } from './chainRight1';
 
 describe('chainRight1', () => {
@@ -20,19 +19,11 @@ describe('chainRight1', () => {
         assertSuccess<number>(result, 512, ''); // 2**(3**2) = 2**9 = 512
     });
 
-    it('should demonstrate right associativity vs left', () => {
-        {
-            const rightParser = chainRight1(digits, operation);
-            const result = rightParser('10-3-2');
+    it('should be right-associative', () => {
+        const parser = chainRight1(digits, operation);
+        const result = parser('10-3-2');
 
-            assertSuccess<number>(result, 9, ''); // 10-(3-2) = 9
-        }
-        {
-            const leftParser = chainLeft1(digits, operation);
-            const result = leftParser('10-3-2');
-
-            assertSuccess<number>(result, 5, ''); // (10-3)-2 = 5
-        }
+        assertSuccess<number>(result, 9, ''); // 10-(3-2) = 9
     });
 
     it('should stop when operator is not found', () => {

@@ -1,29 +1,36 @@
 import { describe, it } from 'vitest';
 
-import { assertFailure, assertSuccess } from '../../test/utils';
-import { string } from '../terminals/string';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils';
 import { bracketed } from './bracketed';
 
 describe('bracketed', () => {
     it('should parse bracketed content', () => {
-        const parser1 = string('ABC');
-        const parser = bracketed(parser1);
+        const parser = bracketed(createTestParser('ABC'));
         const result = parser('[ABC]');
 
         assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should fail with uneven brackets', () => {
-        const parser1 = string('ABC');
-        const parser = bracketed(parser1);
+        const parser = bracketed(createTestParser('ABC'));
         const result = parser('[ABC');
 
         assertFailure<'ABC'>(result);
     });
 
-    it('should handle empty brackets', () => {
-        const parser1 = string('');
-        const parser = bracketed(parser1);
+    it('should leave remaining input', () => {
+        const parser = bracketed(createTestParser('ABC'));
+        const result = parser('[ABC]rest');
+
+        assertSuccess<'ABC'>(result, 'ABC', 'rest');
+    });
+
+    it('should handle empty brackets input', () => {
+        const parser = bracketed(createTestParser(''));
         const result = parser('[]');
 
         assertSuccess<''>(result, '', '');

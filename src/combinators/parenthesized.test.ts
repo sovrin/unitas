@@ -1,29 +1,29 @@
 import { describe, it } from 'vitest';
 
-import { assertFailure, assertSuccess } from '../../test/utils';
-import { string } from '../terminals/string';
+import {
+    assertFailure,
+    assertSuccess,
+    createTestParser,
+} from '../../test/utils';
 import { parenthesized } from './parenthesized';
 
 describe('parenthesized', () => {
     it('should parse parenthesized content', () => {
-        const parser1 = string('ABC');
-        const parser = parenthesized(parser1);
+        const parser = parenthesized(createTestParser('ABC'));
         const result = parser('(ABC)');
 
         assertSuccess<'ABC'>(result, 'ABC', '');
     });
 
     it('should fail with uneven parentheses', () => {
-        const parser1 = string('ABC');
-        const parser = parenthesized(parser1);
+        const parser = parenthesized(createTestParser('ABC'));
         const result = parser('(ABC');
 
         assertFailure<'ABC'>(result);
     });
 
-    it('should handle empty parentheses', () => {
-        const parser1 = string('');
-        const parser = parenthesized(parser1);
+    it('should handle empty parenthesis input', () => {
+        const parser = parenthesized(createTestParser(''));
         const result = parser('()');
 
         assertSuccess<''>(result, '', '');
