@@ -7,6 +7,7 @@ export * from './chainLeft1';
 export * from './chainRight';
 export * from './chainRight1';
 export * from './choice';
+export * from './concat';
 export * from './consume';
 export * from './endBy';
 export * from './endBy1';

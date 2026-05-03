@@ -187,6 +187,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`chainRight`](#chainRight)
     - [`chainRight1`](#chainRight1)
     - [`choice`](#choice)
+    - [`concat`](#concat)
     - [`consume`](#consume)
     - [`endBy`](#endBy)
     - [`endBy1`](#endBy1)
@@ -855,6 +856,15 @@ chainRight1(digits, operation)('4/2/2'); // { ok: true, value: 4, remaining: '' 
 
 ```typescript
 choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello', remaining: '' }
+```
+
+</details>
+<details id="concat">
+<summary><code>concat</code> — Join string array parser result into a single string.</summary>
+
+```typescript
+concat(many(letter))('abc123'); // { ok: true, value: 'abc', remaining: '123' }
+concat(many(letter), '-')('abc123'); // { ok: true, value: 'a-b-c', remaining: '123' }
 ```
 
 </details>

@@ -81,6 +81,21 @@ describe('examples from source', () => {
             });
         });
 
+        it('concat: Join string array parser result into a single string.', () => {
+            const result0 = concat(many(letter))('abc123');
+            expect(result0).toEqual({
+                ok: true,
+                value: 'abc',
+                remaining: '123',
+            });
+            const result1 = concat(many(letter), '-')('abc123');
+            expect(result1).toEqual({
+                ok: true,
+                value: 'a-b-c',
+                remaining: '123',
+            });
+        });
+
         it('consume: Consume input but discard the result (return null).', () => {
             const result0 = consume(string('hello'))('hello world');
             expect(result0).toEqual({
