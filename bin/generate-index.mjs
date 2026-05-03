@@ -4,10 +4,10 @@ import { readdirSync, writeFileSync } from 'fs';
 import { join, dirname } from 'path';
 import { fileURLToPath } from 'url';
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const filename = fileURLToPath(import.meta.url);
+const directoryName = dirname(filename);
 
-const srcDir = join(__dirname, '..', 'src');
+const srcDir = join(directoryName, '..', 'src');
 
 const dirs = ['combinators', 'terminals', 'core', 'utils', 'primitives'];
 

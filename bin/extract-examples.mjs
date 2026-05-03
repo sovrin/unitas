@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path, { basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, '..');
+const directoryName = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(directoryName, '..');
 const srcDir = path.join(rootDir, 'src');
 const testFilePath = path.join(rootDir, 'test', 'examples.test.ts');
 
@@ -112,7 +112,7 @@ function generateTestFile(examples) {
 
         const assertionLines = codeWithComments
             .map(({ code, expected, prelude }, j) => {
-                const varName = `__result${j}`;
+                const varName = `result${j}`;
                 const preludeLines = prelude
                     ? prelude
                           .split('\n')

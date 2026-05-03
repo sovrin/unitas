@@ -2,8 +2,8 @@ import fs from 'node:fs';
 import path, { basename } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const rootDir = path.resolve(__dirname, '..');
+const directoryName = path.dirname(fileURLToPath(import.meta.url));
+const rootDir = path.resolve(directoryName, '..');
 const srcDir = path.join(rootDir, 'src');
 const templatePath = path.join(rootDir, 'doc', 'README.template.md');
 const readmePath = path.join(rootDir, 'README.md');

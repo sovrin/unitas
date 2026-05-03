@@ -21,8 +21,8 @@ Object.assign(
 describe('examples from source', () => {
     describe('combinators', () => {
         it('attempt: Attempt wraps a parser to handle backtracking on failure.', () => {
-            const __result0 = attempt(string('hello'))('hello world');
-            expect(__result0).toEqual({
+            const result0 = attempt(string('hello'))('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: ' world',
@@ -30,55 +30,51 @@ describe('examples from source', () => {
         });
 
         it('bind: Chain parsers where the second parser depends on the first result.', () => {
-            const __result0 = bind(digits, (n) => take(n))('3abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: '',
-            });
+            const result0 = bind(digits, (n) => take(n))('3abc');
+            expect(result0).toEqual({ ok: true, value: 'abc', remaining: '' });
         });
 
         it('braced: Parse content surrounded by braces.', () => {
-            const __result0 = braced(string('hi'))('{hi}');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result0 = braced(string('hi'))('{hi}');
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('bracketed: Parse content surrounded by brackets.', () => {
-            const __result0 = bracketed(string('hi'))('[hi]');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result0 = bracketed(string('hi'))('[hi]');
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('chainLeft: Chain left-associative operations (right-to-left for same precedence).', () => {
-            const __result0 = chainLeft(digits, operation)('1+2+3');
-            expect(__result0).toEqual({ ok: true, value: 6, remaining: '' });
-            const __result1 = chainLeft(digits, operation)('10-3+2');
-            expect(__result1).toEqual({ ok: true, value: 9, remaining: '' });
+            const result0 = chainLeft(digits, operation)('1+2+3');
+            expect(result0).toEqual({ ok: true, value: 6, remaining: '' });
+            const result1 = chainLeft(digits, operation)('10-3+2');
+            expect(result1).toEqual({ ok: true, value: 9, remaining: '' });
         });
 
         it('chainLeft1: Chain left-associative operations (fails on empty input).', () => {
-            const __result0 = chainLeft1(digits, operation)('1+2+3');
-            expect(__result0).toEqual({ ok: true, value: 6, remaining: '' });
-            const __result1 = chainLeft1(digits, operation)('8/2*3');
-            expect(__result1).toEqual({ ok: true, value: 12, remaining: '' });
+            const result0 = chainLeft1(digits, operation)('1+2+3');
+            expect(result0).toEqual({ ok: true, value: 6, remaining: '' });
+            const result1 = chainLeft1(digits, operation)('8/2*3');
+            expect(result1).toEqual({ ok: true, value: 12, remaining: '' });
         });
 
         it('chainRight: Chain right-associative operations (right-to-left grouping).', () => {
-            const __result0 = chainRight(digits, operation)('2-1-1');
-            expect(__result0).toEqual({ ok: true, value: 2, remaining: '' });
-            const __result1 = chainRight(digits, operation)('4/2/2');
-            expect(__result1).toEqual({ ok: true, value: 4, remaining: '' });
+            const result0 = chainRight(digits, operation)('2-1-1');
+            expect(result0).toEqual({ ok: true, value: 2, remaining: '' });
+            const result1 = chainRight(digits, operation)('4/2/2');
+            expect(result1).toEqual({ ok: true, value: 4, remaining: '' });
         });
 
         it('chainRight1: Chain right-associative operations (fails on empty input).', () => {
-            const __result0 = chainRight1(digits, operation)('2-1-1');
-            expect(__result0).toEqual({ ok: true, value: 2, remaining: '' });
-            const __result1 = chainRight1(digits, operation)('4/2/2');
-            expect(__result1).toEqual({ ok: true, value: 4, remaining: '' });
+            const result0 = chainRight1(digits, operation)('2-1-1');
+            expect(result0).toEqual({ ok: true, value: 2, remaining: '' });
+            const result1 = chainRight1(digits, operation)('4/2/2');
+            expect(result1).toEqual({ ok: true, value: 4, remaining: '' });
         });
 
         it('choice: Try each parser in order, return first success.', () => {
-            const __result0 = choice(string('hello'), string('world'))('hello');
-            expect(__result0).toEqual({
+            const result0 = choice(string('hello'), string('world'))('hello');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
@@ -86,8 +82,8 @@ describe('examples from source', () => {
         });
 
         it('consume: Consume input but discard the result (return null).', () => {
-            const __result0 = consume(string('hello'))('hello world');
-            expect(__result0).toEqual({
+            const result0 = consume(string('hello'))('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: null,
                 remaining: ' world',
@@ -95,11 +91,8 @@ describe('examples from source', () => {
         });
 
         it('endBy: Zero or more items separated and ending with terminator.', () => {
-            const __result0 = endBy(
-                string('item'),
-                char(';'),
-            )('item;item;item;');
-            expect(__result0).toEqual({
+            const result0 = endBy(string('item'), char(';'))('item;item;item;');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['item', 'item', 'item'],
                 remaining: '',
@@ -107,11 +100,11 @@ describe('examples from source', () => {
         });
 
         it('endBy1: One or more items separated and ending with terminator.', () => {
-            const __result0 = endBy1(
+            const result0 = endBy1(
                 string('item'),
                 char(';'),
             )('item;item;item;');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: ['item', 'item', 'item'],
                 remaining: '',
@@ -119,8 +112,8 @@ describe('examples from source', () => {
         });
 
         it('exactly: Parse exactly n occurrences.', () => {
-            const __result0 = exactly(char('a'), 3)('aaa');
-            expect(__result0).toEqual({
+            const result0 = exactly(char('a'), 3)('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -128,17 +121,13 @@ describe('examples from source', () => {
         });
 
         it('first: Extract the first element from a parser result array.', () => {
-            const __result0 = first(sequence(char('a'), digit))('a1bc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = first(sequence(char('a'), digit))('a1bc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('fold: Parse zero or more and fold into a single value.', () => {
-            const __result0 = fold(digit, [], (acc, d) => [...acc, d])('123');
-            expect(__result0).toEqual({
+            const result0 = fold(digit, [], (acc, d) => [...acc, d])('123');
+            expect(result0).toEqual({
                 ok: true,
                 value: [1, 2, 3],
                 remaining: '',
@@ -146,15 +135,15 @@ describe('examples from source', () => {
         });
 
         it('fold1: Parse one or more and fold into a single value.', () => {
-            const __result0 = fold1(digit, 0, (acc, d) => acc + d)('123');
-            expect(__result0).toEqual({ ok: true, value: 6, remaining: '' });
+            const result0 = fold1(digit, 0, (acc, d) => acc + d)('123');
+            expect(result0).toEqual({ ok: true, value: 6, remaining: '' });
         });
 
         it('foldRight: Parse zero or more and fold right-to-left.', () => {
-            const __result0 = foldRight(digit, [], (acc, d) => [...acc, d])(
+            const result0 = foldRight(digit, [], (acc, d) => [...acc, d])(
                 '123',
             );
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: [3, 2, 1],
                 remaining: '',
@@ -162,10 +151,10 @@ describe('examples from source', () => {
         });
 
         it('foldRight1: Parse one or more and fold right-to-left.', () => {
-            const __result0 = foldRight1(digit, [], (acc, d) => [...acc, d])(
+            const result0 = foldRight1(digit, [], (acc, d) => [...acc, d])(
                 '123',
             );
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: [3, 2, 1],
                 remaining: '',
@@ -173,18 +162,14 @@ describe('examples from source', () => {
         });
 
         it('fuse: The fused parser concatenates all string results.', () => {
-            const __result0 = fuse(char('a'), char('b'), char('c'))('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: '',
-            });
-            const __result1 = fuse(
+            const result0 = fuse(char('a'), char('b'), char('c'))('abc');
+            expect(result0).toEqual({ ok: true, value: 'abc', remaining: '' });
+            const result1 = fuse(
                 string('hello'),
                 char(' '),
                 string('world'),
             )('hello world');
-            expect(__result1).toEqual({
+            expect(result1).toEqual({
                 ok: true,
                 value: 'hello world',
                 remaining: '',
@@ -192,24 +177,24 @@ describe('examples from source', () => {
         });
 
         it('guard: Conditionally apply parser based on a condition.', () => {
-            const __result0 = guard(true, string('hello'))('hello');
-            expect(__result0).toEqual({
+            const result0 = guard(true, string('hello'))('hello');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = guard(false, string('hello'))('hello');
-            expect(__result1).toEqual({ ok: false });
+            const result1 = guard(false, string('hello'))('hello');
+            expect(result1).toEqual({ ok: false });
         });
 
         it('inner: Extract inner value from surrounded content (like inner of braced).', () => {
-            const __result0 = inner(char('('), string('hi'), char(')'))('(hi)');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result0 = inner(char('('), string('hi'), char(')'))('(hi)');
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('interleaved: Parse items with interleaved separators.', () => {
-            const __result0 = interleaved(char('a'), char(','))('a,a,a');
-            expect(__result0).toEqual({
+            const result0 = interleaved(char('a'), char(','))('a,a,a');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', ',', 'a', ',', 'a'],
                 remaining: '',
@@ -217,16 +202,16 @@ describe('examples from source', () => {
         });
 
         it('last: Extract the last element from a parser result array.', () => {
-            const __result0 = last(sequence(char('a'), char('b')))('ab');
-            expect(__result0).toEqual({ ok: true, value: 'b', remaining: '' });
+            const result0 = last(sequence(char('a'), char('b')))('ab');
+            expect(result0).toEqual({ ok: true, value: 'b', remaining: '' });
         });
 
         it('left: Keep only the left result from a sequence.', () => {
-            const __result0 = left(
+            const result0 = left(
                 string('hello'),
                 string('world'),
             )('helloworld');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
@@ -234,8 +219,8 @@ describe('examples from source', () => {
         });
 
         it('lexeme: Parser that consumes trailing whitespace.', () => {
-            const __result0 = lexeme(string('hello'))('hello   world');
-            expect(__result0).toEqual({
+            const result0 = lexeme(string('hello'))('hello   world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: 'world',
@@ -243,8 +228,8 @@ describe('examples from source', () => {
         });
 
         it('many: Zero or more occurrences (never fails).', () => {
-            const __result0 = many(char('a'))('aaa');
-            expect(__result0).toEqual({
+            const result0 = many(char('a'))('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -252,8 +237,8 @@ describe('examples from source', () => {
         });
 
         it('many1: One or more occurrences (fails if no matches).', () => {
-            const __result0 = many1(char('a'))('aaa');
-            expect(__result0).toEqual({
+            const result0 = many1(char('a'))('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -261,8 +246,8 @@ describe('examples from source', () => {
         });
 
         it('manyAtLeast: Parse at least n occurrences.', () => {
-            const __result0 = manyAtLeast(char('a'), 2)('aaa');
-            expect(__result0).toEqual({
+            const result0 = manyAtLeast(char('a'), 2)('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -270,8 +255,8 @@ describe('examples from source', () => {
         });
 
         it('manyAtMost: Parse at most n occurrences.', () => {
-            const __result0 = manyAtMost(char('a'), 2)('aaa');
-            expect(__result0).toEqual({
+            const result0 = manyAtMost(char('a'), 2)('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a'],
                 remaining: 'a',
@@ -279,8 +264,8 @@ describe('examples from source', () => {
         });
 
         it('manyBetween: Parse between min and max occurrences.', () => {
-            const __result0 = manyBetween(char('a'), 2, 3)('aaa');
-            expect(__result0).toEqual({
+            const result0 = manyBetween(char('a'), 2, 3)('aaa');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -288,8 +273,8 @@ describe('examples from source', () => {
         });
 
         it('manyTill: Parse zero or more until terminator matches.', () => {
-            const __result0 = manyTill(char('a'), char('b'))('aaab');
-            expect(__result0).toEqual({
+            const result0 = manyTill(char('a'), char('b'))('aaab');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -297,10 +282,10 @@ describe('examples from source', () => {
         });
 
         it('map: Transform the parsed value.', () => {
-            const __result0 = map(string('hello'), (v) => v.toUpperCase())(
+            const result0 = map(string('hello'), (v) => v.toUpperCase())(
                 'hello',
             );
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: 'HELLO',
                 remaining: '',
@@ -308,18 +293,18 @@ describe('examples from source', () => {
         });
 
         it('node: Create a node from parser fields.', () => {
-            const __result0 = node('binop', {
+            const result0 = node('binop', {
                 left: digits,
                 op: char('+'),
                 right: digits,
             })('1+2');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: { type: 'binop', left: 1, op: '+', right: 2 },
                 remaining: '',
             });
-            const __result1 = node('number', { value: digits })('123');
-            expect(__result1).toEqual({
+            const result1 = node('number', { value: digits })('123');
+            expect(result1).toEqual({
                 ok: true,
                 value: { type: 'number', value: 123 },
                 remaining: '',
@@ -327,8 +312,8 @@ describe('examples from source', () => {
         });
 
         it('not: Succeed if parser fails (without consuming input).', () => {
-            const __result0 = not(string('hello'))('world');
-            expect(__result0).toEqual({
+            const result0 = not(string('hello'))('world');
+            expect(result0).toEqual({
                 ok: true,
                 value: null,
                 remaining: 'world',
@@ -336,22 +321,22 @@ describe('examples from source', () => {
         });
 
         it('nth: Extract the nth element from a parser result array.', () => {
-            const __result0 = nth(
+            const result0 = nth(
                 sequence(char('a'), char('b'), char('c')),
                 1,
             )('abc');
-            expect(__result0).toEqual({ ok: true, value: 'b', remaining: '' });
+            expect(result0).toEqual({ ok: true, value: 'b', remaining: '' });
         });
 
         it('optional: Make parser optional (return null on failure, without consuming input).', () => {
-            const __result0 = optional(string('hello'))('hello');
-            expect(__result0).toEqual({
+            const result0 = optional(string('hello'))('hello');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = optional(string('hello'))('world');
-            expect(__result1).toEqual({
+            const result1 = optional(string('hello'))('world');
+            expect(result1).toEqual({
                 ok: true,
                 value: null,
                 remaining: 'world',
@@ -359,14 +344,14 @@ describe('examples from source', () => {
         });
 
         it('optionalConsume: Optionally consume input (always succeeds, returns void).', () => {
-            const __result0 = optionalConsume(string('hello'))('hello world');
-            expect(__result0).toEqual({
+            const result0 = optionalConsume(string('hello'))('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: undefined,
                 remaining: ' world',
             });
-            const __result1 = optionalConsume(string('hello'))('world');
-            expect(__result1).toEqual({
+            const result1 = optionalConsume(string('hello'))('world');
+            expect(result1).toEqual({
                 ok: true,
                 value: undefined,
                 remaining: 'world',
@@ -374,25 +359,21 @@ describe('examples from source', () => {
         });
 
         it('optionalSeparatedBy: Zero or more items separated by a separator, with optional null values.', () => {
-            const __result0 = optionalSeparatedBy(digits, char(','))('1,2');
-            expect(__result0).toEqual({
-                ok: true,
-                value: [1, 2],
-                remaining: '',
-            });
-            const __result1 = optionalSeparatedBy(digits, char(','))(',1');
-            expect(__result1).toEqual({
+            const result0 = optionalSeparatedBy(digits, char(','))('1,2');
+            expect(result0).toEqual({ ok: true, value: [1, 2], remaining: '' });
+            const result1 = optionalSeparatedBy(digits, char(','))(',1');
+            expect(result1).toEqual({
                 ok: true,
                 value: [null, 1],
                 remaining: '',
             });
-            const __result2 = optionalSeparatedBy(digits, char(','))('1,');
-            expect(__result2).toEqual({ ok: true, value: [1], remaining: '' });
+            const result2 = optionalSeparatedBy(digits, char(','))('1,');
+            expect(result2).toEqual({ ok: true, value: [1], remaining: '' });
         });
 
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
-            const __result0 = outer(char('('), string('hi'), char(')'))('(hi)');
-            expect(__result0).toEqual({
+            const result0 = outer(char('('), string('hi'), char(')'))('(hi)');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['(', ')'],
                 remaining: '',
@@ -400,18 +381,18 @@ describe('examples from source', () => {
         });
 
         it('padded: Parse content with optional whitespace on both sides.', () => {
-            const __result0 = padded(string('hi'))('   hi   ');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result0 = padded(string('hi'))('   hi   ');
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('parenthesized: Parse content surrounded by parentheses.', () => {
-            const __result0 = parenthesized(string('hi'))('(hi)');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result0 = parenthesized(string('hi'))('(hi)');
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
         });
 
         it('peek: Parse without consuming input.', () => {
-            const __result0 = peek(string('hello'))('hello world');
-            expect(__result0).toEqual({
+            const result0 = peek(string('hello'))('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: 'hello world',
@@ -419,24 +400,24 @@ describe('examples from source', () => {
         });
 
         it('postfix: Parse postfix operators (chains atom with operators that return functions).', () => {
-            const __result0 = postfix(
+            const result0 = postfix(
                 char('a'),
                 map(char('!'), () => (x) => x),
             )('a!');
-            expect(__result0).toEqual({ ok: true, value: 'a', remaining: '' });
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: '' });
         });
 
         it('prefix: Parse prefix operators (like - in -5).', () => {
-            const __result0 = prefix(
+            const result0 = prefix(
                 map(char('-'), () => (x) => -x),
                 digit,
             )('-5');
-            expect(__result0).toEqual({ ok: true, value: -5, remaining: '' });
+            expect(result0).toEqual({ ok: true, value: -5, remaining: '' });
         });
 
         it('quoted: Parse content surrounded by single or double quotes.', () => {
-            const __result0 = quoted(string('hello'))('"hello"');
-            expect(__result0).toEqual({
+            const result0 = quoted(string('hello'))('"hello"');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
@@ -444,8 +425,8 @@ describe('examples from source', () => {
         });
 
         it('recover: Use fallback value when parser fails.', () => {
-            const __result0 = recover(string('hello'), 'default')('world');
-            expect(__result0).toEqual({
+            const result0 = recover(string('hello'), 'default')('world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'default',
                 remaining: 'world',
@@ -453,11 +434,11 @@ describe('examples from source', () => {
         });
 
         it('right: Keep only the right result from a sequence.', () => {
-            const __result0 = right(
+            const result0 = right(
                 string('hello'),
                 string('world'),
             )('helloworld');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: 'world',
                 remaining: '',
@@ -465,8 +446,8 @@ describe('examples from source', () => {
         });
 
         it('separatedBy: Zero or more items separated by a separator.', () => {
-            const __result0 = separatedBy(char('a'), char(','))('a,a,a');
-            expect(__result0).toEqual({
+            const result0 = separatedBy(char('a'), char(','))('a,a,a');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -474,8 +455,8 @@ describe('examples from source', () => {
         });
 
         it('separatedBy1: One or more items separated by a separator.', () => {
-            const __result0 = separatedBy1(char('a'), char(','))('a,a,a');
-            expect(__result0).toEqual({
+            const result0 = separatedBy1(char('a'), char(','))('a,a,a');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -483,8 +464,8 @@ describe('examples from source', () => {
         });
 
         it('separatedEndBy: Zero or more items separated by and ending with a terminator.', () => {
-            const __result0 = separatedEndBy(char('a'), char(';'))('a;a;a;');
-            expect(__result0).toEqual({
+            const result0 = separatedEndBy(char('a'), char(';'))('a;a;a;');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -492,8 +473,8 @@ describe('examples from source', () => {
         });
 
         it('separatedEndBy1: One or more items separated by and ending with a terminator.', () => {
-            const __result0 = separatedEndBy1(char('a'), char(';'))('a;a;a;');
-            expect(__result0).toEqual({
+            const result0 = separatedEndBy1(char('a'), char(';'))('a;a;a;');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -501,12 +482,12 @@ describe('examples from source', () => {
         });
 
         it('separatedUntil: Parse items separated by separator until terminator matches.', () => {
-            const __result0 = separatedUntil(
+            const result0 = separatedUntil(
                 char('a'),
                 char(','),
                 char(';'),
             )('a,a,a;');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'a', 'a'],
                 remaining: '',
@@ -514,8 +495,8 @@ describe('examples from source', () => {
         });
 
         it('sequence: Parse a sequence of parsers and return all results as an array.', () => {
-            const __result0 = sequence(char('a'), char('b'), char('c'))('abc');
-            expect(__result0).toEqual({
+            const result0 = sequence(char('a'), char('b'), char('c'))('abc');
+            expect(result0).toEqual({
                 ok: true,
                 value: ['a', 'b', 'c'],
                 remaining: '',
@@ -523,56 +504,40 @@ describe('examples from source', () => {
         });
 
         it('skip: Skip a parser n times.', () => {
-            const __result0 = skip(char('a'), 2)('aabc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: null,
-                remaining: 'bc',
-            });
+            const result0 = skip(char('a'), 2)('aabc');
+            expect(result0).toEqual({ ok: true, value: null, remaining: 'bc' });
         });
 
         it('skipMany: Skip zero or more occurrences (never fails, returns null).', () => {
-            const __result0 = skipMany(char('a'))('aaabc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: null,
-                remaining: 'bc',
-            });
+            const result0 = skipMany(char('a'))('aaabc');
+            expect(result0).toEqual({ ok: true, value: null, remaining: 'bc' });
         });
 
         it('skipMany1: Skip one or more occurrences (fails if no matches).', () => {
-            const __result0 = skipMany1(char('a'))('aaabc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: null,
-                remaining: 'bc',
-            });
+            const result0 = skipMany1(char('a'))('aaabc');
+            expect(result0).toEqual({ ok: true, value: null, remaining: 'bc' });
         });
 
         it('surrounded: Parse content surrounded by delimiters.', () => {
-            const __result0 = surrounded(
+            const result0 = surrounded(
                 char('['),
                 string('hi'),
                 char(']'),
             )('[hi]');
-            expect(__result0).toEqual({ ok: true, value: 'hi', remaining: '' });
-            const __result1 = surrounded(
-                char('a'),
-                char('b'),
-                char('c'),
-            )('abc');
-            expect(__result1).toEqual({ ok: true, value: 'b', remaining: '' });
+            expect(result0).toEqual({ ok: true, value: 'hi', remaining: '' });
+            const result1 = surrounded(char('a'), char('b'), char('c'))('abc');
+            expect(result1).toEqual({ ok: true, value: 'b', remaining: '' });
         });
 
         it('unless: Parse unless condition is true (inverse of guard).', () => {
-            const __result0 = unless(false, string('hello'))('hello');
-            expect(__result0).toEqual({
+            const result0 = unless(false, string('hello'))('hello');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
             });
-            const __result1 = unless(true, string('hello'))('hello');
-            expect(__result1).toEqual({
+            const result1 = unless(true, string('hello'))('hello');
+            expect(result1).toEqual({
                 ok: true,
                 value: null,
                 remaining: 'hello',
@@ -580,14 +545,10 @@ describe('examples from source', () => {
         });
 
         it('until: Parse until terminator matches (fails if terminator never matches).', () => {
-            const __result0 = until(char('a'), char('b'))('baaa');
-            expect(__result0).toEqual({
-                ok: true,
-                value: [],
-                remaining: 'baaa',
-            });
-            const __result1 = until(char('a'), char('b'))('aaba');
-            expect(__result1).toEqual({
+            const result0 = until(char('a'), char('b'))('baaa');
+            expect(result0).toEqual({ ok: true, value: [], remaining: 'baaa' });
+            const result1 = until(char('a'), char('b'))('aaba');
+            expect(result1).toEqual({
                 ok: true,
                 value: ['a', 'a'],
                 remaining: 'ba',
@@ -595,17 +556,17 @@ describe('examples from source', () => {
         });
 
         it('validate: Validate parsed value with a predicate.', () => {
-            const __result0 = validate(digit, (n) => n > 5)('7');
-            expect(__result0).toEqual({ ok: true, value: 7, remaining: '' });
-            const __result1 = validate(digit, (n) => n > 5)('3');
-            expect(__result1).toEqual({ ok: false });
+            const result0 = validate(digit, (n) => n > 5)('7');
+            expect(result0).toEqual({ ok: true, value: 7, remaining: '' });
+            const result1 = validate(digit, (n) => n > 5)('3');
+            expect(result1).toEqual({ ok: false });
         });
     });
 
     describe('core', () => {
         it('failure: Creates a failed result with an optional error message.', () => {
-            const __result0 = failure('unexpected input');
-            expect(__result0).toEqual({ ok: false, error: 'unexpected input' });
+            const result0 = failure('unexpected input');
+            expect(result0).toEqual({ ok: false, error: 'unexpected input' });
         });
 
         it('grammar: Creates a recursive grammar where rules can reference each other.', () => {
@@ -630,50 +591,43 @@ describe('examples from source', () => {
                     ),
                 value: () => digits,
             });
-            const __result0 = run(g.expr, '1+2');
-            expect(__result0).toEqual(3);
-            const __result1 = run(g.expr, '1+2+3');
-            expect(__result1).toEqual(6);
-            const __result2 = run(g.expr, '(1+2)');
-            expect(__result2).toEqual(3);
+            const result0 = run(g.expr, '1+2');
+            expect(result0).toEqual(3);
+            const result1 = run(g.expr, '1+2+3');
+            expect(result1).toEqual(6);
+            const result2 = run(g.expr, '(1+2)');
+            expect(result2).toEqual(3);
         });
 
         it('label: Labels a parser with a custom error message on failure.', () => {
-            const __result0 = label(char('x'), 'letter x')('');
-            expect(__result0).toEqual({
-                ok: false,
-                error: 'expected letter x',
-            });
+            const result0 = label(char('x'), 'letter x')('');
+            expect(result0).toEqual({ ok: false, error: 'expected letter x' });
         });
 
         it('lazy: Defers parser creation, useful for recursive grammars.', () => {
-            const __result0 = lazy(() => char('a'))('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = lazy(() => char('a'))('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('match: Pattern matching on a Result to handle success and failure cases.', () => {
-            const __result0 = match(success('hello', ''), {
+            const result0 = match(success('hello', ''), {
                 success: (v) => v,
                 failure: () => 'failed',
             });
-            expect(__result0).toEqual('hello');
+            expect(result0).toEqual('hello');
         });
 
         it('memoize: exponential backtracking.', () => {
             const memoDigits = memoize(digits);
-            const __result0 = memoDigits('123');
-            expect(__result0).toEqual({ ok: true, value: 123, remaining: '' });
+            const result0 = memoDigits('123');
+            expect(result0).toEqual({ ok: true, value: 123, remaining: '' });
         });
 
         it('parser: Creates a parser from a parser function.', () => {
-            const __result0 = create((input) =>
+            const result0 = create((input) =>
                 success('parsed', input.slice(6)),
             )('hello world');
-            expect(__result0).toEqual({
+            expect(result0).toEqual({
                 ok: true,
                 value: 'parsed',
                 remaining: 'world',
@@ -681,13 +635,13 @@ describe('examples from source', () => {
         });
 
         it('run: Runs a parser and returns the value, throws on failure or unconsumed input.', () => {
-            const __result0 = run(string('hello'), 'hello');
-            expect(__result0).toEqual('hello');
+            const result0 = run(string('hello'), 'hello');
+            expect(result0).toEqual('hello');
         });
 
         it('success: Creates a successful result with a value and remaining input.', () => {
-            const __result0 = success('hello', ' world');
-            expect(__result0).toEqual({
+            const result0 = success('hello', ' world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: ' world',
@@ -697,15 +651,15 @@ describe('examples from source', () => {
 
     describe('primitives', () => {
         it('alphaNum: Parse a single alphanumeric character.', () => {
-            const __result0 = alphaNum('a1');
-            expect(__result0).toEqual({ ok: true, value: 'a', remaining: '1' });
-            const __result1 = alphaNum('1a');
-            expect(__result1).toEqual({ ok: true, value: '1', remaining: 'a' });
+            const result0 = alphaNum('a1');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: '1' });
+            const result1 = alphaNum('1a');
+            expect(result1).toEqual({ ok: true, value: '1', remaining: 'a' });
         });
 
         it('alphaNums: Parse one or more alphanumeric characters.', () => {
-            const __result0 = alphaNums('abc123');
-            expect(__result0).toEqual({
+            const result0 = alphaNums('abc123');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'abc123',
                 remaining: '',
@@ -713,25 +667,17 @@ describe('examples from source', () => {
         });
 
         it('anyChar: Parse any single character.', () => {
-            const __result0 = anyChar('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = anyChar('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('bool: Parse a boolean literal.', () => {
-            const __result0 = bool('true');
-            expect(__result0).toEqual({ ok: true, value: true, remaining: '' });
-            const __result1 = bool('false');
-            expect(__result1).toEqual({
-                ok: true,
-                value: false,
-                remaining: '',
-            });
-            const __result2 = bool('trueABC');
-            expect(__result2).toEqual({
+            const result0 = bool('true');
+            expect(result0).toEqual({ ok: true, value: true, remaining: '' });
+            const result1 = bool('false');
+            expect(result1).toEqual({ ok: true, value: false, remaining: '' });
+            const result2 = bool('trueABC');
+            expect(result2).toEqual({
                 ok: true,
                 value: true,
                 remaining: 'ABC',
@@ -739,8 +685,8 @@ describe('examples from source', () => {
         });
 
         it('crlf: Parse CRLF line ending.', () => {
-            const __result0 = crlf('\r\nabc');
-            expect(__result0).toEqual({
+            const result0 = crlf('\r\nabc');
+            expect(result0).toEqual({
                 ok: true,
                 value: '\r\n',
                 remaining: 'abc',
@@ -748,27 +694,23 @@ describe('examples from source', () => {
         });
 
         it('digit: Parse a single digit and return as number.', () => {
-            const __result0 = digit('5abc');
-            expect(__result0).toEqual({ ok: true, value: 5, remaining: 'abc' });
+            const result0 = digit('5abc');
+            expect(result0).toEqual({ ok: true, value: 5, remaining: 'abc' });
         });
 
         it('digits: Parse one or more digits and return as number.', () => {
-            const __result0 = digits('123abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 123,
-                remaining: 'abc',
-            });
+            const result0 = digits('123abc');
+            expect(result0).toEqual({ ok: true, value: 123, remaining: 'abc' });
         });
 
         it('eof: Parse end of file (succeeds only on empty input).', () => {
-            const __result0 = eof('');
-            expect(__result0).toEqual({ ok: true, value: null, remaining: '' });
+            const result0 = eof('');
+            expect(result0).toEqual({ ok: true, value: null, remaining: '' });
         });
 
         it('eol: Parse end of line (\\n, \\r\\n, or EOF).', () => {
-            const __result0 = eol('\nabc');
-            expect(__result0).toEqual({
+            const result0 = eol('\nabc');
+            expect(result0).toEqual({
                 ok: true,
                 value: '\n',
                 remaining: 'abc',
@@ -776,12 +718,12 @@ describe('examples from source', () => {
         });
 
         it('float: Parse a floating point number.', () => {
-            const __result0 = float('1.23');
-            expect(__result0).toEqual({ ok: true, value: 1.23, remaining: '' });
-            const __result1 = float('-2.5');
-            expect(__result1).toEqual({ ok: true, value: -2.5, remaining: '' });
-            const __result2 = float('1.23abc');
-            expect(__result2).toEqual({
+            const result0 = float('1.23');
+            expect(result0).toEqual({ ok: true, value: 1.23, remaining: '' });
+            const result1 = float('-2.5');
+            expect(result1).toEqual({ ok: true, value: -2.5, remaining: '' });
+            const result2 = float('1.23abc');
+            expect(result2).toEqual({
                 ok: true,
                 value: 1.23,
                 remaining: 'abc',
@@ -789,17 +731,13 @@ describe('examples from source', () => {
         });
 
         it('hexDigit: Parse a single hexadecimal digit.', () => {
-            const __result0 = hexDigit('fF9');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'f',
-                remaining: 'F9',
-            });
+            const result0 = hexDigit('fF9');
+            expect(result0).toEqual({ ok: true, value: 'f', remaining: 'F9' });
         });
 
         it('hexDigits: Parse one or more hexadecimal digits.', () => {
-            const __result0 = hexDigits('deadbeef');
-            expect(__result0).toEqual({
+            const result0 = hexDigits('deadbeef');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'deadbeef',
                 remaining: '',
@@ -807,8 +745,8 @@ describe('examples from source', () => {
         });
 
         it('identifier: Parse an identifier — starts with letter or underscore, no leading digit, no hyphen.', () => {
-            const __result0 = identifier('variable_name');
-            expect(__result0).toEqual({
+            const result0 = identifier('variable_name');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'variable_name',
                 remaining: '',
@@ -816,17 +754,13 @@ describe('examples from source', () => {
         });
 
         it('letter: Parse a single letter.', () => {
-            const __result0 = letter('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = letter('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('letters: Parse one or more letters.', () => {
-            const __result0 = letters('abc123');
-            expect(__result0).toEqual({
+            const result0 = letters('abc123');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'abc',
                 remaining: '123',
@@ -834,8 +768,8 @@ describe('examples from source', () => {
         });
 
         it('line: Parse until end of line.', () => {
-            const __result0 = line('hello\nworld');
-            expect(__result0).toEqual({
+            const result0 = line('hello\nworld');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '\nworld',
@@ -843,14 +777,14 @@ describe('examples from source', () => {
         });
 
         it('literal: Parse a word-like value including hyphens.', () => {
-            const __result0 = literal('foo-bar');
-            expect(__result0).toEqual({
+            const result0 = literal('foo-bar');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'foo-bar',
                 remaining: '',
             });
-            const __result1 = literal('123abc');
-            expect(__result1).toEqual({
+            const result1 = literal('123abc');
+            expect(result1).toEqual({
                 ok: true,
                 value: '123abc',
                 remaining: '',
@@ -858,17 +792,13 @@ describe('examples from source', () => {
         });
 
         it('lowercase: Parse a single lowercase letter.', () => {
-            const __result0 = lowercase('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = lowercase('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('lowercases: Parses one or more lowercase letters.', () => {
-            const __result0 = lowercases('abcDEF');
-            expect(__result0).toEqual({
+            const result0 = lowercases('abcDEF');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'abc',
                 remaining: 'DEF',
@@ -876,8 +806,8 @@ describe('examples from source', () => {
         });
 
         it('nl: Parse a newline character.', () => {
-            const __result0 = nl('\ntext');
-            expect(__result0).toEqual({
+            const result0 = nl('\ntext');
+            expect(result0).toEqual({
                 ok: true,
                 value: '\n',
                 remaining: 'text',
@@ -885,17 +815,13 @@ describe('examples from source', () => {
         });
 
         it('octDigit: Parse a single octal digit.', () => {
-            const __result0 = octDigit('7abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: '7',
-                remaining: 'abc',
-            });
+            const result0 = octDigit('7abc');
+            expect(result0).toEqual({ ok: true, value: '7', remaining: 'abc' });
         });
 
         it('octDigits: Parse one or more octal digits.', () => {
-            const __result0 = octDigits('0777abc');
-            expect(__result0).toEqual({
+            const result0 = octDigits('0777abc');
+            expect(result0).toEqual({
                 ok: true,
                 value: '0777',
                 remaining: 'abc',
@@ -903,13 +829,13 @@ describe('examples from source', () => {
         });
 
         it('position: Get current position (remaining input length).', () => {
-            const __result0 = position('abc');
-            expect(__result0).toEqual({ ok: true, value: 3, remaining: 'abc' });
+            const result0 = position('abc');
+            expect(result0).toEqual({ ok: true, value: 3, remaining: 'abc' });
         });
 
         it('rest: Parse the rest of the input.', () => {
-            const __result0 = rest('hello');
-            expect(__result0).toEqual({
+            const result0 = rest('hello');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: '',
@@ -917,8 +843,8 @@ describe('examples from source', () => {
         });
 
         it('tab: Parse tab character.', () => {
-            const __result0 = tab('\ttext');
-            expect(__result0).toEqual({
+            const result0 = tab('\ttext');
+            expect(result0).toEqual({
                 ok: true,
                 value: '\t',
                 remaining: 'text',
@@ -926,17 +852,13 @@ describe('examples from source', () => {
         });
 
         it('uppercase: Parses a single uppercase letter.', () => {
-            const __result0 = uppercase('ABC');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'A',
-                remaining: 'BC',
-            });
+            const result0 = uppercase('ABC');
+            expect(result0).toEqual({ ok: true, value: 'A', remaining: 'BC' });
         });
 
         it('uppercases: Parses one or more uppercase letters.', () => {
-            const __result0 = uppercases('ABCdef');
-            expect(__result0).toEqual({
+            const result0 = uppercases('ABCdef');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'ABC',
                 remaining: 'def',
@@ -944,17 +866,13 @@ describe('examples from source', () => {
         });
 
         it('whitespace: Parses a single whitespace character.', () => {
-            const __result0 = whitespace(' abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: ' ',
-                remaining: 'abc',
-            });
+            const result0 = whitespace(' abc');
+            expect(result0).toEqual({ ok: true, value: ' ', remaining: 'abc' });
         });
 
         it('whitespaces: Parses one or more whitespace characters.', () => {
-            const __result0 = whitespaces('  abc');
-            expect(__result0).toEqual({
+            const result0 = whitespaces('  abc');
+            expect(result0).toEqual({
                 ok: true,
                 value: '  ',
                 remaining: 'abc',
@@ -964,35 +882,23 @@ describe('examples from source', () => {
 
     describe('terminals', () => {
         it('char: Parse a specific character.', () => {
-            const __result0 = char('A')('ABC');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'A',
-                remaining: 'BC',
-            });
+            const result0 = char('A')('ABC');
+            expect(result0).toEqual({ ok: true, value: 'A', remaining: 'BC' });
         });
 
         it('charOf: Parse any character from a set.', () => {
-            const __result0 = charOf(['a', 'b', 'c'])('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = charOf(['a', 'b', 'c'])('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('noneOf: Parse any character not in the set.', () => {
-            const __result0 = noneOf(['a', 'b', 'c'])('xyz');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'x',
-                remaining: 'yz',
-            });
+            const result0 = noneOf(['a', 'b', 'c'])('xyz');
+            expect(result0).toEqual({ ok: true, value: 'x', remaining: 'yz' });
         });
 
         it('oneOf: Parse one string from a set of strings (longest match wins).', () => {
-            const __result0 = oneOf(['hello', 'hell', 'help'])('helpful');
-            expect(__result0).toEqual({
+            const result0 = oneOf(['hello', 'hell', 'help'])('helpful');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'help',
                 remaining: 'ful',
@@ -1000,8 +906,8 @@ describe('examples from source', () => {
         });
 
         it('regex: Parse with a regular expression.', () => {
-            const __result0 = regex(/^\w+/)('hello world');
-            expect(__result0).toEqual({
+            const result0 = regex(/^\w+/)('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: ' world',
@@ -1009,17 +915,13 @@ describe('examples from source', () => {
         });
 
         it('satisfy: Parse a character satisfying a predicate.', () => {
-            const __result0 = satisfy((c) => c === 'a')('abc');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'a',
-                remaining: 'bc',
-            });
+            const result0 = satisfy((c) => c === 'a')('abc');
+            expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
         it('string: Parse a specific string.', () => {
-            const __result0 = string('hello')('hello world');
-            expect(__result0).toEqual({
+            const result0 = string('hello')('hello world');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'hello',
                 remaining: ' world',
@@ -1027,8 +929,8 @@ describe('examples from source', () => {
         });
 
         it('stringOf: Parse first character that exists in string (like charOf but for a string).', () => {
-            const __result0 = stringOf('abc')('abcdef');
-            expect(__result0).toEqual({
+            const result0 = stringOf('abc')('abcdef');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'a',
                 remaining: 'bcdef',
@@ -1036,8 +938,8 @@ describe('examples from source', () => {
         });
 
         it('take: Take n characters.', () => {
-            const __result0 = take(3)('abcdef');
-            expect(__result0).toEqual({
+            const result0 = take(3)('abcdef');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'abc',
                 remaining: 'def',
@@ -1045,46 +947,26 @@ describe('examples from source', () => {
         });
 
         it('takeWhile: Takes characters while the predicate returns true.', () => {
-            const __result0 = takeWhile((c) => c !== 'x')('abcx');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'abc',
-                remaining: 'x',
-            });
+            const result0 = takeWhile((c) => c !== 'x')('abcx');
+            expect(result0).toEqual({ ok: true, value: 'abc', remaining: 'x' });
         });
 
         it('token: strings that might be followed by any character.', () => {
-            const __result0 = token('let')('let x');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'let',
-                remaining: 'x',
-            });
-            const __result1 = token('let')('let1');
-            expect(__result1).toEqual({
-                ok: true,
-                value: 'let',
-                remaining: '1',
-            });
-            const __result2 = token('let')('let  x');
-            expect(__result2).toEqual({
-                ok: true,
-                value: 'let',
-                remaining: 'x',
-            });
+            const result0 = token('let')('let x');
+            expect(result0).toEqual({ ok: true, value: 'let', remaining: 'x' });
+            const result1 = token('let')('let1');
+            expect(result1).toEqual({ ok: true, value: 'let', remaining: '1' });
+            const result2 = token('let')('let  x');
+            expect(result2).toEqual({ ok: true, value: 'let', remaining: 'x' });
         });
 
         it('word: Use this when parsing keywords that should not be part of a longer identifier.', () => {
-            const __result0 = word('let')('let x');
-            expect(__result0).toEqual({
-                ok: true,
-                value: 'let',
-                remaining: 'x',
-            });
-            const __result1 = word('let')('let1');
-            expect(__result1).toEqual({ ok: false });
-            const __result2 = word('if')('if (x)');
-            expect(__result2).toEqual({
+            const result0 = word('let')('let x');
+            expect(result0).toEqual({ ok: true, value: 'let', remaining: 'x' });
+            const result1 = word('let')('let1');
+            expect(result1).toEqual({ ok: false });
+            const result2 = word('if')('if (x)');
+            expect(result2).toEqual({
                 ok: true,
                 value: 'if',
                 remaining: '(x)',
@@ -1094,36 +976,36 @@ describe('examples from source', () => {
 
     describe('utils', () => {
         it('filter: Exclude values from array.', () => {
-            const __result0 = filter([1, 2, 3])([1, 2, 3, 4, 5]);
-            expect(__result0).toEqual([4, 5]);
-            const __result1 = filter([1, 2], true)([1, false, 3]);
-            expect(__result1).toEqual([3]);
+            const result0 = filter([1, 2, 3])([1, 2, 3, 4, 5]);
+            expect(result0).toEqual([4, 5]);
+            const result1 = filter([1, 2], true)([1, false, 3]);
+            expect(result1).toEqual([3]);
         });
 
         it('flatten: Flatten nested arrays.', () => {
-            const __result0 = flatten()([1, [2, [3]]]);
-            expect(__result0).toEqual([1, 2, [3]]);
-            const __result1 = flatten(2)([1, [2, [3]]]);
-            expect(__result1).toEqual([1, 2, 3]);
+            const result0 = flatten()([1, [2, [3]]]);
+            expect(result0).toEqual([1, 2, [3]]);
+            const result1 = flatten(2)([1, [2, [3]]]);
+            expect(result1).toEqual([1, 2, 3]);
         });
 
         it('join: Join array elements into a string.', () => {
-            const __result0 = join()([1, 2, 3]);
-            expect(__result0).toEqual('123');
-            const __result1 = join('-')([1, 2, 3]);
-            expect(__result1).toEqual('1-2-3');
+            const result0 = join()([1, 2, 3]);
+            expect(result0).toEqual('123');
+            const result1 = join('-')([1, 2, 3]);
+            expect(result1).toEqual('1-2-3');
         });
 
         it('pick: Pick elements from an array by index.', () => {
-            const __result0 = pick(0, 2)(['a', 'b', 'c']);
-            expect(__result0).toEqual(['a', 'c']);
-            const __result1 = pick(2, 4)(['a', 'b', 'c', 'd', 'e']);
-            expect(__result1).toEqual(['c', 'e']);
+            const result0 = pick(0, 2)(['a', 'b', 'c']);
+            expect(result0).toEqual(['a', 'c']);
+            const result1 = pick(2, 4)(['a', 'b', 'c', 'd', 'e']);
+            expect(result1).toEqual(['c', 'e']);
         });
 
         it('pipe: Pipe parser functions together.', () => {
-            const __result0 = pipe(lexeme)(letters)('xyz   abc');
-            expect(__result0).toEqual({
+            const result0 = pipe(lexeme)(letters)('xyz   abc');
+            expect(result0).toEqual({
                 ok: true,
                 value: 'xyz',
                 remaining: 'abc',
@@ -1131,18 +1013,18 @@ describe('examples from source', () => {
         });
 
         it('pop: Get the last element of an array.', () => {
-            const __result0 = pop()([1, 2, 3]);
-            expect(__result0).toEqual(3);
+            const result0 = pop()([1, 2, 3]);
+            expect(result0).toEqual(3);
         });
 
         it('shift: Get the first element of an array.', () => {
-            const __result0 = shift()([1, 2, 3]);
-            expect(__result0).toEqual(1);
+            const result0 = shift()([1, 2, 3]);
+            expect(result0).toEqual(1);
         });
 
         it('spread: Collect spread arguments into an array.', () => {
-            const __result0 = spread()(1, 2, 3);
-            expect(__result0).toEqual([1, 2, 3]);
+            const result0 = spread()(1, 2, 3);
+            expect(result0).toEqual([1, 2, 3]);
         });
     });
 });
