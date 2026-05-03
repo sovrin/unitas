@@ -61,18 +61,18 @@
     },
     "scripts": {
         "build": "tsdown",
-        "watch": "tsdown --watch",
+        "build:watch": "tsdown --watch",
         "test": "vitest run",
         "test:watch": "vitest",
         "test:types": "attw --pack .",
         "test:extract": "tsx bin/extract-examples.mjs && oxfmt ./test/examples.test.ts",
+        "test:coverage": "vitest run --coverage",
         "generate:index": "tsx bin/generate-index.mjs",
         "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md",
-        "coverage": "vitest run --coverage",
-        "format": "oxfmt",
         "lint": "oxlint && node bin/check-test-imports.mjs",
         "lint:fix": "oxlint --fix",
-        "fix:imports": "npx jscodeshift -t bin/split-imports.mjs src --extensions=ts --parser=tsx"
+        "format": "oxfmt",
+        "format:imports": "npx jscodeshift -t bin/split-imports.mjs src --extensions=ts --parser=tsx"
     },
     "devDependencies": {
         "@arethetypeswrong/cli": "^0.18",

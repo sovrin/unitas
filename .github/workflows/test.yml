@@ -23,7 +23,7 @@ jobs:
               run: npm run test:types
 
             - name: Test coverage
-              run: npm run coverage
+              run: npm run test:coverage
 
             - name: Publish coverage
               uses: coverallsapp/github-action@master
