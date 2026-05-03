@@ -191,6 +191,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`endBy1`](#endBy1)
     - [`exactly`](#exactly)
     - [`first`](#first)
+    - [`flag`](#flag)
     - [`fold`](#fold)
     - [`fold1`](#fold1)
     - [`foldRight`](#foldRight)
@@ -883,6 +884,15 @@ exactly(char('a'), 3)('aaa'); // { ok: true, value: ['a', 'a', 'a'], remaining: 
 
 ```typescript
 first(sequence(char('a'), digit))('a1bc'); // { ok: true, value: 'a', remaining: 'bc' }
+```
+
+</details>
+<details id="flag">
+<summary><code>flag</code> — Return true if parser succeeds, false otherwise. Always succeeds without consuming input on failure.</summary>
+
+```typescript
+flag(string('*'))('*abc'); // { ok: true, value: true, remaining: 'abc' }
+flag(string('*'))('abc'); // { ok: true, value: false, remaining: 'abc' }
 ```
 
 </details>

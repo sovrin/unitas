@@ -12,6 +12,7 @@ export * from './endBy';
 export * from './endBy1';
 export * from './exactly';
 export * from './first';
+export * from './flag';
 export * from './fold';
 export * from './fold1';
 export * from './foldRight';

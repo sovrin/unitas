@@ -125,6 +125,21 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });
         });
 
+        it('flag: Return true if parser succeeds, false otherwise. Always succeeds without consuming input on failure.', () => {
+            const result0 = flag(string('*'))('*abc');
+            expect(result0).toEqual({
+                ok: true,
+                value: true,
+                remaining: 'abc',
+            });
+            const result1 = flag(string('*'))('abc');
+            expect(result1).toEqual({
+                ok: true,
+                value: false,
+                remaining: 'abc',
+            });
+        });
+
         it('fold: Parse zero or more and fold into a single value.', () => {
             const result0 = fold(digit, [], (acc, d) => [...acc, d])('123');
             expect(result0).toEqual({
