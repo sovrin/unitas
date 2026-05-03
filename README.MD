@@ -160,6 +160,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`hexDigit`](#hexDigit)
     - [`hexDigits`](#hexDigits)
     - [`identifier`](#identifier)
+    - [`integer`](#integer)
     - [`letter`](#letter)
     - [`letters`](#letters)
     - [`line`](#line)
@@ -634,6 +635,16 @@ hexDigits('deadbeef'); // { ok: true, value: 'deadbeef', remaining: '' }
 
 ```typescript
 identifier('variable_name'); // { ok: true, value: 'variable_name', remaining: '' }
+```
+
+</details>
+<details id="integer">
+<summary><code>integer</code> — Parse a signed integer.</summary>
+
+```typescript
+integer('42'); // { ok: true, value: 42, remaining: '' }
+integer('-7'); // { ok: true, value: -7, remaining: '' }
+integer('123abc'); // { ok: true, value: 123, remaining: 'abc' }
 ```
 
 </details>

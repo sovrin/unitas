@@ -768,6 +768,15 @@ describe('examples from source', () => {
             });
         });
 
+        it('integer: Parse a signed integer.', () => {
+            const result0 = integer('42');
+            expect(result0).toEqual({ ok: true, value: 42, remaining: '' });
+            const result1 = integer('-7');
+            expect(result1).toEqual({ ok: true, value: -7, remaining: '' });
+            const result2 = integer('123abc');
+            expect(result2).toEqual({ ok: true, value: 123, remaining: 'abc' });
+        });
+
         it('letter: Parse a single letter.', () => {
             const result0 = letter('abc');
             expect(result0).toEqual({ ok: true, value: 'a', remaining: 'bc' });

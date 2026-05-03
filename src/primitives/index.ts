@@ -11,6 +11,7 @@ export * from './float';
 export * from './hexDigit';
 export * from './hexDigits';
 export * from './identifier';
+export * from './integer';
 export * from './letter';
 export * from './letters';
 export * from './line';
