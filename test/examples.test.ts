@@ -591,6 +591,29 @@ describe('examples from source', () => {
             const result1 = validate(digit, (n) => n > 5)('3');
             expect(result1).toEqual({ ok: false });
         });
+
+        it('when: Branch on a boolean parser result.', () => {
+            const result0 = when(
+                flag(char('*')),
+                pure('many'),
+                pure('one'),
+            )('*rest');
+            expect(result0).toEqual({
+                ok: true,
+                value: 'many',
+                remaining: 'rest',
+            });
+            const result1 = when(
+                flag(char('*')),
+                pure('many'),
+                pure('one'),
+            )('abc');
+            expect(result1).toEqual({
+                ok: true,
+                value: 'one',
+                remaining: 'abc',
+            });
+        });
     });
 
     describe('core', () => {

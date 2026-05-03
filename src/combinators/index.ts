@@ -60,3 +60,4 @@ export * from './surrounded';
 export * from './unless';
 export * from './until';
 export * from './validate';
+export * from './when';

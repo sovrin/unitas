@@ -240,6 +240,7 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
     - [`unless`](#unless)
     - [`until`](#until)
     - [`validate`](#validate)
+    - [`when`](#when)
 - [Utils](#utils)
     - [`filter`](#filter)
     - [`flatten`](#flatten)
@@ -1299,6 +1300,15 @@ until(char('a'), char('b'))('aaba'); // { ok: true, value: ['a', 'a'], remaining
 ```typescript
 validate(digit, (n) => n > 5)('7'); // { ok: true, value: 7, remaining: '' }
 validate(digit, (n) => n > 5)('3'); // { ok: false }
+```
+
+</details>
+<details id="when">
+<summary><code>when</code> — Branch on a boolean parser result.</summary>
+
+```typescript
+when(flag(char('*')), pure('many'), pure('one'))('*rest'); // { ok: true, value: 'many', remaining: 'rest' }
+when(flag(char('*')), pure('many'), pure('one'))('abc'); // { ok: true, value: 'one', remaining: 'abc' }
 ```
 
 </details>
