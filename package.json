@@ -1,10 +1,21 @@
 {
     "name": "unitas",
     "version": "0.2.5",
+    "description": "TypeScript-first parser combinator library — compose small typed parsers into whole grammars. Zero dependencies, ESM-only, tree-shakeable.",
     "keywords": [
+        "parser",
+        "parser-combinator",
         "combinator",
+        "parsing",
+        "grammar",
+        "peg",
+        "recursive-descent",
+        "lexer",
+        "tokenizer",
         "functional",
-        "parser"
+        "typescript",
+        "esm",
+        "zero-dependency"
     ],
     "license": "MIT",
     "author": {
@@ -14,6 +25,10 @@
     "repository": {
         "type": "git",
         "url": "https://github.com/sovrin/unitas.git"
+    },
+    "homepage": "https://github.com/sovrin/unitas#readme",
+    "bugs": {
+        "url": "https://github.com/sovrin/unitas/issues"
     },
     "files": [
         "dist",
@@ -68,7 +83,7 @@
         "test:extract": "tsx bin/extract-examples.mjs && oxfmt ./test/examples.test.ts",
         "test:coverage": "vitest run --coverage",
         "generate:index": "tsx bin/generate-index.mjs",
-        "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md",
+        "generate:readme": "tsx bin/generate-readme.mjs && oxfmt ./README.md ./doc/api",
         "lint": "oxlint && node bin/check-test-imports.mjs",
         "lint:fix": "oxlint --fix",
         "format": "oxfmt",

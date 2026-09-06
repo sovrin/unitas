@@ -17,7 +17,7 @@ npm run lint:fix          # auto-fix lint issues
 npm run format            # oxfmt (format all files)
 
 npm run generate:index    # regenerate all index.ts barrel files from source
-npm run generate:readme   # regenerate README.MD from JSDoc examples
+npm run generate:readme   # regenerate README.md and doc/api/*.md from JSDoc examples
 npm run test:extract      # extract JSDoc @examples from .js files into test/examples.test.ts
 ```
 
@@ -55,13 +55,17 @@ type Failure = { ok: false; error?: string };
 - Every combinator/terminal/primitive lives in its own file: `src/combinators/map.ts`
 - Co-located test: `src/combinators/map.test.ts`
 - `index.ts` in each module is generated — run `npm run generate:index` after adding or removing files; do not edit manually
-- JSDoc `@example` blocks in source files are the source of truth for README and `test/examples.test.ts`
+- JSDoc `@example` blocks in source files are the source of truth for the docs and `test/examples.test.ts`
+- `README.md` is generated from `doc/README.template.md` — a landing page (pitch, quick start, intent-based cheat sheet, one-line API index)
+- `doc/api/{core,terminals,primitives,combinators,utils}.md` are generated from `doc/api.template.md` — the full per-export reference; the whole directory is wiped and rewritten on every run
+- Neither `README.md` nor `doc/api/` is edited by hand; hand-written prose belongs in the two templates in `doc/`
 
 ### Adding a new combinator
 
 1. Create `src/combinators/myThing.ts` + `src/combinators/myThing.test.ts`
 2. Run `npm run generate:index` to update `src/combinators/index.ts`
-3. Add JSDoc `@example` block — run `npm run generate:readme` and `npm run test:extract` to keep README and examples test in sync
+3. Add JSDoc `@example` block — run `npm run generate:readme` and `npm run test:extract` to keep the docs and examples test in sync
+4. Add the new name to the "Which function do I need?" cheat sheet in `doc/README.template.md` — that table is hand-written, and `generate:readme` warns about any export missing from it
 
 ### Test structure
 
