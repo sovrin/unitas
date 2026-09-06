@@ -1,7 +1,6 @@
 import type { Parser } from '../core/parser';
 
 import { failure } from '../core/failure';
-import { forward } from '../core/forward';
 import { create } from '../core/parser';
 import { chainLeft1 } from './chainLeft1';
 import { optional } from './optional';
@@ -23,6 +22,6 @@ export const chainLeft = <T>(
             return failure();
         }
 
-        return forward(result);
+        return result;
     });
 };

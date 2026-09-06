@@ -1,33 +1,18 @@
-# unitas — composing parsers into a unified whole
+<!-- Generated from doc/README.template.md by `npm run generate:readme`. Edit the template, not this file. -->
 
-<img src="doc/logo.png" style="margin-left: 16px" height="64" align="right" alt="Unitas logo">
+# unitas
+
+<img src="https://raw.githubusercontent.com/sovrin/unitas/master/doc/logo.png" height="64" align="right" alt="">
+
+**Composing parsers into a unified whole.** A lightweight, TypeScript-first parser combinator library — write small parsers, combine them into big ones, get typed results back.
 
 [![npm version](https://img.shields.io/npm/v/unitas)](https://www.npmjs.com/package/unitas)
 [![Coverage](https://coveralls.io/repos/github/sovrin/unitas/badge.svg?branch=master)](https://coveralls.io/github/sovrin/unitas?branch=master)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
-A lightweight, TypeScript-first parser combinator library for building expressive and composable parsers.
-
-## Features
-
-- **Parser Combinators**: Compose small parsers into complex ones using combinators like `many`, `choice`, `sequence`, and more
-- **Terminals**: Factory functions for common patterns (`char`, `string`, `regex`, etc.)
-- **Primitives**: Pre-built parser instances ready to use (`digit`, `letter`, `whitespace`, etc.)
-- **TypeScript**: Full TypeScript support with generic types and inference
-- **Tree-shakeable**: ESM-only with separate exports for `combinators`, `terminals`, `primitives`, and `utils`
-- **No dependencies**: Zero external runtime dependencies
-
-> **Note:** This library is in active development. The API may change before v1.0.0.
-
-## Installation
-
 ```bash
 npm install unitas
 ```
-
-## Quick Start
-
-**CSV parser** — parsing comma-separated values with quoted fields
 
 ```typescript
 import { grammar, run } from 'unitas';
@@ -46,11 +31,204 @@ run(csv.row, 'a,b,c'); // ['a', 'b', 'c']
 run(csv.row, '"a,b",c'); // ['a,b', 'c']
 ```
 
-**JSON value parser** — parsing simple json values
+- **Zero dependencies**, ESM-only, fully typed
+- **Tree-shakeable** — five entry points, import only what you touch
+- **<$total> composable exports** — grouped by what they do, indexed below
+- **Mutual recursion out of the box** via `grammar`, no forward declarations
+
+> **Note:** This library is in active development. The API may change before v1.0.0.
+
+## Contents
+
+- [Entry points](#entry-points)
+- [Which function do I need?](#which-function-do-i-need)
+- [Core concepts](#core-concepts)
+- [More examples](#more-examples)
+- [API index](#api-index)
+
+## Entry points
+
+Nothing is re-exported across entry points, so your bundler only ever sees what you import.
+
+| Import from            | Contains                                                              |
+| ---------------------- | --------------------------------------------------------------------- |
+| `unitas`               | Types, `success`/`failure`, `run`, `grammar`, `lazy`, `memoize`        |
+| `unitas/terminals`     | Factories that match input directly — `char`, `string`, `regex`, …    |
+| `unitas/primitives`    | Ready-made parsers — `digit`, `letters`, `whitespace`, …              |
+| `unitas/combinators`   | Parsers that take parsers — `map`, `choice`, `sequence`, `many`, …    |
+| `unitas/utils`         | Helpers for `map` callbacks — `pick`, `join`, `pipe`, …               |
+
+## Which function do I need?
+
+The library is broad on purpose: each function does one small thing, so grammars read like the format they parse. This table is the fastest way in — start from the intent, then look the name up in the [API index](#api-index).
+
+### Matching a single thing
+
+| I want to match…                            | Reach for                                            |
+| ------------------------------------------- | ---------------------------------------------------- |
+| an exact character or string                | `char`, `string`                                     |
+| one of several strings (longest wins)       | `oneOf`                                              |
+| any character in / not in a set             | `charOf`, `stringOf`, `noneOf`                       |
+| a character passing a predicate             | `satisfy`                                            |
+| a regular expression                        | `regex`                                              |
+| a fixed number of characters, or a run      | `take`, `takeWhile`                                  |
+| a keyword not glued to more word characters | `word`                                               |
+| a token, eating trailing whitespace         | `token`, `lexeme`                                    |
+| a value — no need to build it               | `number`, `integer`, `float`, `bool`, `identifier`, `literal`, `line`, `rest` |
+| a character class                           | `letter`, `digit`, `alphaNum`, `hexDigit`, `octDigit`, `lowercase`, `uppercase`, `anyChar` |
+| whitespace or a line break                  | `whitespace`, `space`, `tab`, `nl`, `crlf`, `eol`, `eof`   |
+
+Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how much input is left? `position`.
+
+### Repeating
+
+| I want to…                                   | Reach for                                            |
+| -------------------------------------------- | ---------------------------------------------------- |
+| repeat zero or more / one or more times      | `many`, `many1`                                      |
+| repeat a bounded number of times             | `exactly`, `manyAtLeast`, `manyAtMost`, `manyBetween` |
+| repeat with a separator between items        | `separatedBy`, `separatedBy1`, `optionalSeparatedBy` |
+| …and allow a trailing separator              | `separatedEndBy`, `separatedEndBy1`                  |
+| …where every item ends with the separator    | `endBy`, `endBy1`, `interleaved`                     |
+| repeat until something else shows up         | `manyTill`, `until`, `separatedUntil`                |
+| repeat but throw the values away             | `skip`, `skipMany`, `skipMany1`                      |
+| reduce the repetitions as I go               | `fold`, `fold1`, `foldRight`, `foldRight1`           |
+
+### Choosing and branching
+
+| I want to…                                   | Reach for                                            |
+| -------------------------------------------- | ---------------------------------------------------- |
+| take the first alternative that matches      | `choice`                                             |
+| succeed either way                           | `optional`, `optionalConsume`, `recover`, `flag`     |
+| succeed only when something *doesn't* match  | `not`                                                |
+| gate on a boolean I already have             | `guard`, `unless`, `when`                            |
+| look ahead without consuming input           | `peek`                                               |
+
+### Sequencing and pulling values out
+
+| I want to…                                   | Reach for                                            |
+| -------------------------------------------- | ---------------------------------------------------- |
+| run parsers in order and keep every result   | `sequence`                                           |
+| keep only one side of a pair                 | `left`, `right`                                      |
+| keep specific positions of a sequence        | `first`, `last`, `nth`, `pick`                       |
+| drop the delimiters, keep the middle         | `inner`, `outer`                                     |
+| glue string results together                 | `concat`, `fuse`, `join`                             |
+| match content inside delimiters              | `surrounded`, `parenthesized`, `braced`, `bracketed`, `quoted`, `padded` |
+
+### Shaping the result
+
+| I want to…                                   | Reach for                                            |
+| -------------------------------------------- | ---------------------------------------------------- |
+| transform the parsed value                   | `map`, `pipe`                                        |
+| replace it with a constant                   | `value`, `pure`, `consume`                           |
+| build a typed AST node                       | `node`                                               |
+| reject a value after parsing it              | `validate`                                           |
+| choose the next parser from the last value   | `bind`                                               |
+| tidy up arrays inside a `map`                | `pick`, `filter`, `flatten`, `shift`, `pop`, `spread` |
+
+### Grammars, recursion and errors
+
+| I want to…                                   | Reach for                                            |
+| -------------------------------------------- | ---------------------------------------------------- |
+| let rules reference each other by name       | `grammar`                                            |
+| refer to a parser defined further down       | `lazy`                                               |
+| cache results and avoid exponential blowup   | `memoize`                                            |
+| attach a readable error message              | `label`                                              |
+| parse infix operators with precedence        | `chainLeft`, `chainLeft1`, `chainRight`, `chainRight1` |
+| parse prefix / postfix operators             | `prefix`, `postfix`                                  |
+| handle both outcomes of a `Result`           | `match`                                              |
+
+## Core concepts
+
+### The `Parser` type
+
+A `Parser<T>` is a function from an input string to a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one.
+
+```typescript
+type Parser<T> = (input: string) => Result<T>;
+```
+
+### The `Result` type
+
+```typescript
+type Success<T> = { ok: true; value: T; remaining: string };
+type Failure = { ok: false; error?: string };
+type Result<T> = Success<T> | Failure;
+```
+
+```typescript
+{ ok: true, value: 'hello', remaining: ' world' }
+       │           │                   │
+       │           │                   └── what is left to parse
+       │           └── the parsed value
+       └── always true for success
+```
+
+`remaining` is the important part: it is how input gets consumed and how parsers chain. A failure carries an optional message, which you can always supply later with `label`.
+
+```typescript
+{ ok: false }                      // generic failure
+{ ok: false, error: 'expected a' } // failure with a message
+```
+
+### Backtracking is free
+
+Note what a `Failure` does *not* carry: a position. There is nowhere to record how much input a failed parser got through, and combinators hand every alternative the same string they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the full input, however far `a` got.
+
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into.
+
+### Writing one by hand
+
+Most of the time you compose existing pieces, but nothing stops you from dropping down a level:
+
+```typescript
+import { create, success, failure } from 'unitas';
+
+const parser = create<string>((input) => {
+    if (input.startsWith('hello')) {
+        return success('hello', input.slice(5));
+    }
+
+    return failure('expected "hello"');
+});
+```
+
+### Grammars
+
+`grammar` hands every rule a proxy `p`, so rules can reference each other — including themselves — without forward declarations or `lazy` boilerplate.
 
 ```typescript
 import { grammar, run } from 'unitas';
-import { choice, map, quoted, value } from 'unitas/combinators';
+import { chainLeft1, choice, map, sequence } from 'unitas/combinators';
+import { char } from 'unitas/terminals';
+import { digits } from 'unitas/primitives';
+
+type Math = { expr: number; term: number; value: number };
+
+const g = grammar<Math>({
+    expr: (p) =>
+        chainLeft1(
+            p.term,
+            map(char('+'), () => (l: number, r: number) => l + r),
+        ),
+    term: (p) =>
+        choice(
+            p.value,
+            map(sequence(char('('), p.expr, char(')')), ([, v]) => v),
+        ),
+    value: () => digits,
+});
+
+run(g.expr, '1+2+3'); // 6
+run(g.expr, '(1+2)'); // 3
+```
+
+## More examples
+
+**JSON value** — a tagged union of scalars
+
+```typescript
+import { grammar, run } from 'unitas';
+import { choice, quoted, value } from 'unitas/combinators';
 import { string } from 'unitas/terminals';
 import { bool, digits, letters } from 'unitas/primitives';
 
@@ -68,7 +246,7 @@ run(json.value, 'true'); // true
 run(json.value, 'null'); // null
 ```
 
-**Query string parser** — parsing URL query parameters
+**Query string** — separated pairs folded into an object
 
 ```typescript
 import { grammar, run } from 'unitas';
@@ -96,11 +274,11 @@ const query = grammar<Query>({
 run(query.params, 'foo=bar&baz=qux'); // { foo: 'bar', baz: 'qux' }
 ```
 
-**INI file section** — parsing section headers and key-value pairs
+**INI section** — a header plus an entry, with the punctuation dropped
 
 ```typescript
 import { grammar, run } from 'unitas';
-import { map, outer, sequence, bracketed } from 'unitas/combinators';
+import { bracketed, map, outer, sequence } from 'unitas/combinators';
 import { char, regex } from 'unitas/terminals';
 import { letters, nl } from 'unitas/primitives';
 import { pick } from 'unitas/utils';
@@ -121,113 +299,23 @@ const ini = grammar({
 run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['host', 'localhost'] }
 ```
 
-## Table of Contents
+## API index
 
-<$toc>
+One line per export. Every name links to its full description and runnable example in the reference pages under [`doc/api`](https://github.com/sovrin/unitas/tree/master/doc/api).
 
-## Core Concepts
+<$index>
 
-### The Parser Type
+## Contributing
 
-A `Parser<T>` is a function that takes an input string and returns a `Result<T>`. The generic `T` represents the type of value the parser produces.
-
-```typescript
-type Parser<T> = (input: string) => Result<T>;
+```bash
+npm test                  # run the suite
+npm run build             # compile to dist/
+npm run generate:index    # regenerate barrel files after adding a source file
+npm run generate:readme   # regenerate README.md and doc/api/ from JSDoc
 ```
 
-### The Result Type
-
-Every parser returns a `Result<T>` which is either:
-
-- **Success** — The parser matched and produced a value
-- **Failure** — The parser did not match
-
-```typescript
-type Success<T> = { ok: true; value: T; remaining: string };
-type Failure = { ok: false; error?: string };
-type Result<T> = Success<T> | Failure;
-```
-
-The `remaining` string is crucial — it represents what input is left after the parser has done its work. This is how we "consume" input and chain parsers together.
-
-### Creating a Parser
-
-Use `create` to wrap a parsing function:
-
-```typescript
-import { create, success, failure } from 'unitas';
-
-const parser = create<string>((input) => {
-    if (input.startsWith('hello')) {
-        return success('hello', input.slice(5));
-    }
-    return failure('expected "hello"');
-});
-```
-
-### Understanding the Monadic Nature
-
-Parsers are monadic, which means they follow certain laws that make them composable:
-
-1. **Left identity**: `create(success(a, input))` behaves like `a`
-2. **Right identity**: `parser` composed with `success` returns equivalent result
-3. **Associativity**: Composition order doesn't affect final result
-
-The practical implication is that you can chain and combine parsers predictably.
-
-### Success Results
-
-When a parser successfully matches, it returns:
-
-```typescript
-{ ok: true, value: 'hello', remaining: ' world' }
-       │           │                   │
-       │           │                   └── What's left to parse
-       │           └── The parsed value
-       └── Always true for success
-```
-
-### Failure Results
-
-When a parser fails, it returns:
-
-```typescript
-{ ok: false }                      // Generic failure
-{ ok: false, error: 'expected a' } // Failure with message
-```
-
-The `error` field is optional — you can always add meaningful error messages later using `label`.
-
-## Core (`unitas`)
-
-**Core** provides the fundamental types and functions for building parsers.
-
-<$core>
-
-## Terminals (`unitas/terminals`)
-
-**Terminals** are the basic building blocks that match specific parts of the input. They don't combine other parsers — they directly inspect the input string.
-
-<$terminals>
-
-## Primitives (`unitas/primitives`)
-
-**Primitives** are pre-built parser instances ready to use. Unlike terminals which are factory functions (like `char('x')`), primitives are constants you can pass directly to combinators.
-
-<$primitives>
-
-## Combinators (`unitas/combinators`)
-
-**Combinators** are functions that take one or more parsers and return a new parser. They are the "glue" that lets you compose complex parsers from simple ones.
-
-<$combinators>
-
-## Utils (`unitas/utils`)
-
-**Utils** are utility functions for working with parser results, arrays, and function composition.
-
-<$utils>
+Every export lives in its own file with a co-located test and a JSDoc `@example`. Those examples are the single source of truth: they are extracted into `test/examples.test.ts` and into the documentation, so they cannot drift.
 
 ## License
 
-MIT
+MIT © [Oleg Kamlowski](https://github.com/sovrin)

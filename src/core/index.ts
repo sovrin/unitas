@@ -1,5 +1,4 @@
 export * from './failure';
-export * from './forward';
 export * from './grammar';
 export * from './label';
 export * from './lazy';
