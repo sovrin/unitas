@@ -1,7 +1,6 @@
 import type { Parser } from '../core/parser';
 
 import { failure } from '../core/failure';
-import { forward } from '../core/forward';
 import { create } from '../core/parser';
 
 /**
@@ -19,6 +18,6 @@ export const guard = <T>(condition: boolean, parser: Parser<T>) => {
 
         const result = parser(input);
 
-        return forward(result);
+        return result;
     });
 };

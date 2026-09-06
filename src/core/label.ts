@@ -1,7 +1,6 @@
 import type { Parser } from '../core/parser';
 
 import { failure } from './failure';
-import { forward } from './forward';
 import { create } from './parser';
 
 /**
@@ -17,6 +16,6 @@ export const label = <T>(parser: Parser<T>, expected: string): Parser<T> => {
             return failure(`expected ${expected}`);
         }
 
-        return forward(result);
+        return result;
     });
 };
