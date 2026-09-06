@@ -9,13 +9,13 @@ describe('word', () => {
             const parser = word('test');
             const result = parser('test abc');
 
-            assertSuccess<string>(result, 'test', 'abc');
+            assertSuccess<string>(result, 'test', 5);
         }
         {
             const parser = word('hello');
             const result = parser('hello world');
 
-            assertSuccess<string>(result, 'hello', 'world');
+            assertSuccess<string>(result, 'hello', 6);
         }
     });
 
@@ -39,13 +39,13 @@ describe('word', () => {
             const parser = word('test');
             const result = parser('test!');
 
-            assertSuccess<string>(result, 'test', '!');
+            assertSuccess<string>(result, 'test', 4);
         }
         {
             const parser = word('word');
             const result = parser('word.');
 
-            assertSuccess<string>(result, 'word', '.');
+            assertSuccess<string>(result, 'word', 4);
         }
     });
 });

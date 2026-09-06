@@ -1,5 +1,5 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { alphaNum } from './alphaNum';
@@ -7,18 +7,16 @@ import { alphaNum } from './alphaNum';
 const parser = many1(alphaNum);
 
 /**
- * Parse one or more alphanumeric characters.
+ * Parse one or more alphanumeric characters as a string.
  *
  * @example
- * alphaNums('abc123') // { ok: true, value: 'abc123', remaining: '' }
+ * alphaNums('placeholder') // { ok: true, value: 'placeholder', index: 11, furthest: 11, expected: ['alphanumeric character'] }
  */
-export const alphaNums = create<string>((input) => {
-    const result = parser(input);
+export const alphaNums = create<string>((input, index = 0) => {
+    const result = parser(input, index);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return merge(result, success(result.value.join(''), result.index));
 });

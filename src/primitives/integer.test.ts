@@ -7,25 +7,25 @@ describe('integer', () => {
     it('should parse a positive integer', () => {
         const result = integer('42');
 
-        assertSuccess<number>(result, 42, '');
+        assertSuccess<number>(result, 42, 2);
     });
 
     it('should parse a negative integer', () => {
         const result = integer('-7');
 
-        assertSuccess<number>(result, -7, '');
+        assertSuccess<number>(result, -7, 2);
     });
 
     it('should parse multi-digit negative integer', () => {
         const result = integer('-123');
 
-        assertSuccess<number>(result, -123, '');
+        assertSuccess<number>(result, -123, 4);
     });
 
     it('should stop at non-numeric character', () => {
         const result = integer('123abc');
 
-        assertSuccess<number>(result, 123, 'abc');
+        assertSuccess<number>(result, 123, 3);
     });
 
     it('should fail on non-numeric input', () => {

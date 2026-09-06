@@ -8,17 +8,17 @@ describe('uppercases', () => {
         {
             const result = uppercases('ABCdef');
 
-            assertSuccess<string>(result, 'ABC', 'def');
+            assertSuccess<string>(result, 'ABC', 3);
         }
         {
             const result = uppercases('HELLO world');
 
-            assertSuccess<string>(result, 'HELLO', ' world');
+            assertSuccess<string>(result, 'HELLO', 5);
         }
         {
             const result = uppercases('ABC');
 
-            assertSuccess<string>(result, 'ABC', '');
+            assertSuccess<string>(result, 'ABC', 3);
         }
     });
 
@@ -43,6 +43,6 @@ describe('uppercases', () => {
     it('should handle single uppercase letter', () => {
         const result = uppercases('Abc');
 
-        assertSuccess<string>(result, 'A', 'bc');
+        assertSuccess<string>(result, 'A', 1);
     });
 });

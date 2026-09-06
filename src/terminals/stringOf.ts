@@ -6,12 +6,14 @@ import { success } from '../core/success';
  * Parse first character that exists in string (like charOf but for a string).
  *
  * @example
- * stringOf('abc')('abcdef') // { ok: true, value: 'a', remaining: 'bcdef' }
+ * stringOf('abc')('abcdef') // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
  */
 export const stringOf = (chars: string) => {
-    return create<string>((input) =>
-        input.length > 0 && chars.includes(input[0])
-            ? success(input[0], input.slice(1))
-            : failure(),
+    const described = `one of '${chars}'`;
+
+    return create<string>((input, index = 0) =>
+        index < input.length && chars.includes(input[index])
+            ? success(input[index], index + 1)
+            : failure(index, described),
     );
 };

@@ -1,6 +1,6 @@
 {
     "name": "unitas",
-    "version": "0.2.5",
+    "version": "0.3.0",
     "description": "TypeScript-first parser combinator library — compose small typed parsers into whole grammars. Zero dependencies, ESM-only, tree-shakeable.",
     "keywords": [
         "parser",

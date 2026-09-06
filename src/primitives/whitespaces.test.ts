@@ -8,17 +8,17 @@ describe('whitespaces', () => {
         {
             const result = whitespaces('   abc');
 
-            assertSuccess<string>(result, '   ', 'abc');
+            assertSuccess<string>(result, '   ', 3);
         }
         {
             const result = whitespaces(' \t\n end');
 
-            assertSuccess<string>(result, ' \t\n ', 'end');
+            assertSuccess<string>(result, ' \t\n ', 4);
         }
         {
             const result = whitespaces('   ');
 
-            assertSuccess<string>(result, '   ', '');
+            assertSuccess<string>(result, '   ', 3);
         }
     });
 
@@ -38,6 +38,6 @@ describe('whitespaces', () => {
     it('should handle single whitespace character', () => {
         const result = whitespaces(' abc');
 
-        assertSuccess<string>(result, ' ', 'abc');
+        assertSuccess<string>(result, ' ', 1);
     });
 });

@@ -7,7 +7,7 @@ import { surrounded } from './surrounded';
  * Parse content surrounded by brackets.
  *
  * @example
- * bracketed(string('hi'))('[hi]') // { ok: true, value: 'hi', remaining: '' }
+ * bracketed(string('hi'))('[hi]') // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
  */
 export const bracketed = <T>(content: Parser<T>) => {
     return surrounded(string('['), content, string(']'));

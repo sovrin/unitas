@@ -13,7 +13,7 @@ describe('validate', () => {
         const parser = validate(parser1, (value) => value === 'A');
         const result = parser('AAA');
 
-        assertSuccess<'A'>(result, 'A', 'AA');
+        assertSuccess<'A'>(result, 'A', 1);
     });
 
     it('should fail when parser succeeds but predicate returns false', () => {

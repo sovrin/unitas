@@ -12,7 +12,7 @@ describe('parenthesized', () => {
         const parser = parenthesized(createTestParser('ABC'));
         const result = parser('(ABC)');
 
-        assertSuccess<'ABC'>(result, 'ABC', '');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should fail with uneven parentheses', () => {
@@ -26,6 +26,6 @@ describe('parenthesized', () => {
         const parser = parenthesized(createTestParser(''));
         const result = parser('()');
 
-        assertSuccess<''>(result, '', '');
+        assertSuccess<''>(result, '', 2);
     });
 });

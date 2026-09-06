@@ -13,7 +13,7 @@ describe('skip', () => {
         const parser = skip(parser1, 3);
         const result = parser('AAAB');
 
-        assertSuccess<null>(result, null, 'B');
+        assertSuccess<null>(result, null, 3);
     });
 
     it('should fail if not enough occurrences', () => {
@@ -29,6 +29,6 @@ describe('skip', () => {
         const parser = skip(parser1, 0);
         const result = parser('ABC');
 
-        assertSuccess<null>(result, null, 'ABC');
+        assertSuccess<null>(result, null, 0);
     });
 });

@@ -1,5 +1,5 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { octDigit } from './octDigit';
@@ -7,18 +7,16 @@ import { octDigit } from './octDigit';
 const parser = many1(octDigit);
 
 /**
- * Parse one or more octal digits.
+ * Parse one or more octal digits as a string.
  *
  * @example
- * octDigits('0777abc') // { ok: true, value: '0777', remaining: 'abc' }
+ * octDigits('placeholder') // { ok: false, index: 0, furthest: 0, expected: ['octal digit'] }
  */
-export const octDigits = create<string>((input) => {
-    const result = parser(input);
+export const octDigits = create<string>((input, index = 0) => {
+    const result = parser(input, index);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return merge(result, success(result.value.join(''), result.index));
 });

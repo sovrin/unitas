@@ -1,4 +1,8 @@
-import { create, type Parser } from '../core/parser';
+import type { Parser } from '../core/parser';
+
+import { merge } from '../core/merge';
+import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
@@ -6,23 +10,27 @@ import { success } from '../core/success';
  * The fused parser concatenates all string results.
  *
  * @example
- * fuse(char('a'), char('b'), char('c'))('abc') // { ok: true, value: 'abc', remaining: '' }
- * fuse(string('hello'), char(' '), string('world'))('hello world') // { ok: true, value: 'hello world', remaining: '' }
+ * fuse(char('a'), char('b'), char('c'))('abc') // { ok: true, value: 'abc', index: 3, furthest: -1, expected: [] }
+ * fuse(string('hello'), char(' '), string('world'))('hello world') // { ok: true, value: 'hello world', index: 11, furthest: -1, expected: [] }
  */
 export const fuse = <T extends Parser<string>[]>(...parsers: T) => {
-    return create<string>((input) => {
-        let result = '';
-        let remaining = input;
+    return create<string>((input, index = 0) => {
+        let value = '';
+        let at = index;
+        let trace: Result<unknown> = success(null, index);
 
         for (const parser of parsers) {
-            const parsed = parser(remaining);
+            const parsed: Result<string> = merge(trace, parser(input, at));
+            trace = parsed;
+
             if (!parsed.ok) {
-                return { ok: false };
+                return parsed;
             }
-            result += parsed.value;
-            remaining = parsed.remaining;
+
+            value += parsed.value;
+            at = parsed.index;
         }
 
-        return success(result, remaining);
+        return merge(trace, success(value, at));
     });
 };

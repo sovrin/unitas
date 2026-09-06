@@ -16,14 +16,14 @@ describe('chainRight', () => {
         const parser = chainRight(digits, operation);
         const result = parser('2**3');
 
-        assertSuccess<number | null>(result, 8, '');
+        assertSuccess<number | null>(result, 8, 4);
     });
 
     it('should return single value when successful', () => {
         const parser = chainRight(digits, operation);
         const result = parser('5');
 
-        assertSuccess<number | null>(result, 5, '');
+        assertSuccess<number | null>(result, 5, 1);
     });
 
     it('should handle empty input', () => {
@@ -37,6 +37,6 @@ describe('chainRight', () => {
         const parser = chainRight(digits, operation);
         const result = parser('10-3-2');
 
-        assertSuccess<number | null>(result, 9, ''); // 10-(3-2)
+        assertSuccess<number | null>(result, 9, 6); // 10-(3-2)
     });
 });

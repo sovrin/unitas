@@ -9,8 +9,8 @@ import { success } from '../core/success';
 import { postfix } from './postfix';
 
 describe('postfix', () => {
-    const postfixOps: Parser<(value: number) => number> = (input) => {
-        if (input.startsWith('!')) {
+    const postfixOps: Parser<(value: number) => number> = (input, index = 0) => {
+        if (input.startsWith('!', index)) {
             return success((value) => {
                 let result = 1;
                 for (let i = 2; i <= value; i += 1) {
@@ -18,19 +18,19 @@ describe('postfix', () => {
                 }
 
                 return result;
-            }, input.slice(1));
+            }, index + 1);
         }
-        if (input.startsWith('²')) {
-            return success((value) => value * value, input.slice(1));
+        if (input.startsWith('²', index)) {
+            return success((value) => value * value, index + 1);
         }
-        return failure();
+        return failure(index);
     };
 
     it('should handle atom without postfix operators', () => {
         const parser = postfix(digits, postfixOps);
         const result = parser('5');
 
-        assertSuccess<number>(result, 5, '');
+        assertSuccess<number>(result, 5, 1);
     });
 
     it('should apply single postfix operator', () => {
@@ -38,12 +38,12 @@ describe('postfix', () => {
         {
             const result = parser('5!');
 
-            assertSuccess<number>(result, 120, ''); // 5! = 120
+            assertSuccess<number>(result, 120, 2); // 5! = 120
         }
         {
             const result = parser('3²');
 
-            assertSuccess<number>(result, 9, ''); // 3² = 9
+            assertSuccess<number>(result, 9, 2); // 3² = 9
         }
     });
 
@@ -51,7 +51,7 @@ describe('postfix', () => {
         const parser = postfix(digits, postfixOps);
         const result = parser('3²!');
 
-        assertSuccess<number>(result, 362880, ''); // (3²)! = 9! = 362880
+        assertSuccess<number>(result, 362880, 3); // (3²)! = 9! = 362880
     });
 
     it('should fail when atom parser fails', () => {
@@ -65,13 +65,13 @@ describe('postfix', () => {
         const parser = postfix(digits, postfixOps);
         const result = parser('2²²');
 
-        assertSuccess<number>(result, 16, ''); // (2²)² = 4² = 16
+        assertSuccess<number>(result, 16, 3); // (2²)² = 4² = 16
     });
 
     it('should stop when no more operators match', () => {
         const parser = postfix(digits, postfixOps);
         const result = parser('3!+');
 
-        assertSuccess<number>(result, 6, '+'); // 3! = 6, stops at +
+        assertSuccess<number>(result, 6, 2); // 3! = 6, stops at +
     });
 });

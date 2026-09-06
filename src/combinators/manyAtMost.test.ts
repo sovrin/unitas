@@ -10,34 +10,34 @@ describe('manyAtMost', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('AABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A'], 2);
     });
 
     it('should parse exactly n occurrences when available', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should not parse more than n occurrences', () => {
         const parser = manyAtMost(parser1, 2);
         const result = parser('AAAAAA');
 
-        assertSuccess<'A'[]>(result, ['A', 'A'], 'AAAA');
+        assertSuccess<'A'[]>(result, ['A', 'A'], 2);
     });
 
     it('should parse zero occurrences', () => {
         const parser = manyAtMost(parser1, 3);
         const result = parser('BCD');
 
-        assertSuccess<'A'[]>(result, [], 'BCD');
+        assertSuccess<'A'[]>(result, [], 0);
     });
 
     it('should handle limit of zero', () => {
         const parser = manyAtMost(parser1, 0);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, [], 'AAABCD');
+        assertSuccess<'A'[]>(result, [], 0);
     });
 });

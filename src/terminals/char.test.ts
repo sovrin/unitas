@@ -8,7 +8,7 @@ describe('char', () => {
         const parser = char('A');
         const result = parser('ABC');
 
-        assertSuccess<'A' | null>(result, 'A', 'BC');
+        assertSuccess<'A' | null>(result, 'A', 1);
     });
 
     it('should fail when character does not match', () => {

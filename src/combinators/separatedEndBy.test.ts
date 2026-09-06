@@ -11,7 +11,7 @@ describe('separatedEndBy', () => {
         const parser = separatedEndBy(parser1, parser2);
         const result = parser('CCC');
 
-        assertSuccess<'A'[]>(result, [], 'CCC');
+        assertSuccess<'A'[]>(result, [], 0);
     });
 
     it('should parse elements without trailing separator', () => {
@@ -21,7 +21,7 @@ describe('separatedEndBy', () => {
         const parser = separatedEndBy(parser1, parser2);
         const result = parser('A,A,A');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 5);
     });
 
     it('should parse elements with trailing separator', () => {
@@ -31,7 +31,7 @@ describe('separatedEndBy', () => {
         const parser = separatedEndBy(parser1, parser2);
         const result = parser('A,A,A,');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 6);
     });
 
     it('should handle single element with separator', () => {
@@ -41,7 +41,7 @@ describe('separatedEndBy', () => {
         const parser = separatedEndBy(parser1, parser2);
         const result = parser('A,');
 
-        assertSuccess<'A'[]>(result, ['A'], '');
+        assertSuccess<'A'[]>(result, ['A'], 2);
     });
 
     it('should handle single element without separator', () => {
@@ -51,6 +51,6 @@ describe('separatedEndBy', () => {
         const parser = separatedEndBy(parser1, parser2);
         const result = parser('A');
 
-        assertSuccess<'A'[]>(result, ['A'], '');
+        assertSuccess<'A'[]>(result, ['A'], 1);
     });
 });

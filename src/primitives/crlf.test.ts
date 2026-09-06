@@ -7,7 +7,7 @@ describe('crlf', () => {
     it('should parse CRLF sequence', () => {
         const result = crlf('\r\nabc');
 
-        assertSuccess<string>(result, '\r\n', 'abc');
+        assertSuccess<string>(result, '\r\n', 2);
     });
 
     it('should fail on single CR or LF', () => {

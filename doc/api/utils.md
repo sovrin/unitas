@@ -57,7 +57,7 @@ pick(2, 4)(['a', 'b', 'c', 'd', 'e']); // ['c', 'e']
 Pipe parser functions together.
 
 ```typescript
-pipe(lexeme)(letters)('xyz   abc'); // { ok: true, value: 'xyz', remaining: 'abc' }
+pipe(lexeme)(letters)('xyz   abc'); // { ok: true, value: 'xyz', index: 6, furthest: 3, expected: ['letter'] }
 ```
 
 ### `pop`

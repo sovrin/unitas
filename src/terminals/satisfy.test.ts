@@ -8,7 +8,7 @@ describe('satisfy', () => {
         const parser = satisfy((c: string) => c >= '0' && c <= '9');
         const result = parser('5abc');
 
-        assertSuccess<string>(result, '5', 'abc');
+        assertSuccess<string>(result, '5', 1);
     });
 
     it('should fail when character does not satisfy predicate', () => {

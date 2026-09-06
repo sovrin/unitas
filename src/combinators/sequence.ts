@@ -1,32 +1,36 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
  * Parse a sequence of parsers and return all results as an array.
  *
  * @example
- * sequence(char('a'), char('b'), char('c'))('abc') // { ok: true, value: ['a', 'b', 'c'], remaining: '' }
+ * sequence(char('a'), char('b'), char('c'))('abc') // { ok: true, value: ['a', 'b', 'c'], index: 3, furthest: -1, expected: [] }
  */
 export const sequence = <T extends readonly unknown[]>(
     ...parsers: { [K in keyof T]: Parser<T[K]> }
 ) => {
-    return create<T>((input) => {
+    return create<T>((input, index = 0) => {
         const results: unknown[] = [];
-        let remaining = input;
+        let at = index;
+        let trace: Result<unknown> = success(null, index);
 
         for (const parser of parsers) {
-            const result = parser(remaining);
+            const result: Result<unknown> = merge(trace, parser(input, at));
+            trace = result;
+
             if (!result.ok) {
-                return failure();
+                return result;
             }
 
             results.push(result.value);
-            remaining = result.remaining;
+            at = result.index;
         }
 
-        return success(results as unknown as T, remaining);
+        return merge(trace, success(results as unknown as T, at));
     });
 };

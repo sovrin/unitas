@@ -12,14 +12,14 @@ describe('optional', () => {
         const parser = optional(aParser);
         const result = parser('ABC');
 
-        assertSuccess<'A' | null>(result, 'A', 'BC');
+        assertSuccess<'A' | null>(result, 'A', 1);
     });
 
     it('should return null when parser fails', () => {
-        const parser1 = create<'A'>(() => failure());
+        const parser1 = create<'A'>((_input, index = 0) => failure(index));
         const parser = optional(parser1);
         const result = parser('ABC');
 
-        assertSuccess<'A' | null>(result, null, 'ABC');
+        assertSuccess<'A' | null>(result, null, 0);
     });
 });

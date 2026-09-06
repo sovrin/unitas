@@ -22,14 +22,14 @@ describe('many1', () => {
         const parser = many1(parser1);
         const result = parser('ABCD');
 
-        assertSuccess<'A'[]>(result, ['A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A'], 1);
     });
 
     it('should parse multiple occurrences', () => {
         const parser = many1(parser1);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should fail on empty input', () => {
@@ -41,10 +41,10 @@ describe('many1', () => {
 
     it('should fail when many returns null after first success', () => {
         let callCount = 0;
-        const flakyParser = (input: string) => {
+        const flakyParser = (_input: string, index = 0) => {
             callCount++;
             if (callCount === 1) {
-                return success('A', input.slice(1));
+                return success('A', index + 1);
             }
 
             // On subsequent calls, throw to make many() fail

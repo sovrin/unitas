@@ -36,8 +36,8 @@ describe('memoize', () => {
         const result1 = parser('123');
         const result2 = parser('456');
 
-        assertSuccess(result1, 123, '');
-        assertSuccess(result2, 456, '');
+        assertSuccess(result1, 123, 3);
+        assertSuccess(result2, 456, 3);
     });
 
     it('should work with char parser', () => {
@@ -46,7 +46,7 @@ describe('memoize', () => {
         const result1 = parser('xyz');
         const result2 = parser('xyz');
 
-        assertSuccess(result1, 'x', 'yz');
+        assertSuccess(result1, 'x', 1);
         expect(result1).toBe(result2);
     });
 });

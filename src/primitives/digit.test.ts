@@ -8,17 +8,17 @@ describe('digit', () => {
         {
             const result = digit('5abc');
 
-            assertSuccess<number>(result, 5, 'abc');
+            assertSuccess<number>(result, 5, 1);
         }
         {
             const result = digit('0xyz');
 
-            assertSuccess<number>(result, 0, 'xyz');
+            assertSuccess<number>(result, 0, 1);
         }
         {
             const result = digit('9');
 
-            assertSuccess<number>(result, 9, '');
+            assertSuccess<number>(result, 9, 1);
         }
     });
 
@@ -43,6 +43,6 @@ describe('digit', () => {
     it('should only parse first digit', () => {
         const result = digit('123');
 
-        assertSuccess<number>(result, 1, '23');
+        assertSuccess<number>(result, 1, 1);
     });
 });

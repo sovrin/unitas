@@ -7,7 +7,7 @@ describe('uppercase', () => {
     it('should parse uppercase letter', () => {
         const result = uppercase('ABC');
 
-        assertSuccess<UppercaseLetter>(result, 'A', 'BC');
+        assertSuccess<UppercaseLetter>(result, 'A', 1);
     });
 
     it('should fail on lowercase', () => {
@@ -25,6 +25,6 @@ describe('uppercase', () => {
     it('should narrow result to first character type for const string', () => {
         const result = uppercase('ABC' as const);
 
-        assertSuccess<'A'>(result, 'A', 'BC');
+        assertSuccess<'A'>(result, 'A', 1);
     });
 });

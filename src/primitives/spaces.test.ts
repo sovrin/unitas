@@ -7,13 +7,13 @@ describe('spaces', () => {
     it('should parse one or more spaces', () => {
         const result = spaces('   abc');
 
-        assertSuccess<string>(result, '   ', 'abc');
+        assertSuccess<string>(result, '   ', 3);
     });
 
     it('should parse single space', () => {
         const result = spaces(' abc');
 
-        assertSuccess<string>(result, ' ', 'abc');
+        assertSuccess<string>(result, ' ', 1);
     });
 
     it('should fail on tab', () => {

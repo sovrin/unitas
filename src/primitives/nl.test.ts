@@ -7,7 +7,7 @@ describe('nl', () => {
     it('should parse newline character', () => {
         const result = nl('\nabc');
 
-        assertSuccess<'\n'>(result, '\n', 'abc');
+        assertSuccess<'\n'>(result, '\n', 1);
     });
 
     it('should fail on non-newline characters', () => {

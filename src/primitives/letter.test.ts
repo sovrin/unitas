@@ -7,7 +7,7 @@ describe('letter', () => {
     it('should parse alphabetic characters', () => {
         const result = letter('A' as const);
 
-        assertSuccess<Letter>(result, 'A', '');
+        assertSuccess<Letter>(result, 'A', 1);
     });
 
     it('should fail on non-letter characters', () => {
@@ -19,24 +19,24 @@ describe('letter', () => {
     it('should only parse first character', () => {
         const result = letter('hello' as never);
 
-        assertSuccess<unknown>(result, 'h', 'ello');
+        assertSuccess<unknown>(result, 'h', 1);
     });
 
     it('should match the expected type', () => {
         const result = letter('A');
 
-        assertSuccess<Letter>(result, 'A', '');
+        assertSuccess<Letter>(result, 'A', 1);
     });
 
     it('should narrow result to first character type for const string', () => {
         const result = letter('abc' as const);
 
-        assertSuccess<'a'>(result, 'a', 'bc');
+        assertSuccess<'a'>(result, 'a', 1);
     });
 
     it('should narrow result type for uppercase const string', () => {
         const result = letter('XYZ' as const);
 
-        assertSuccess<'X'>(result, 'X', 'YZ');
+        assertSuccess<'X'>(result, 'X', 1);
     });
 });

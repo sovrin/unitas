@@ -10,15 +10,15 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 import { when } from './when';
 
-const boolParser = create<boolean>((input) => {
-    if (input.startsWith('*')) {
-        return success(true, input.slice(1));
+const boolParser = create<boolean>((input, index = 0) => {
+    if (input.startsWith('*', index)) {
+        return success(true, index + 1);
     }
 
-    return success(false, input);
+    return success(false, index);
 });
 
-const failingCondition = create<boolean>(() => failure());
+const failingCondition = create<boolean>((_input, index = 0) => failure(index));
 
 describe('when', () => {
     const thenP = createTestParser('yes');
@@ -28,14 +28,14 @@ describe('when', () => {
         const parser = when(boolParser, thenP, elseP);
         const result = parser('*yes');
 
-        assertSuccess<'yes' | 'no'>(result, 'yes', '');
+        assertSuccess<'yes' | 'no'>(result, 'yes', 4);
     });
 
     it('should run elseParser when condition is false', () => {
         const parser = when(boolParser, thenP, elseP);
         const result = parser('no');
 
-        assertSuccess<'yes' | 'no'>(result, 'no', '');
+        assertSuccess<'yes' | 'no'>(result, 'no', 2);
     });
 
     it('should fail when condition parser fails', () => {

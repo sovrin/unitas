@@ -44,12 +44,12 @@ describe('grammar', () => {
 
         {
             const result = a('abc');
-            assertSuccess<'a'>(result, 'a', 'bc');
+            assertSuccess<'a'>(result, 'a', 1);
         }
 
         {
             const result = b('bcd');
-            assertSuccess<'b'>(result, 'b', 'cd');
+            assertSuccess<'b'>(result, 'b', 1);
         }
     });
 
@@ -73,22 +73,22 @@ describe('grammar', () => {
 
         {
             const result = add('2+3');
-            assertSuccess<unknown>(result, 5, '');
+            assertSuccess<unknown>(result, 5, 3);
         }
 
         {
             const result = number('5');
-            assertSuccess<number>(result, 5, '');
+            assertSuccess<number>(result, 5, 1);
         }
 
         {
             const result = term('(2+3)');
-            assertSuccess<unknown>(result, 5, '');
+            assertSuccess<unknown>(result, 5, 5);
         }
 
         {
             const result = expr('1+(2+3)'); // [6, '']
-            assertSuccess<unknown>(result, 6, '');
+            assertSuccess<unknown>(result, 6, 7);
         }
     });
 });

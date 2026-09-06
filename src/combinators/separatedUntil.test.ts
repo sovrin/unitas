@@ -16,7 +16,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A,A,A;');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 6);
     });
 
     it('should handle single element with terminator', () => {
@@ -27,7 +27,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser('A;');
 
-        assertSuccess<'A'[]>(result, ['A'], '');
+        assertSuccess<'A'[]>(result, ['A'], 2);
     });
 
     it('should handle empty list with terminator', () => {
@@ -38,7 +38,7 @@ describe('separatedUntil', () => {
         const parser = separatedUntil(parser1, parser2, parser3);
         const result = parser(';');
 
-        assertSuccess<'A'[]>(result, [], '');
+        assertSuccess<'A'[]>(result, [], 1);
     });
 
     it('should fail without terminator', () => {

@@ -13,7 +13,7 @@ describe('peek', () => {
         const parser = peek(parser1);
         const result = parser('AB');
 
-        assertSuccess<'A'>(result, 'A', 'AB');
+        assertSuccess<'A'>(result, 'A', 0);
     });
 
     it('should fail when peek parser does not match', () => {

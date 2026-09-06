@@ -8,24 +8,24 @@ describe('eol', () => {
         {
             const result = eol('\nabc');
 
-            assertSuccess<string>(result, '\n', 'abc');
+            assertSuccess<string>(result, '\n', 1);
         }
         {
             const result = eol('\r\nabc');
 
-            assertSuccess<string>(result, '\r\n', 'abc');
+            assertSuccess<string>(result, '\r\n', 2);
         }
     });
 
     it('should handle end of file', () => {
         const result = eol('');
 
-        assertSuccess<string>(result, '', '');
+        assertSuccess<string>(result, '', 0);
     });
 
     it('should prefer CRLF over individual characters', () => {
         const result = eol('\r\n');
 
-        assertSuccess<string>(result, '\r\n', '');
+        assertSuccess<string>(result, '\r\n', 2);
     });
 });

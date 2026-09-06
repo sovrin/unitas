@@ -1,6 +1,6 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { type Result } from '../core/result';
 import { success } from '../core/success';
@@ -9,28 +9,42 @@ import { success } from '../core/success';
  * Chain right-associative operations (fails on empty input).
  *
  * @example
- * chainRight1(digits, operation)('2-1-1') // { ok: true, value: 2, remaining: '' }
- * chainRight1(digits, operation)('4/2/2') // { ok: true, value: 4, remaining: '' }
+ * chainRight1(digits, operation)('1+2+3') // { ok: true, value: 6, index: 5, furthest: 5, expected: ['operator'] }
  */
 export const chainRight1 = <T>(
     term: Parser<T>,
     operator: Parser<(left: T, right: T) => T>,
 ) => {
-    return create<T>((input) => {
-        const leftResult = term(input);
-        if (!leftResult.ok) return failure();
+    const parser: Parser<T> = create<T>((input, index = 0) => {
+        const leftResult = term(input, index);
+        if (!leftResult.ok) {
+            return leftResult;
+        }
 
-        const tryRightSide = (leftValue: T, remaining: string): Result<T> => {
-            const opResult = operator(remaining);
-            if (!opResult.ok) return success(leftValue, remaining);
+        const opResult = merge(leftResult, operator(input, leftResult.index));
+        if (!opResult.ok) {
+            return merge(opResult, success(leftResult.value, leftResult.index));
+        }
 
-            const rightResult = chainRight1(term, operator)(opResult.remaining);
-            if (!rightResult.ok) return success(leftValue, remaining);
+        const rightResult: Result<T> = merge(
+            opResult,
+            parser(input, opResult.index),
+        );
+        if (!rightResult.ok) {
+            return merge(
+                rightResult,
+                success(leftResult.value, leftResult.index),
+            );
+        }
 
-            const combinedValue = opResult.value(leftValue, rightResult.value);
-            return success(combinedValue, rightResult.remaining);
-        };
-
-        return tryRightSide(leftResult.value, leftResult.remaining);
+        return merge(
+            rightResult,
+            success(
+                opResult.value(leftResult.value, rightResult.value),
+                rightResult.index,
+            ),
+        );
     });
+
+    return parser;
 };

@@ -9,35 +9,35 @@ describe('chainLeft1', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('1+1+1');
 
-        assertSuccess<number>(result, 3, ''); // ((1+1)+1)
+        assertSuccess<number>(result, 3, 5); // ((1+1)+1)
     });
 
     it('should handle single operand', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('42');
 
-        assertSuccess<number>(result, 42, '');
+        assertSuccess<number>(result, 42, 2);
     });
 
     it('should parse left-associative operations', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('1+2+3');
 
-        assertSuccess<number>(result, 6, ''); // ((1+2)+3)
+        assertSuccess<number>(result, 6, 5); // ((1+2)+3)
     });
 
     it('should handle mixed operations with same precedence', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('10-3+2');
 
-        assertSuccess<number>(result, 9, ''); // ((10-3)+2)
+        assertSuccess<number>(result, 9, 6); // ((10-3)+2)
     });
 
     it('should stop when operator is not found', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('1+2*3^4');
 
-        assertSuccess<number>(result, 9, '^4'); //  1+2, then stops
+        assertSuccess<number>(result, 9, 5); //  1+2, then stops
     });
 
     it('should handle multiplication and division', () => {
@@ -45,12 +45,12 @@ describe('chainLeft1', () => {
         {
             const result = parser('8/2*3');
 
-            assertSuccess<number>(result, 12, ''); // ((8/2)*3)
+            assertSuccess<number>(result, 12, 5); // ((8/2)*3)
         }
         {
             const result = parser('24/3/2');
 
-            assertSuccess<number>(result, 4, ''); // ((24/3)/2)
+            assertSuccess<number>(result, 4, 6); // ((24/3)/2)
         }
     });
 
@@ -65,6 +65,6 @@ describe('chainLeft1', () => {
         const parser = chainLeft1(digits, operation);
         const result = parser('1+2+');
 
-        assertSuccess<number>(result, 3, '+'); // Stops at incomplete operation
+        assertSuccess<number>(result, 3, 3); // Stops at incomplete operation
     });
 });

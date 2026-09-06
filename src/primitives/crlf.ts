@@ -7,6 +7,6 @@ const parser = string('\r\n');
  * Parse CRLF line ending.
  *
  * @example
- * crlf('\r\nabc') // { ok: true, value: '\r\n', remaining: 'abc' }
+ * crlf('\r\nabc') // { ok: true, value: '\r\n', index: 2, furthest: -1, expected: [] }
  */
 export const crlf = create<string>(parser);

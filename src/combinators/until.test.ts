@@ -17,15 +17,15 @@ describe('until', () => {
         const parser = until(aParser, bParser);
         const result = parser('AAAABAAAA');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 'BAAAA');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 4);
     });
 
     it('should return empty array when terminator is at start', () => {
-        const failureParser = create(() => failure());
+        const failureParser = create((_input, index = 0) => failure(index));
         const parser = until(failureParser, bParser);
         const result = parser('BAAAA');
 
-        assertSuccess<unknown[]>(result, [], 'BAAAA');
+        assertSuccess<unknown[]>(result, [], 0);
     });
 
     it('should fail when terminator is never found and parser fails', () => {

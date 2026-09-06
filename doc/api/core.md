@@ -12,21 +12,37 @@ import {} from /* … */ 'unitas';
 
 ## Index
 
-9 exports: [`failure`](#failure) · [`grammar`](#grammar) · [`label`](#label) · [`lazy`](#lazy) · [`match`](#match) · [`memoize`](#memoize) · [`parser`](#parser) · [`run`](#run) · [`success`](#success)
+14 exports: [`error`](#error) · [`failure`](#failure) · [`format`](#format) · [`grammar`](#grammar) · [`label`](#label) · [`lazy`](#lazy) · [`locate`](#locate) · [`match`](#match) · [`memoize`](#memoize) · [`merge`](#merge) · [`parse`](#parse) · [`parser`](#parser) · [`run`](#run) · [`success`](#success)
 
 ## Reference
 
-### `failure`
+### `error`
 
-Creates a failed result with an optional error message.
+Error thrown by {@link run} when a parse fails, carrying the offset, the 1-based line/column and the set of expectations at that offset.
 
 ```typescript
-failure('unexpected input'); // { ok: false, error: 'unexpected input' }
+new ParseError('a=1,b=x', 6, ['digit']).line; // 1
+```
+
+### `failure`
+
+Creates a failed result at an offset, describing what was expected there. Expectations are phrased as nouns ('digit', "'{'") and are unioned by {@link choice}, so a failing alternation reports every branch it tried.
+
+```typescript
+failure(3, 'digit'); // { ok: false, index: 3, furthest: 3, expected: ['digit'] }
+```
+
+### `format`
+
+Renders a parse failure as a source excerpt with a caret under the offset.
+
+```typescript
+format('a=1,b=x', 6, ['digit']); // "1:7 expected digit, found 'x'\n  1 | a=1,b=x\n    |       ^"
 ```
 
 ### `grammar`
 
-Creates a recursive grammar where rules can reference each other.
+Creates a recursive grammar where rules can reference each other. Rules are resolved lazily through a shared record, so they may refer to one another by name without forward declarations. Left-recursive rules are reported by name rather than overflowing the stack.
 
 ```typescript
 type Math = {
@@ -54,10 +70,10 @@ run(g.expr, '(1+2)'); // 3
 
 ### `label`
 
-Labels a parser with a custom error message on failure.
+Replaces the expectations of a parser with a single description. Only applies when the parser failed without consuming input: once a branch has committed, its own deeper error is more useful than the label.
 
 ```typescript
-label(char('x'), 'letter x')(''); // { ok: false, error: 'expected letter x' }
+label(char('x'), 'letter x')(''); // { ok: false, index: 0, furthest: 0, expected: ['letter x'] }
 ```
 
 ### `lazy`
@@ -65,7 +81,15 @@ label(char('x'), 'letter x')(''); // { ok: false, error: 'expected letter x' }
 Defers parser creation, useful for recursive grammars.
 
 ```typescript
-lazy(() => char('a'))('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+lazy(() => char('a'))('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+```
+
+### `locate`
+
+Converts a character offset into a 1-based line and column.
+
+```typescript
+locate('a=1\nb=x', 5); // { index: 5, line: 2, column: 2 }
 ```
 
 ### `match`
@@ -73,29 +97,45 @@ lazy(() => char('a'))('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 Pattern matching on a Result to handle success and failure cases.
 
 ```typescript
-match(success('hello', ''), { success: (v) => v, failure: () => 'failed' }); // 'hello'
+match(success('hello', 5), { success: (v) => v, failure: () => 'failed' }); // 'hello'
 ```
 
 ### `memoize`
 
-Memoizes a parser to cache results by input string. Useful for expensive parsers and recursive grammars to avoid exponential backtracking.
+Memoizes a parser so each offset is parsed at most once (packrat caching). Keyed by offset rather than by the remaining input, so entries are cheap and the cache is dropped as soon as a different input is parsed.
 
 ```typescript
 const memoDigits = memoize(digits);
-memoDigits('123'); // { ok: true, value: 123, remaining: '' }
+memoDigits('123'); // { ok: true, value: 123, index: 3, furthest: -1, expected: [] }
+```
+
+### `merge`
+
+Carries the furthest-failure trace of an earlier result into a later one. Every combinator that runs more than one parser threads its intermediate results through `merge`, so an expectation recorded deep inside a branch that was later backtracked over still surfaces in the final error. Without it, `a=1,b=x` would only report "unconsumed input" instead of "expected digit". Returns `result` untouched whenever the trace adds nothing, which is the common case and keeps the hot path allocation-free.
+
+```typescript
+merge(failure(7, 'digit'), success('ok', 3)); // { ok: true, value: 'ok', index: 3, furthest: 7, expected: ['digit'] }
+```
+
+### `parse`
+
+Runs a parser over the whole input without throwing. The non-throwing counterpart of {@link run}: on failure it reports the offset, line, column, expectations and a formatted message.
+
+```typescript
+parse(digits, '12x').message; // "1:3 expected end of input, found 'x'\n  1 | 12x\n    |   ^"
 ```
 
 ### `parser`
 
-Creates a parser from a parser function.
+Creates a parser from a parser function. A parser reads `input` starting at `index` and never slices it — results report the offset they reached, so positions stay meaningful all the way up to the top-level error message.
 
 ```typescript
-create((input) => success('parsed', input.slice(6)))('hello world'); // { ok: true, value: 'parsed', remaining: 'world' }
+create((input, index = 0) => success('parsed', index + 6))('hello world'); // { ok: true, value: 'parsed', index: 6, furthest: -1, expected: [] }
 ```
 
 ### `run`
 
-Runs a parser and returns the value, throws on failure or unconsumed input.
+Runs a parser over the whole input and returns the value. Throws a {@link ParseError} — with line, column and the expectations at that point — if the parse fails or leaves input unconsumed.
 
 ```typescript
 run(string('hello'), 'hello'); // 'hello'
@@ -103,8 +143,8 @@ run(string('hello'), 'hello'); // 'hello'
 
 ### `success`
 
-Creates a successful result with a value and remaining input.
+Creates a successful result with a value and the offset reached in the input. The `furthest`/`expected` pair carries the furthest failure seen while producing this success, so a later error can still report it. Use {@link merge} to propagate it — a fresh success starts with no trace.
 
 ```typescript
-success('hello', ' world'); // { ok: true, value: 'hello', remaining: ' world' }
+success('hello', 5); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
 ```

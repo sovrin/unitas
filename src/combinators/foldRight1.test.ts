@@ -7,11 +7,11 @@ import { success } from '../core/success';
 import { foldRight1 } from './foldRight1';
 
 describe('foldRight1', () => {
-    const stringParser = create<string>((input: string) => {
-        if (input.length === 0) {
-            return failure();
+    const stringParser = create<string>((input, index = 0) => {
+        if (index >= input.length) {
+            return failure(index);
         }
-        return success(input[0], input.slice(1));
+        return success(input[index], index + 1);
     });
 
     it('should fold right over parsed items', () => {
@@ -22,11 +22,11 @@ describe('foldRight1', () => {
         );
         const result = parser('ABC');
 
-        assertSuccess<string>(result, '(((ZC)B)A)', '');
+        assertSuccess<string>(result, '(((ZC)B)A)', 3);
     });
 
     it('should return null, one or more successful parser returns are required', () => {
-        const failureParser = create<number>(() => failure());
+        const failureParser = create<number>((_input, index = 0) => failure(index));
         const parser = foldRight1(
             failureParser,
             42,

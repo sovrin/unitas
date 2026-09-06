@@ -7,13 +7,13 @@ describe('whitespace', () => {
     it('should parse whitespace', () => {
         const result = whitespace(' ');
 
-        assertSuccess<string>(result, ' ', '');
+        assertSuccess<string>(result, ' ', 1);
     });
 
     it('should parse only one whitespace', () => {
         const result = whitespace('   ');
 
-        assertSuccess<string>(result, ' ', '  ');
+        assertSuccess<string>(result, ' ', 1);
     });
 
     it('should fail on non-whitespace', () => {

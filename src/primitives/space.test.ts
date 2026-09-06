@@ -7,7 +7,7 @@ describe('space', () => {
     it('should parse a single space', () => {
         const result = space(' abc');
 
-        assertSuccess<string>(result, ' ', 'abc');
+        assertSuccess<string>(result, ' ', 1);
     });
 
     it('should fail on tab', () => {

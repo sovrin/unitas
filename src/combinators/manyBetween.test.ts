@@ -14,28 +14,28 @@ describe('manyBetween', () => {
         const parser = manyBetween(parser1, 2, 4);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should parse minimum required', () => {
         const parser = manyBetween(parser1, 2, 4);
         const result = parser('AABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A'], 2);
     });
 
     it('should parse maximum allowed', () => {
         const parser = manyBetween(parser1, 2, 4);
         const result = parser('AAAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 4);
     });
 
     it('should not parse more than maximum', () => {
         const parser = manyBetween(parser1, 1, 3);
         const result = parser('AAAAAA');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'AAA');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should fail if fewer than minimum', () => {
@@ -49,6 +49,6 @@ describe('manyBetween', () => {
         const parser = manyBetween(parser1, 3, 3);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 });

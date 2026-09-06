@@ -3,11 +3,13 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
- * Parse end of file (succeeds only on empty input).
+ * Match the end of the input.
  *
  * @example
- * eof('') // { ok: true, value: null, remaining: '' }
+ * eof('') // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
  */
-export const eof = create<null>((input) => {
-    return input.length === 0 ? success(null, input) : failure();
+export const eof = create<null>((input, index = 0) => {
+    return index >= input.length
+        ? success(null, index)
+        : failure(index, 'end of input');
 });

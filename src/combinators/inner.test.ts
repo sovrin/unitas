@@ -16,7 +16,7 @@ describe('inner', () => {
         const parser = inner(parser1, parser2, parser3);
         const result = parser('ABC');
 
-        assertSuccess<'B'>(result, 'B', '');
+        assertSuccess<'B'>(result, 'B', 3);
     });
 
     it('should fail if first parser fails', () => {

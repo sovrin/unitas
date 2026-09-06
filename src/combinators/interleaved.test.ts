@@ -14,7 +14,7 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('ABABA');
 
-        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A', 'B', 'A'], '');
+        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A', 'B', 'A'], 5);
     });
 
     it('should handle single item', () => {
@@ -23,7 +23,7 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('AC');
 
-        assertSuccess<('A' | 'B')[]>(result, ['A'], 'C');
+        assertSuccess<('A' | 'B')[]>(result, ['A'], 1);
     });
 
     it('should fail when first item does not match', () => {
@@ -41,6 +41,6 @@ describe('interleaved', () => {
         const parser = interleaved(parser1, parser2);
         const result = parser('ABABC');
 
-        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A'], 'BC');
+        assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A'], 3);
     });
 });

@@ -1,22 +1,27 @@
-import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import type { Parser } from '../core/parser';
+
+import { merge } from '../core/merge';
+import { create } from '../core/parser';
+import { success, type Success } from '../core/success';
 import { many } from './many';
 
 /**
- * Parse zero or more and fold into a single value.
+ * Fold zero or more occurrences into a single value.
  *
  * @example
- * fold(digit, [], (acc, d) => [...acc, d])('123') // { ok: true, value: [1, 2, 3], remaining: '' }
+ * fold(digit, 0, (acc, d) => acc + d)('123') // { ok: true, value: 6, index: 3, furthest: 3, expected: ['digit'] }
  */
 export const fold = <T, U>(
     parser: Parser<T>,
     initial: U,
     folder: (acc: U, item: T) => U,
 ): Parser<U> => {
-    return create<U>((input) => {
-        const result = many(parser)(input) as Success<T[]>;
-        const { value, remaining } = result;
+    return create<U>((input, index = 0) => {
+        const result = many(parser)(input, index) as Success<T[]>;
 
-        return success(value.reduce(folder, initial), remaining);
+        return merge(
+            result,
+            success(result.value.reduce(folder, initial), result.index),
+        );
     });
 };

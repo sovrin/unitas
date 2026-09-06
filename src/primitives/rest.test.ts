@@ -7,12 +7,12 @@ describe('rest', () => {
     it('should return all remaining input', () => {
         const result = rest('hello world');
 
-        assertSuccess<string>(result, 'hello world', '');
+        assertSuccess<string>(result, 'hello world', 11);
     });
 
     it('should handle empty input', () => {
         const result = rest('');
 
-        assertSuccess<string>(result, '', '');
+        assertSuccess<string>(result, '', 0);
     });
 });

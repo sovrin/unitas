@@ -16,7 +16,7 @@ describe('outer', () => {
         const parser = outer(parserA, parserB, parserC);
         const result = parser('ABC');
 
-        assertSuccess<['A', 'C']>(result, ['A', 'C'], '');
+        assertSuccess<['A', 'C']>(result, ['A', 'C'], 3);
     });
 
     it('should fail if first parser fails', () => {

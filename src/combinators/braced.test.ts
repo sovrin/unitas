@@ -12,7 +12,7 @@ describe('braced', () => {
         const parser = braced(createTestParser('ABC'));
         const result = parser('{ABC}');
 
-        assertSuccess<'ABC'>(result, 'ABC', '');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should fail with uneven braces', () => {
@@ -26,13 +26,13 @@ describe('braced', () => {
         const parser = braced(createTestParser('ABC'));
         const result = parser('{ABC}rest');
 
-        assertSuccess<'ABC'>(result, 'ABC', 'rest');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should handle empty braces input', () => {
         const parser = braced(createTestParser(''));
         const result = parser('{}');
 
-        assertSuccess<''>(result, '', '');
+        assertSuccess<''>(result, '', 2);
     });
 });

@@ -8,14 +8,14 @@ describe('take', () => {
         const parser = take(3);
         const result = parser('abcdef');
 
-        assertSuccess<string>(result, 'abc', 'def');
+        assertSuccess<string>(result, 'abc', 3);
     });
 
     it('should take all characters when count equals input length', () => {
         const parser = take(3);
         const result = parser('abc');
 
-        assertSuccess<string>(result, 'abc', '');
+        assertSuccess<string>(result, 'abc', 3);
     });
 
     it('should fail when input is shorter than count', () => {
@@ -29,6 +29,6 @@ describe('take', () => {
         const parser = take(0);
         const result = parser('abc');
 
-        assertSuccess<string>(result, '', 'abc');
+        assertSuccess<string>(result, '', 0);
     });
 });

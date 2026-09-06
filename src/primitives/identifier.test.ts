@@ -8,42 +8,42 @@ describe('identifier', () => {
         {
             const result = identifier('variable_name');
 
-            assertSuccess<string>(result, 'variable_name', '');
+            assertSuccess<string>(result, 'variable_name', 13);
         }
         {
             const result = identifier('_private');
 
-            assertSuccess<string>(result, '_private', '');
+            assertSuccess<string>(result, '_private', 8);
         }
         {
             const result = identifier('camelCase');
 
-            assertSuccess<string>(result, 'camelCase', '');
+            assertSuccess<string>(result, 'camelCase', 9);
         }
         {
             const result = identifier('PascalCase');
 
-            assertSuccess<string>(result, 'PascalCase', '');
+            assertSuccess<string>(result, 'PascalCase', 10);
         }
         {
             const result = identifier('name123');
 
-            assertSuccess<string>(result, 'name123', '');
+            assertSuccess<string>(result, 'name123', 7);
         }
         {
             const result = identifier('some-name');
 
-            assertSuccess<string>(result, 'some', '-name');
+            assertSuccess<string>(result, 'some', 4);
         }
         {
             const result = identifier('some.name');
 
-            assertSuccess<string>(result, 'some', '.name');
+            assertSuccess<string>(result, 'some', 4);
         }
         {
             const result = identifier('some_name!');
 
-            assertSuccess<string>(result, 'some_name', '!');
+            assertSuccess<string>(result, 'some_name', 9);
         }
     });
 
@@ -65,12 +65,12 @@ describe('identifier', () => {
         {
             const result = identifier('a');
 
-            assertSuccess<string>(result, 'a', '');
+            assertSuccess<string>(result, 'a', 1);
         }
         {
             const result = identifier('_');
 
-            assertSuccess<string>(result, '_', '');
+            assertSuccess<string>(result, '_', 1);
         }
     });
 });

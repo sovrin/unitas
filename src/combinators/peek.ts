@@ -1,19 +1,19 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
- * Parse without consuming input.
+ * Look ahead without consuming input.
  *
  * @example
- * peek(string('hello'))('hello world') // { ok: true, value: 'hello', remaining: 'hello world' }
+ * peek(string('hello'))('hello world') // { ok: true, value: 'hello', index: 0, furthest: -1, expected: [] }
  */
 export const peek = <T>(parser: Parser<T>) => {
-    return create<T>((input) => {
-        const result = parser(input);
+    return create<T>((input, index = 0) => {
+        const result = parser(input, index);
 
-        return result.ok ? success(result.value, input) : failure();
+        return result.ok ? merge(result, success(result.value, index)) : result;
     });
 };

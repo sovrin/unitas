@@ -7,13 +7,13 @@ describe('alphaNum', () => {
     it('should parse letter', () => {
         const result = alphaNum('a1');
 
-        assertSuccess<AlphaNum>(result, 'a', '1');
+        assertSuccess<AlphaNum>(result, 'a', 1);
     });
 
     it('should parse digit', () => {
         const result = alphaNum('1a');
 
-        assertSuccess<AlphaNum>(result, '1', 'a');
+        assertSuccess<AlphaNum>(result, '1', 1);
     });
 
     it('should fail on non-alphanumeric', () => {
@@ -31,6 +31,6 @@ describe('alphaNum', () => {
     it('should narrow result to first character type for const string', () => {
         const result = alphaNum('a1' as const);
 
-        assertSuccess<'a'>(result, 'a', '1');
+        assertSuccess<'a'>(result, 'a', 1);
     });
 });

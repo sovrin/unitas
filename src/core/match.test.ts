@@ -5,48 +5,51 @@ import { match } from './match';
 import { success } from './success';
 
 describe('match', () => {
-    it('should call success branch with value and remaining', () => {
-        const result = success('test', 'rest');
+    it('should call success branch with value and offset', () => {
+        const result = success('test', 4);
         let capturedValue = '';
-        let capturedRemaining = '';
+        let capturedIndex = -1;
 
         match(result, {
-            success: (value, remaining) => {
+            success: (value, index) => {
                 capturedValue = value;
-                capturedRemaining = remaining;
+                capturedIndex = index;
             },
             failure: () => {},
         });
 
         expect(capturedValue).toBe('test');
-        expect(capturedRemaining).toBe('rest');
+        expect(capturedIndex).toBe(4);
     });
 
-    it('should call failure branch with error', () => {
-        const result = failure('test error');
-        let capturedError = 'not called';
+    it('should call failure branch with offset and expectations', () => {
+        const result = failure(2, 'digit');
+        let capturedIndex = -1;
+        let capturedExpected: readonly string[] = [];
 
         match(result, {
             success: () => {},
-            failure: (error) => {
-                capturedError = error ?? 'no error';
+            failure: (index, expected) => {
+                capturedIndex = index;
+                capturedExpected = expected;
             },
         });
 
-        expect(capturedError).toBe('test error');
+        expect(capturedIndex).toBe(2);
+        expect(capturedExpected).toEqual(['digit']);
     });
 
-    it('should call failure branch with undefined when no error', () => {
-        const result = failure();
-        let capturedError = 'not called';
+    it('should call failure branch with no expectations when none were recorded', () => {
+        const result = failure(0);
+        let capturedExpected: readonly string[] = ['not called'];
 
         match(result, {
             success: () => {},
-            failure: (error) => {
-                capturedError = error ?? 'no error';
+            failure: (_index, expected) => {
+                capturedExpected = expected;
             },
         });
 
-        expect(capturedError).toBe('no error');
+        expect(capturedExpected).toEqual([]);
     });
 });

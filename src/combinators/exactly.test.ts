@@ -14,7 +14,7 @@ describe('exactly', () => {
         const parser = exactly(parser1, 3);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should fail if fewer than n occurrences', () => {
@@ -28,14 +28,14 @@ describe('exactly', () => {
         const parser = exactly(parser1, 2);
         const result = parser('AAAAA');
 
-        assertSuccess<'A'[]>(result, ['A', 'A'], 'AAA');
+        assertSuccess<'A'[]>(result, ['A', 'A'], 2);
     });
 
     it('should handle count of zero', () => {
         const parser = exactly(parser1, 0);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, [], 'AAABCD');
+        assertSuccess<'A'[]>(result, [], 0);
     });
 
     it('should fail on empty input when count > 0', () => {

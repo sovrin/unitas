@@ -6,35 +6,53 @@ import { type Result } from '../src/core/result';
 import { success } from '../src/core/success';
 
 export const createTestParser = <T extends string | number>(tester: T) => {
-    return create<T>((input) => {
-        const stringTester = String(tester);
-        if (input.startsWith(stringTester)) {
-            return success(tester, input.slice(stringTester.length));
+    const stringTester = String(tester);
+
+    return create<T>((input, index = 0) => {
+        if (input.startsWith(stringTester, index)) {
+            return success(tester, index + stringTester.length);
         }
 
-        return failure();
+        return failure(index, stringTester);
     });
 };
 
+/**
+ * Asserts a parser succeeded with a value, having consumed up to `index`.
+ *
+ * The furthest-failure trace is deliberately not asserted: it is bookkeeping
+ * for error messages, not part of a parser's contract.
+ */
 export const assertSuccess = <T>(
     result: Result<T>,
     value: T,
-    remaining: string,
+    index: number,
 ) => {
     assertType<Result<T>>(result);
 
-    expect(result).toEqual({
-        ok: true,
-        value,
-        remaining,
-    });
+    expect(result.ok).toBe(true);
+    expect((result as { value: T }).value).toEqual(value);
+    expect(result.index).toBe(index);
 };
 
-export const assertFailure = <T>(result: Result<T>, error?: string) => {
+/**
+ * Asserts a parser failed, optionally at a given offset and with given
+ * expectations.
+ */
+export const assertFailure = <T>(
+    result: Result<T>,
+    index?: number,
+    expected?: readonly string[],
+) => {
     assertType<Result<T>>(result);
 
-    expect(result).toEqual({
-        ok: false,
-        error,
-    });
+    expect(result.ok).toBe(false);
+
+    if (index !== undefined) {
+        expect(result.index).toBe(index);
+    }
+
+    if (expected !== undefined) {
+        expect([...result.expected].sort()).toEqual([...expected].sort());
+    }
 };

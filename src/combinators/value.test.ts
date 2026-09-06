@@ -14,21 +14,21 @@ describe('value', () => {
         const parser = value(aParser, 42);
         const result = parser('ABC');
 
-        assertSuccess<number>(result, 42, 'BC');
+        assertSuccess<number>(result, 42, 1);
     });
 
     it('should work with boolean constant', () => {
         const parser = value(aParser, true);
         const result = parser('ABC');
 
-        assertSuccess<boolean>(result, true, 'BC');
+        assertSuccess<boolean>(result, true, 1);
     });
 
     it('should work with null constant', () => {
         const parser = value(aParser, null);
         const result = parser('ABC');
 
-        assertSuccess<null>(result, null, 'BC');
+        assertSuccess<null>(result, null, 1);
     });
 
     it('should fail when underlying parser fails', () => {

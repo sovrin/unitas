@@ -11,7 +11,7 @@ describe('pipe', () => {
             (n: number) => n * 2,
         );
 
-        const parser = create<number>(() => success(5, 'abc'));
+        const parser = create<number>((_input, index = 0) => success(5, index));
         const result = transform.call(parser, 5);
 
         expect(result).toBe(12);
@@ -24,7 +24,7 @@ describe('pipe', () => {
             (n: number) => n - 3,
         );
 
-        const parser = create<number>(() => success(5, 'abc'));
+        const parser = create<number>((_input, index = 0) => success(5, index));
         const result = transform.call(parser, 5);
 
         expect(result).toBe(9);
@@ -33,7 +33,7 @@ describe('pipe', () => {
     it('should work with a single function', () => {
         const transform = pipe((n: number) => n * 2);
 
-        const parser = create<number>(() => success(5, 'abc'));
+        const parser = create<number>((_input, index = 0) => success(5, index));
         const result = transform.call(parser, 5);
 
         expect(result).toBe(10);
@@ -46,14 +46,14 @@ describe('pipe', () => {
             (s: string) => s + '!',
         );
 
-        const parser = create<string>(() => success('  hello  ', '!'));
+        const parser = create<string>((_input, index = 0) => success('  hello  ', index));
         const result = transform.call(parser, '  hello  ');
 
         expect(result).toBe('HELLO!');
     });
 
     it('should allow accessing parser state via this', () => {
-        const parser = create<number>(() => success(100, 'abc'));
+        const parser = create<number>((_input, index = 0) => success(100, index));
 
         const transform = pipe(function (n: number) {
             return n + (this ? 1 : 0);

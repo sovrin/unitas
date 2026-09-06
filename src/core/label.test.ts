@@ -13,7 +13,7 @@ describe('label', () => {
         const labeled = label(parser, 'letter');
         const result = labeled('ABC');
 
-        assertSuccess(result, 'A', 'BC');
+        assertSuccess(result, 'A', 1);
     });
 
     it('should include label in error message on failure', () => {
@@ -21,6 +21,6 @@ describe('label', () => {
         const labeled = label(parser, 'letter');
         const result = labeled('BCD');
 
-        assertFailure(result, 'expected letter');
+        assertFailure(result, 0, ['letter']);
     });
 });

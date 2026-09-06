@@ -7,7 +7,7 @@ import { map } from './map';
  * Consume input but discard the result (return null).
  *
  * @example
- * consume(string('hello'))('hello world') // { ok: true, value: null, remaining: ' world' }
+ * consume(string('hello'))('hello world') // { ok: true, value: null, index: 5, furthest: -1, expected: [] }
  */
 export const consume = <T>(parser: Parser<T>) => {
     return create<null>(map(parser, () => null));

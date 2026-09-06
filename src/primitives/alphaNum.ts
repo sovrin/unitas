@@ -7,19 +7,20 @@ import { type Letter } from './letter';
 type Head<S extends string> = S extends `${infer C}${string}` ? C : never;
 export type AlphaNum = Letter | Digit;
 
-const parser = satisfy<AlphaNum>((c) => /[a-zA-Z0-9]/.test(c));
+const parser = satisfy<AlphaNum>((c) => /[a-zA-Z0-9]/.test(c), 'alphanumeric character');
 
 /**
  * Parse a single alphanumeric character.
  *
  * @example
- * alphaNum('a1') // { ok: true, value: 'a', remaining: '1' }
- * alphaNum('1a') // { ok: true, value: '1', remaining: 'a' }
+ * alphaNum('a1') // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+ * alphaNum('1a') // { ok: true, value: '1', index: 1, furthest: -1, expected: [] }
  */
 export function alphaNum<S extends `${AlphaNum}${string}`>(
     input: S,
+    index?: number,
 ): Result<Head<S> & AlphaNum>;
-export function alphaNum(input: string): Result<AlphaNum>;
-export function alphaNum(input: string) {
-    return create<AlphaNum>(parser)(input);
+export function alphaNum(input: string, index?: number): Result<AlphaNum>;
+export function alphaNum(input: string, index = 0) {
+    return create<AlphaNum>(parser)(input, index);
 }

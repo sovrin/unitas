@@ -19,18 +19,19 @@ export type HexDigit =
     | 'E'
     | 'F';
 
-const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c));
+const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c), 'hex digit');
 
 /**
  * Parse a single hexadecimal digit.
  *
  * @example
- * hexDigit('fF9') // { ok: true, value: 'f', remaining: 'F9' }
+ * hexDigit('fF9') // { ok: true, value: 'f', index: 1, furthest: -1, expected: [] }
  */
 export function hexDigit<S extends `${HexDigit}${string}`>(
     input: S,
+    index?: number,
 ): Result<Head<S> & HexDigit>;
-export function hexDigit(input: string): Result<HexDigit>;
-export function hexDigit(input: string) {
-    return create<HexDigit>(parser)(input);
+export function hexDigit(input: string, index?: number): Result<HexDigit>;
+export function hexDigit(input: string, index = 0) {
+    return create<HexDigit>(parser)(input, index);
 }

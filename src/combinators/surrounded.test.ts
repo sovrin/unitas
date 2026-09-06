@@ -15,7 +15,7 @@ describe('surrounded', () => {
         const parser = surrounded(parser1, parser2);
         const result = parser('ABA');
 
-        assertSuccess<'B'>(result, 'B', '');
+        assertSuccess<'B'>(result, 'B', 3);
     });
 
     it('should fail if opening delimiter fails', () => {
@@ -56,7 +56,7 @@ describe('surrounded', () => {
         const parser = surrounded(parser1, parser2, parser3);
         const result = parser('ABCAA');
 
-        assertSuccess<'B'>(result, 'B', 'AA');
+        assertSuccess<'B'>(result, 'B', 3);
     });
 
     it('should leave remaining input', () => {
@@ -66,6 +66,6 @@ describe('surrounded', () => {
         const parser = surrounded(parser1, parser2);
         const result = parser('ABAAA');
 
-        assertSuccess<'B'>(result, 'B', 'AA');
+        assertSuccess<'B'>(result, 'B', 3);
     });
 });

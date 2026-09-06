@@ -1,27 +1,30 @@
-import { failure } from '../core/failure';
-import { create, type Parser } from '../core/parser';
+import type { Parser } from '../core/parser';
+
+import { merge } from '../core/merge';
+import { create } from '../core/parser';
 import { success, type Success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 /**
- * Parse items separated by separator until terminator matches.
+ * Parse items separated by a separator, up to a terminator.
  *
  * @example
- * separatedUntil(char('a'), char(','), char(';'))('a,a,a;') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * separatedUntil(digits, char(','), char(';'))('1,2,3;') // { ok: true, value: [1, 2, 3], index: 6, furthest: 5, expected: ["','"] }
  */
 export const separatedUntil = <T>(
     parser: Parser<T>,
     separator: Parser,
     terminator: Parser,
 ) => {
-    return create<T[]>((input) => {
-        const { value: values, remaining } = separatedBy(
-            parser,
-            separator,
-        )(input) as Success<T[]>;
+    return create<T[]>((input, index = 0) => {
+        const items = separatedBy(parser, separator)(
+            input,
+            index,
+        ) as Success<T[]>;
+        const result = merge(items, terminator(input, items.index));
 
-        const result = terminator(remaining);
-
-        return result.ok ? success(values, result.remaining) : failure();
+        return result.ok
+            ? merge(result, success(items.value, result.index))
+            : result;
     });
 };

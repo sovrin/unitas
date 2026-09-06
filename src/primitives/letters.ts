@@ -1,5 +1,5 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
+import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { letter } from './letter';
@@ -7,18 +7,16 @@ import { letter } from './letter';
 const parser = many1(letter);
 
 /**
- * Parse one or more letters.
+ * Parse one or more letters as a string.
  *
  * @example
- * letters('abc123') // { ok: true, value: 'abc', remaining: '123' }
+ * letters('placeholder') // { ok: true, value: 'placeholder', index: 11, furthest: 11, expected: ['letter'] }
  */
-export const letters = create<string>((input) => {
-    const result = parser(input);
+export const letters = create<string>((input, index = 0) => {
+    const result = parser(input, index);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return merge(result, success(result.value.join(''), result.index));
 });

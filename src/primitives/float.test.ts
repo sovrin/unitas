@@ -7,19 +7,19 @@ describe('float', () => {
     it('should parse a positive float', () => {
         const result = float('1.23');
 
-        assertSuccess<number>(result, 1.23, '');
+        assertSuccess<number>(result, 1.23, 4);
     });
 
     it('should parse a negative float', () => {
         const result = float('-2.5');
 
-        assertSuccess<number>(result, -2.5, '');
+        assertSuccess<number>(result, -2.5, 4);
     });
 
     it('should parse float with many decimal places', () => {
         const result = float('123.456789');
 
-        assertSuccess<number>(result, 123.456789, '');
+        assertSuccess<number>(result, 123.456789, 10);
     });
 
     it('should fail on integer input', () => {
@@ -43,6 +43,6 @@ describe('float', () => {
     it('should stop at non-numeric character', () => {
         const result = float('1.23abc');
 
-        assertSuccess<number>(result, 1.23, 'abc');
+        assertSuccess<number>(result, 1.23, 4);
     });
 });

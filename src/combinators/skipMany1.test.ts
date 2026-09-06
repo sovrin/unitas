@@ -14,7 +14,7 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('AAABBB');
 
-        assertSuccess<null>(result, null, 'BBB');
+        assertSuccess<null>(result, null, 3);
     });
 
     it('should fail when no matches found', () => {
@@ -32,7 +32,7 @@ describe('skipMany1', () => {
         const parser = skipMany1(parser1);
         const result = parser('ABBB');
 
-        assertSuccess<null>(result, null, 'BBB');
+        assertSuccess<null>(result, null, 1);
     });
 
     it('should require at least one match', () => {

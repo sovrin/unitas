@@ -13,7 +13,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A       B');
 
-        assertSuccess<'A'>(result, 'A', 'B');
+        assertSuccess<'A'>(result, 'A', 8);
     });
 
     it('should parse a token with no trailing whitespace', () => {
@@ -21,7 +21,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('AB');
 
-        assertSuccess<'A'>(result, 'A', 'B');
+        assertSuccess<'A'>(result, 'A', 1);
     });
 
     it('should consume various types of whitespace', () => {
@@ -29,7 +29,7 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A \t\n\r  B');
 
-        assertSuccess<'A'>(result, 'A', 'B');
+        assertSuccess<'A'>(result, 'A', 7);
     });
 
     it('should fail when the underlying parser fails', () => {
@@ -45,6 +45,6 @@ describe('lexeme', () => {
         const parser = lexeme(parser1);
         const result = parser('A   ');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 4);
     });
 });

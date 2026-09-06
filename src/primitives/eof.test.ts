@@ -7,7 +7,7 @@ describe('eof', () => {
     it('should succeed on empty input', () => {
         const result = eof('');
 
-        assertSuccess<null>(result, null, '');
+        assertSuccess<null>(result, null, 0);
     });
 
     it('should fail on non-empty input', () => {

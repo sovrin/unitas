@@ -1,12 +1,22 @@
-import { describe, it } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
-import { assertFailure } from '../../test/utils';
 import { failure } from './failure';
 
 describe('failure', () => {
-    it('should create failed parse result', () => {
-        const result = failure();
+    it('should create failed parse result at an offset', () => {
+        const result = failure(3);
 
-        assertFailure(result);
+        expect(result).toEqual({
+            ok: false,
+            index: 3,
+            furthest: 3,
+            expected: [],
+        });
+    });
+
+    it('should record what was expected at that offset', () => {
+        const result = failure(3, 'digit', 'letter');
+
+        expect(result.expected).toEqual(['digit', 'letter']);
     });
 });

@@ -11,14 +11,14 @@ describe('optionalConsume', () => {
         const parser = optionalConsume(parser1);
         const result = parser('ABCD');
 
-        assertSuccess<void>(result, undefined, 'BCD');
+        assertSuccess<void>(result, undefined, 1);
     });
 
     it('should not consume input on failure', () => {
-        const failureParser = create(() => failure());
+        const failureParser = create((_input, index = 0) => failure(index));
         const parser = optionalConsume(failureParser);
         const result = parser('ABCD');
 
-        assertSuccess<void>(result, undefined, 'ABCD');
+        assertSuccess<void>(result, undefined, 0);
     });
 });

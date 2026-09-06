@@ -14,24 +14,26 @@ describe('run', () => {
         expect(result).toBe('A');
     });
 
-    it('should return null result', () => {
+    it('should report the expectation and position on failure', () => {
         expect(() => {
             run(parser, 'B');
-        }).toThrowError('Parsing failed: Unexpected error');
+        }).toThrowError("1:1 expected A, found 'B'");
     });
 
-    it('should throw error for not remaining input', () => {
+    it('should throw error for unconsumed input', () => {
         expect(() => {
             run(parser, 'AB');
-        }).toThrowError('Not all input consumed');
+        }).toThrowError("1:2 expected end of input, found 'B'");
     });
 
-    it('should throw error with message', () => {
+    it('should throw error with the expectation the parser recorded', () => {
         expect(() => {
             run(
-                create(() => failure('Something weird happened')),
+                create((_input, index = 0) =>
+                    failure(index, 'something weird'),
+                ),
                 'AB',
             );
-        }).toThrowError('Something weird happened');
+        }).toThrowError('expected something weird');
     });
 });
