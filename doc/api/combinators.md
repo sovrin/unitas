@@ -12,17 +12,9 @@ import {} from /* … */ 'unitas/combinators';
 
 ## Index
 
-65 exports: [`attempt`](#attempt) · [`bind`](#bind) · [`braced`](#braced) · [`bracketed`](#bracketed) · [`chainLeft`](#chainleft) · [`chainLeft1`](#chainleft1) · [`chainRight`](#chainright) · [`chainRight1`](#chainright1) · [`choice`](#choice) · [`concat`](#concat) · [`consume`](#consume) · [`endBy`](#endby) · [`endBy1`](#endby1) · [`exactly`](#exactly) · [`first`](#first) · [`flag`](#flag) · [`fold`](#fold) · [`fold1`](#fold1) · [`foldRight`](#foldright) · [`foldRight1`](#foldright1) · [`fuse`](#fuse) · [`guard`](#guard) · [`inner`](#inner) · [`interleaved`](#interleaved) · [`last`](#last) · [`left`](#left) · [`lexeme`](#lexeme) · [`many`](#many) · [`many1`](#many1) · [`manyAtLeast`](#manyatleast) · [`manyAtMost`](#manyatmost) · [`manyBetween`](#manybetween) · [`manyTill`](#manytill) · [`map`](#map) · [`node`](#node) · [`not`](#not) · [`nth`](#nth) · [`optional`](#optional) · [`optionalConsume`](#optionalconsume) · [`optionalSeparatedBy`](#optionalseparatedby) · [`outer`](#outer) · [`padded`](#padded) · [`parenthesized`](#parenthesized) · [`peek`](#peek) · [`postfix`](#postfix) · [`prefix`](#prefix) · [`pure`](#pure) · [`quoted`](#quoted) · [`recover`](#recover) · [`right`](#right) · [`separatedBy`](#separatedby) · [`separatedBy1`](#separatedby1) · [`separatedEndBy`](#separatedendby) · [`separatedEndBy1`](#separatedendby1) · [`separatedUntil`](#separateduntil) · [`sequence`](#sequence) · [`skip`](#skip) · [`skipMany`](#skipmany) · [`skipMany1`](#skipmany1) · [`surrounded`](#surrounded) · [`unless`](#unless) · [`until`](#until) · [`validate`](#validate) · [`value`](#value) · [`when`](#when)
+64 exports: [`bind`](#bind) · [`braced`](#braced) · [`bracketed`](#bracketed) · [`chainLeft`](#chainleft) · [`chainLeft1`](#chainleft1) · [`chainRight`](#chainright) · [`chainRight1`](#chainright1) · [`choice`](#choice) · [`concat`](#concat) · [`consume`](#consume) · [`endBy`](#endby) · [`endBy1`](#endby1) · [`exactly`](#exactly) · [`first`](#first) · [`flag`](#flag) · [`fold`](#fold) · [`fold1`](#fold1) · [`foldRight`](#foldright) · [`foldRight1`](#foldright1) · [`fuse`](#fuse) · [`guard`](#guard) · [`inner`](#inner) · [`interleaved`](#interleaved) · [`last`](#last) · [`left`](#left) · [`lexeme`](#lexeme) · [`many`](#many) · [`many1`](#many1) · [`manyAtLeast`](#manyatleast) · [`manyAtMost`](#manyatmost) · [`manyBetween`](#manybetween) · [`manyTill`](#manytill) · [`map`](#map) · [`node`](#node) · [`not`](#not) · [`nth`](#nth) · [`optional`](#optional) · [`optionalConsume`](#optionalconsume) · [`optionalSeparatedBy`](#optionalseparatedby) · [`outer`](#outer) · [`padded`](#padded) · [`parenthesized`](#parenthesized) · [`peek`](#peek) · [`postfix`](#postfix) · [`prefix`](#prefix) · [`pure`](#pure) · [`quoted`](#quoted) · [`recover`](#recover) · [`right`](#right) · [`separatedBy`](#separatedby) · [`separatedBy1`](#separatedby1) · [`separatedEndBy`](#separatedendby) · [`separatedEndBy1`](#separatedendby1) · [`separatedUntil`](#separateduntil) · [`sequence`](#sequence) · [`skip`](#skip) · [`skipMany`](#skipmany) · [`skipMany1`](#skipmany1) · [`surrounded`](#surrounded) · [`unless`](#unless) · [`until`](#until) · [`validate`](#validate) · [`value`](#value) · [`when`](#when)
 
 ## Reference
-
-### `attempt`
-
-Attempt wraps a parser to handle backtracking on failure.
-
-```typescript
-attempt(string('hello'))('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
-```
 
 ### `bind`
 

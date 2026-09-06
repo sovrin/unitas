@@ -102,7 +102,6 @@ Most primitives come in a singular and a plural form: `letter` matches one, `let
 | succeed only when something *doesn't* match  | `not`                                                |
 | gate on a boolean I already have             | `guard`, `unless`, `when`                            |
 | look ahead without consuming input           | `peek`                                               |
-| undo input consumption on failure            | `attempt`                                            |
 
 ### Sequencing and pulling values out
 
@@ -170,6 +169,12 @@ type Result<T> = Success<T> | Failure;
 { ok: false }                      // generic failure
 { ok: false, error: 'expected a' } // failure with a message
 ```
+
+### Backtracking is free
+
+Note what a `Failure` does *not* carry: a position. There is nowhere to record how much input a failed parser got through, and combinators hand every alternative the same string they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the full input, however far `a` got.
+
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into.
 
 ### Writing one by hand
 

@@ -20,15 +20,6 @@ Object.assign(
 
 describe('examples from source', () => {
     describe('combinators', () => {
-        it('attempt: Attempt wraps a parser to handle backtracking on failure.', () => {
-            const result0 = attempt(string('hello'))('hello world');
-            expect(result0).toEqual({
-                ok: true,
-                value: 'hello',
-                remaining: ' world',
-            });
-        });
-
         it('bind: Chain parsers where the second parser depends on the first result.', () => {
             const result0 = bind(digits, (n) => take(n))('3abc');
             expect(result0).toEqual({ ok: true, value: 'abc', remaining: '' });

@@ -33,7 +33,7 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 
 - **Zero dependencies**, ESM-only, fully typed
 - **Tree-shakeable** — five entry points, import only what you touch
-- **127 composable exports** — grouped by what they do, indexed below
+- **126 composable exports** — grouped by what they do, indexed below
 - **Mutual recursion out of the box** via `grammar`, no forward declarations
 
 > **Note:** This library is in active development. The API may change before v1.0.0.
@@ -102,7 +102,6 @@ Most primitives come in a singular and a plural form: `letter` matches one, `let
 | succeed only when something _doesn't_ match | `not`                                            |
 | gate on a boolean I already have            | `guard`, `unless`, `when`                        |
 | look ahead without consuming input          | `peek`                                           |
-| undo input consumption on failure           | `attempt`                                        |
 
 ### Sequencing and pulling values out
 
@@ -170,6 +169,12 @@ type Result<T> = Success<T> | Failure;
 { ok: false }                      // generic failure
 { ok: false, error: 'expected a' } // failure with a message
 ```
+
+### Backtracking is free
+
+Note what a `Failure` does _not_ carry: a position. There is nowhere to record how much input a failed parser got through, and combinators hand every alternative the same string they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the full input, however far `a` got.
+
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into.
 
 ### Writing one by hand
 
@@ -375,11 +380,10 @@ Ready-made parsers for the usual suspects. **33** exports — [full reference �
 
 ### Combinators — `unitas/combinators`
 
-Take parsers, return a new parser. **65** exports — [full reference →][api-combinators]
+Take parsers, return a new parser. **64** exports — [full reference →][api-combinators]
 
 |                                                          |                                                                             |
 | -------------------------------------------------------- | --------------------------------------------------------------------------- |
-| [`attempt`][combinators-attempt]                         | Attempt wraps a parser to handle backtracking on failure.                   |
 | [`bind`][combinators-bind]                               | Chain parsers where the second parser depends on the first result.          |
 | [`braced`][combinators-braced]                           | Parse content surrounded by braces.                                         |
 | [`bracketed`][combinators-bracketed]                     | Parse content surrounded by brackets.                                       |
@@ -518,7 +522,6 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 [primitives-whitespace]: https://github.com/sovrin/unitas/blob/master/doc/api/primitives.md#whitespace
 [primitives-whitespaces]: https://github.com/sovrin/unitas/blob/master/doc/api/primitives.md#whitespaces
 [api-combinators]: https://github.com/sovrin/unitas/blob/master/doc/api/combinators.md
-[combinators-attempt]: https://github.com/sovrin/unitas/blob/master/doc/api/combinators.md#attempt
 [combinators-bind]: https://github.com/sovrin/unitas/blob/master/doc/api/combinators.md#bind
 [combinators-braced]: https://github.com/sovrin/unitas/blob/master/doc/api/combinators.md#braced
 [combinators-bracketed]: https://github.com/sovrin/unitas/blob/master/doc/api/combinators.md#bracketed

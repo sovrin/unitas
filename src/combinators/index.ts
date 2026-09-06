@@ -1,4 +1,3 @@
-export * from './attempt';
 export * from './bind';
 export * from './braced';
 export * from './bracketed';
