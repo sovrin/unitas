@@ -7,7 +7,7 @@
 Combinators are the glue. Every one of them takes one or more parsers and returns a new parser, which is what lets a grammar stay a set of small, independently testable pieces.
 
 ```typescript
-import {} from /* … */ 'unitas/combinators';
+import { map, choice, sequence } from 'unitas/combinators';
 ```
 
 ## Index
@@ -21,7 +21,7 @@ import {} from /* … */ 'unitas/combinators';
 Chain parsers where the second parser depends on the first result.
 
 ```typescript
-bind(digits, (n) => take(n))('3abc'); // { ok: true, value: 'abc', index: 4, furthest: -1, expected: [] }
+bind(digits, (n) => take(n))('3abc'); // { ok: true, value: 'abc', index: 4 }
 ```
 
 ### `braced`
@@ -29,7 +29,7 @@ bind(digits, (n) => take(n))('3abc'); // { ok: true, value: 'abc', index: 4, fur
 Parse content surrounded by braces.
 
 ```typescript
-braced(string('hi'))('{hi}'); // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
+braced(string('hi'))('{hi}'); // { ok: true, value: 'hi', index: 4 }
 ```
 
 ### `bracketed`
@@ -37,7 +37,7 @@ braced(string('hi'))('{hi}'); // { ok: true, value: 'hi', index: 4, furthest: -1
 Parse content surrounded by brackets.
 
 ```typescript
-bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
+bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', index: 4 }
 ```
 
 ### `chainLeft`
@@ -45,7 +45,7 @@ bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', index: 4, furthest:
 Chain left-associative operations (right-to-left for same precedence).
 
 ```typescript
-chainLeft(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furthest: 5, expected: ['operator'] }
+chainLeft(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
 ```
 
 ### `chainLeft1`
@@ -53,8 +53,8 @@ chainLeft(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furthe
 Chain left-associative operations (fails on empty input).
 
 ```typescript
-chainLeft1(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furthest: 5, expected: ['operator'] }
-chainLeft1(digits, operation)('8/2*3'); // { ok: true, value: 12, index: 5, furthest: 5, expected: ['operator'] }
+chainLeft1(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
+chainLeft1(digits, operation)('8/2*3'); // { ok: true, value: 12, index: 5 }
 ```
 
 ### `chainRight`
@@ -62,7 +62,7 @@ chainLeft1(digits, operation)('8/2*3'); // { ok: true, value: 12, index: 5, furt
 Chain right-associative operations.
 
 ```typescript
-chainRight(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furthest: 5, expected: ['operator'] }
+chainRight(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
 ```
 
 ### `chainRight1`
@@ -70,15 +70,15 @@ chainRight(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furth
 Chain right-associative operations (fails on empty input).
 
 ```typescript
-chainRight1(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5, furthest: 5, expected: ['operator'] }
+chainRight1(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
 ```
 
 ### `choice`
 
-Try each parser in order, return first success. Expectations from every alternative tried at the same offset are unioned, so a failing alternation reports all of them rather than only the last.
+Try each parser in order, return first success. Alternatives all start from the same offset, so the expectations of those that failed there are unioned into the result. Anything they recorded deeper in the input is already in the parse context.
 
 ```typescript
-choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
+choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello', index: 5 }
 ```
 
 ### `concat`
@@ -86,8 +86,8 @@ choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello'
 Join string array parser result into a single string.
 
 ```typescript
-concat(many(letter))('abc123'); // { ok: true, value: 'abc', index: 3, furthest: 3, expected: ['letter'] }
-concat(many(letter), '-')('abc123'); // { ok: true, value: 'a-b-c', index: 3, furthest: 3, expected: ['letter'] }
+concat(many(letter))('abc123'); // { ok: true, value: 'abc', index: 3 }
+concat(many(letter), '-')('abc123'); // { ok: true, value: 'a-b-c', index: 3 }
 ```
 
 ### `consume`
@@ -95,7 +95,7 @@ concat(many(letter), '-')('abc123'); // { ok: true, value: 'a-b-c', index: 3, fu
 Consume input but discard the result (return null).
 
 ```typescript
-consume(string('hello'))('hello world'); // { ok: true, value: null, index: 5, furthest: -1, expected: [] }
+consume(string('hello'))('hello world'); // { ok: true, value: null, index: 5 }
 ```
 
 ### `endBy`
@@ -103,7 +103,7 @@ consume(string('hello'))('hello world'); // { ok: true, value: null, index: 5, f
 Zero or more items separated and ending with terminator.
 
 ```typescript
-endBy(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], index: 15, furthest: 15, expected: ["'item'"] }
+endBy(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], index: 15 }
 ```
 
 ### `endBy1`
@@ -111,7 +111,7 @@ endBy(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['ite
 One or more items separated and ending with terminator.
 
 ```typescript
-endBy1(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], index: 15, furthest: 15, expected: ["'item'"] }
+endBy1(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['item', 'item', 'item'], index: 15 }
 ```
 
 ### `exactly`
@@ -119,7 +119,7 @@ endBy1(string('item'), char(';'))('item;item;item;'); // { ok: true, value: ['it
 Parse exactly n occurrences.
 
 ```typescript
-exactly(char('a'), 3)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: -1, expected: [] }
+exactly(char('a'), 3)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }
 ```
 
 ### `first`
@@ -127,7 +127,7 @@ exactly(char('a'), 3)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, f
 Extract the first element from a parser result array.
 
 ```typescript
-first(sequence(char('a'), digit))('a1bc'); // { ok: true, value: 'a', index: 2, furthest: -1, expected: [] }
+first(sequence(char('a'), digit))('a1bc'); // { ok: true, value: 'a', index: 2 }
 ```
 
 ### `flag`
@@ -135,8 +135,8 @@ first(sequence(char('a'), digit))('a1bc'); // { ok: true, value: 'a', index: 2, 
 Return true if parser succeeds, false otherwise. Always succeeds without consuming input on failure.
 
 ```typescript
-flag(string('*'))('*abc'); // { ok: true, value: true, index: 1, furthest: -1, expected: [] }
-flag(string('*'))('abc'); // { ok: true, value: false, index: 0, furthest: 0, expected: ["'*'"] }
+flag(string('*'))('*abc'); // { ok: true, value: true, index: 1 }
+flag(string('*'))('abc'); // { ok: true, value: false, index: 0 }
 ```
 
 ### `fold`
@@ -144,7 +144,7 @@ flag(string('*'))('abc'); // { ok: true, value: false, index: 0, furthest: 0, ex
 Fold zero or more occurrences into a single value.
 
 ```typescript
-fold(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, furthest: 3, expected: ['digit'] }
+fold(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3 }
 ```
 
 ### `fold1`
@@ -152,7 +152,7 @@ fold(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, f
 Fold one or more occurrences into a single value.
 
 ```typescript
-fold1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, furthest: 3, expected: ['digit'] }
+fold1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3 }
 ```
 
 ### `foldRight`
@@ -160,7 +160,7 @@ fold1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, 
 Fold zero or more occurrences from the right into a single value.
 
 ```typescript
-foldRight(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, furthest: 3, expected: ['digit'] }
+foldRight(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3 }
 ```
 
 ### `foldRight1`
@@ -168,7 +168,7 @@ foldRight(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index:
 Fold one or more occurrences from the right into a single value.
 
 ```typescript
-foldRight1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3, furthest: 3, expected: ['digit'] }
+foldRight1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index: 3 }
 ```
 
 ### `fuse`
@@ -176,8 +176,8 @@ foldRight1(digit, 0, (acc, d) => acc + d)('123'); // { ok: true, value: 6, index
 Fuse multiple string parsers into a single one. The fused parser concatenates all string results.
 
 ```typescript
-fuse(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'abc', index: 3, furthest: -1, expected: [] }
-fuse(string('hello'), char(' '), string('world'))('hello world'); // { ok: true, value: 'hello world', index: 11, furthest: -1, expected: [] }
+fuse(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'abc', index: 3 }
+fuse(string('hello'), char(' '), string('world'))('hello world'); // { ok: true, value: 'hello world', index: 11 }
 ```
 
 ### `guard`
@@ -185,8 +185,8 @@ fuse(string('hello'), char(' '), string('world'))('hello world'); // { ok: true,
 Conditionally apply parser based on a condition.
 
 ```typescript
-guard(true, string('hello'))('hello'); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
-guard(false, string('hello'))('hello'); // { ok: false, index: 0, furthest: 0, expected: [] }
+guard(true, string('hello'))('hello'); // { ok: true, value: 'hello', index: 5 }
+guard(false, string('hello'))('hello'); // { ok: false, index: 0, expected: [] }
 ```
 
 ### `inner`
@@ -194,7 +194,7 @@ guard(false, string('hello'))('hello'); // { ok: false, index: 0, furthest: 0, e
 Extract inner value from surrounded content (like inner of braced).
 
 ```typescript
-inner(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
+inner(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', index: 4 }
 ```
 
 ### `interleaved`
@@ -202,7 +202,7 @@ inner(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', i
 Parse items separated by separators, keeping both in the result.
 
 ```typescript
-interleaved(digits, char('+'))('1+2'); // { ok: true, value: [1, '+', 2], index: 3, furthest: 3, expected: ["'+'"] }
+interleaved(digits, char('+'))('1+2'); // { ok: true, value: [1, '+', 2], index: 3 }
 ```
 
 ### `last`
@@ -210,7 +210,7 @@ interleaved(digits, char('+'))('1+2'); // { ok: true, value: [1, '+', 2], index:
 Extract the last element from a parser result array.
 
 ```typescript
-last(sequence(char('a'), char('b')))('ab'); // { ok: true, value: 'b', index: 2, furthest: -1, expected: [] }
+last(sequence(char('a'), char('b')))('ab'); // { ok: true, value: 'b', index: 2 }
 ```
 
 ### `left`
@@ -218,7 +218,7 @@ last(sequence(char('a'), char('b')))('ab'); // { ok: true, value: 'b', index: 2,
 Keep only the left result from a sequence.
 
 ```typescript
-left(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'hello', index: 10, furthest: -1, expected: [] }
+left(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'hello', index: 10 }
 ```
 
 ### `lexeme`
@@ -226,7 +226,7 @@ left(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'hel
 Parser that consumes trailing whitespace.
 
 ```typescript
-lexeme(string('hello'))('hello   world'); // { ok: true, value: 'hello', index: 8, furthest: -1, expected: [] }
+lexeme(string('hello'))('hello   world'); // { ok: true, value: 'hello', index: 8 }
 ```
 
 ### `many`
@@ -234,7 +234,7 @@ lexeme(string('hello'))('hello   world'); // { ok: true, value: 'hello', index: 
 Zero or more occurrences (never fails). The failure that stopped the loop is kept as a trace, so a later error can still report what the repetition was expecting next.
 
 ```typescript
-many(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: 3, expected: ["'a'"] }
+many(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }
 ```
 
 ### `many1`
@@ -242,7 +242,7 @@ many(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthes
 One or more occurrences.
 
 ```typescript
-many1(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: 3, expected: ["'a'"] }
+many1(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }
 ```
 
 ### `manyAtLeast`
@@ -250,7 +250,7 @@ many1(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthe
 Parse at least n occurrences.
 
 ```typescript
-manyAtLeast(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: 3, expected: ["'a'"] }
+manyAtLeast(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }
 ```
 
 ### `manyAtMost`
@@ -258,7 +258,7 @@ manyAtLeast(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 
 Parse at most n occurrences (never fails).
 
 ```typescript
-manyAtMost(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2, furthest: -1, expected: [] }
+manyAtMost(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2 }
 ```
 
 ### `manyBetween`
@@ -266,7 +266,7 @@ manyAtMost(char('a'), 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2, fur
 Parse between min and max occurrences.
 
 ```typescript
-manyBetween(char('a'), 1, 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2, furthest: -1, expected: [] }
+manyBetween(char('a'), 1, 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2 }
 ```
 
 ### `manyTill`
@@ -274,7 +274,7 @@ manyBetween(char('a'), 1, 2)('aaa'); // { ok: true, value: ['a', 'a'], index: 2,
 Parse zero or more until terminator matches.
 
 ```typescript
-manyTill(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], index: 4, furthest: 2, expected: ["'b'"] }
+manyTill(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], index: 4 }
 ```
 
 ### `map`
@@ -282,7 +282,7 @@ manyTill(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], i
 Transform a parsed value through one or more functions.
 
 ```typescript
-map(digits, (n) => n * 2)('21'); // { ok: true, value: 42, index: 2, furthest: -1, expected: [] }
+map(digits, (n) => n * 2)('21'); // { ok: true, value: 42, index: 2 }
 ```
 
 ### `node`
@@ -290,16 +290,16 @@ map(digits, (n) => n * 2)('21'); // { ok: true, value: 42, index: 2, furthest: -
 Create a node from parser fields.
 
 ```typescript
-node('binop', { left: digits, op: char('+'), right: digits })('1+2'); // { ok: true, value: { type: 'binop', left: 1, op: '+', right: 2 }, index: 3, furthest: -1, expected: [] }
-node('number', { value: digits })('123'); // { ok: true, value: { type: 'number', value: 123 }, index: 3, furthest: -1, expected: [] }
+node('binop', { left: digits, op: char('+'), right: digits })('1+2'); // { ok: true, value: { type: 'binop', left: 1, op: '+', right: 2 }, index: 3 }
+node('number', { value: digits })('123'); // { ok: true, value: { type: 'number', value: 123 }, index: 3 }
 ```
 
 ### `not`
 
-Succeed if parser fails (without consuming input). The inner failure is deliberately not traced: it is the expected outcome, so reporting it would produce a misleading expectation.
+Succeed if parser fails (without consuming input). The inner parser runs against an isolated context: its failure is the expected outcome here, so reporting it would produce a misleading expectation in the final message.
 
 ```typescript
-not(string('hello'))('world'); // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
+not(string('hello'))('world'); // { ok: true, value: null, index: 0 }
 ```
 
 ### `nth`
@@ -307,7 +307,7 @@ not(string('hello'))('world'); // { ok: true, value: null, index: 0, furthest: -
 Extract the nth element from a parser result array.
 
 ```typescript
-nth(sequence(char('a'), char('b'), char('c')), 1)('abc'); // { ok: true, value: 'b', index: 3, furthest: -1, expected: [] }
+nth(sequence(char('a'), char('b'), char('c')), 1)('abc'); // { ok: true, value: 'b', index: 3 }
 ```
 
 ### `optional`
@@ -315,8 +315,8 @@ nth(sequence(char('a'), char('b'), char('c')), 1)('abc'); // { ok: true, value: 
 Make parser optional (return null on failure, without consuming input).
 
 ```typescript
-optional(string('hello'))('hello'); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
-optional(string('hello'))('world'); // { ok: true, value: null, index: 0, furthest: 0, expected: ["'hello'"] }
+optional(string('hello'))('hello'); // { ok: true, value: 'hello', index: 5 }
+optional(string('hello'))('world'); // { ok: true, value: null, index: 0 }
 ```
 
 ### `optionalConsume`
@@ -324,7 +324,7 @@ optional(string('hello'))('world'); // { ok: true, value: null, index: 0, furthe
 Consume input if the parser matches, discarding the result.
 
 ```typescript
-optionalConsume(string('hi'))('hi there'); // { ok: true, index: 2, furthest: -1, expected: [] }
+optionalConsume(string('hi'))('hi there'); // { ok: true, index: 2 }
 ```
 
 ### `optionalSeparatedBy`
@@ -332,7 +332,7 @@ optionalConsume(string('hi'))('hi there'); // { ok: true, index: 2, furthest: -1
 Parse items separated by a separator, allowing empty slots.
 
 ```typescript
-optionalSeparatedBy(digits, char(','))('1,2'); // { ok: true, value: [1, 2], index: 3, furthest: 3, expected: ["','"] }
+optionalSeparatedBy(digits, char(','))('1,2'); // { ok: true, value: [1, 2], index: 3 }
 ```
 
 ### `outer`
@@ -340,7 +340,7 @@ optionalSeparatedBy(digits, char(','))('1,2'); // { ok: true, value: [1, 2], ind
 Extract outer values from a sequence of 3 parsers (skip middle).
 
 ```typescript
-outer(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', ')'], index: 4, furthest: -1, expected: [] }
+outer(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', ')'], index: 4 }
 ```
 
 ### `padded`
@@ -348,7 +348,7 @@ outer(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: ['(', '
 Parse content surrounded by optional whitespace.
 
 ```typescript
-padded(string('hi'))('  hi  '); // { ok: true, value: 'hi', index: 6, furthest: 6, expected: ['whitespace'] }
+padded(string('hi'))('  hi  '); // { ok: true, value: 'hi', index: 6 }
 ```
 
 ### `parenthesized`
@@ -356,7 +356,7 @@ padded(string('hi'))('  hi  '); // { ok: true, value: 'hi', index: 6, furthest: 
 Parse content surrounded by parentheses.
 
 ```typescript
-parenthesized(string('hi'))('(hi)'); // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
+parenthesized(string('hi'))('(hi)'); // { ok: true, value: 'hi', index: 4 }
 ```
 
 ### `peek`
@@ -364,7 +364,7 @@ parenthesized(string('hi'))('(hi)'); // { ok: true, value: 'hi', index: 4, furth
 Look ahead without consuming input.
 
 ```typescript
-peek(string('hello'))('hello world'); // { ok: true, value: 'hello', index: 0, furthest: -1, expected: [] }
+peek(string('hello'))('hello world'); // { ok: true, value: 'hello', index: 0 }
 ```
 
 ### `postfix`
@@ -375,7 +375,7 @@ Apply zero or more postfix operators to an atom.
 postfix(
     digits,
     map(char('!'), () => (n) => n * 2),
-)('3!'); // { ok: true, value: 6, index: 2, furthest: 2, expected: ["'!'"] }
+)('3!'); // { ok: true, value: 6, index: 2 }
 ```
 
 ### `prefix`
@@ -386,7 +386,7 @@ Apply zero or more prefix operators to an atom.
 prefix(
     map(char('-'), () => (n) => -n),
     digits,
-)('-3'); // { ok: true, value: -3, index: 2, furthest: 1, expected: ["'-'"] }
+)('-3'); // { ok: true, value: -3, index: 2 }
 ```
 
 ### `pure`
@@ -394,7 +394,7 @@ prefix(
 Always succeed with a value without consuming input.
 
 ```typescript
-pure(42)('abc'); // { ok: true, value: 42, index: 0, furthest: -1, expected: [] }
+pure(42)('abc'); // { ok: true, value: 42, index: 0 }
 ```
 
 ### `quoted`
@@ -402,7 +402,7 @@ pure(42)('abc'); // { ok: true, value: 42, index: 0, furthest: -1, expected: [] 
 Parse content surrounded by single or double quotes.
 
 ```typescript
-quoted(string('hello'))('"hello"'); // { ok: true, value: 'hello', index: 7, furthest: -1, expected: [] }
+quoted(string('hello'))('"hello"'); // { ok: true, value: 'hello', index: 7 }
 ```
 
 ### `recover`
@@ -410,7 +410,7 @@ quoted(string('hello'))('"hello"'); // { ok: true, value: 'hello', index: 7, fur
 Use fallback value when parser fails.
 
 ```typescript
-recover(string('hello'), 'default')('world'); // { ok: true, value: 'default', index: 0, furthest: 0, expected: ["'hello'"] }
+recover(string('hello'), 'default')('world'); // { ok: true, value: 'default', index: 0 }
 ```
 
 ### `right`
@@ -418,7 +418,7 @@ recover(string('hello'), 'default')('world'); // { ok: true, value: 'default', i
 Keep only the right result from a sequence.
 
 ```typescript
-right(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'world', index: 10, furthest: -1, expected: [] }
+right(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'world', index: 10 }
 ```
 
 ### `separatedBy`
@@ -426,7 +426,7 @@ right(string('hello'), string('world'))('helloworld'); // { ok: true, value: 'wo
 Parse zero or more items separated by a separator. A trailing separator is not consumed: if the separator matches but the item after it does not, the list ends before the separator.
 
 ```typescript
-separatedBy(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index: 5, furthest: 5, expected: ["','"] }
+separatedBy(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index: 5 }
 ```
 
 ### `separatedBy1`
@@ -434,7 +434,7 @@ separatedBy(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index:
 Parse one or more items separated by a separator.
 
 ```typescript
-separatedBy1(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index: 5, furthest: 5, expected: ["','"] }
+separatedBy1(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index: 5 }
 ```
 
 ### `separatedEndBy`
@@ -442,7 +442,7 @@ separatedBy1(digits, char(','))('1,2,3'); // { ok: true, value: [1, 2, 3], index
 Parse zero or more items separated by a separator, allowing a trailing one.
 
 ```typescript
-separatedEndBy(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], index: 6, furthest: 6, expected: ['digit'] }
+separatedEndBy(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], index: 6 }
 ```
 
 ### `separatedEndBy1`
@@ -450,7 +450,7 @@ separatedEndBy(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], in
 Parse one or more items separated by a separator, allowing a trailing one.
 
 ```typescript
-separatedEndBy1(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], index: 6, furthest: 6, expected: ['digit'] }
+separatedEndBy1(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], index: 6 }
 ```
 
 ### `separatedUntil`
@@ -458,7 +458,7 @@ separatedEndBy1(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], i
 Parse items separated by a separator, up to a terminator.
 
 ```typescript
-separatedUntil(digits, char(','), char(';'))('1,2,3;'); // { ok: true, value: [1, 2, 3], index: 6, furthest: 5, expected: ["','"] }
+separatedUntil(digits, char(','), char(';'))('1,2,3;'); // { ok: true, value: [1, 2, 3], index: 6 }
 ```
 
 ### `sequence`
@@ -466,7 +466,7 @@ separatedUntil(digits, char(','), char(';'))('1,2,3;'); // { ok: true, value: [1
 Parse a sequence of parsers and return all results as an array.
 
 ```typescript
-sequence(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: ['a', 'b', 'c'], index: 3, furthest: -1, expected: [] }
+sequence(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: ['a', 'b', 'c'], index: 3 }
 ```
 
 ### `skip`
@@ -474,7 +474,7 @@ sequence(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: ['a', 'b
 Skip a parser n times.
 
 ```typescript
-skip(char('a'), 2)('aabc'); // { ok: true, value: null, index: 2, furthest: -1, expected: [] }
+skip(char('a'), 2)('aabc'); // { ok: true, value: null, index: 2 }
 ```
 
 ### `skipMany`
@@ -482,7 +482,7 @@ skip(char('a'), 2)('aabc'); // { ok: true, value: null, index: 2, furthest: -1, 
 Skip zero or more occurrences (never fails, returns null).
 
 ```typescript
-skipMany(char('a'))('aaabc'); // { ok: true, value: null, index: 3, furthest: 3, expected: ["'a'"] }
+skipMany(char('a'))('aaabc'); // { ok: true, value: null, index: 3 }
 ```
 
 ### `skipMany1`
@@ -490,7 +490,7 @@ skipMany(char('a'))('aaabc'); // { ok: true, value: null, index: 3, furthest: 3,
 Skip one or more occurrences (fails if no matches).
 
 ```typescript
-skipMany1(char('a'))('aaabc'); // { ok: true, value: null, index: 3, furthest: 3, expected: ["'a'"] }
+skipMany1(char('a'))('aaabc'); // { ok: true, value: null, index: 3 }
 ```
 
 ### `surrounded`
@@ -498,8 +498,8 @@ skipMany1(char('a'))('aaabc'); // { ok: true, value: null, index: 3, furthest: 3
 Parse content surrounded by delimiters.
 
 ```typescript
-surrounded(char('['), string('hi'), char(']'))('[hi]'); // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
-surrounded(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'b', index: 3, furthest: -1, expected: [] }
+surrounded(char('['), string('hi'), char(']'))('[hi]'); // { ok: true, value: 'hi', index: 4 }
+surrounded(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'b', index: 3 }
 ```
 
 ### `unless`
@@ -507,8 +507,8 @@ surrounded(char('a'), char('b'), char('c'))('abc'); // { ok: true, value: 'b', i
 Parse unless condition is true (inverse of guard).
 
 ```typescript
-unless(false, string('hello'))('hello'); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
-unless(true, string('hello'))('hello'); // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
+unless(false, string('hello'))('hello'); // { ok: true, value: 'hello', index: 5 }
+unless(true, string('hello'))('hello'); // { ok: true, value: null, index: 0 }
 ```
 
 ### `until`
@@ -516,7 +516,7 @@ unless(true, string('hello'))('hello'); // { ok: true, value: null, index: 0, fu
 Parse zero or more until terminator matches, leaving the terminator unconsumed.
 
 ```typescript
-until(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: 2, expected: ["'b'"] }
+until(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }
 ```
 
 ### `validate`
@@ -524,8 +524,8 @@ until(char('a'), char('b'))('aaab'); // { ok: true, value: ['a', 'a', 'a'], inde
 Validate parsed value with a predicate.
 
 ```typescript
-validate(digit, (n) => n > 5)('7'); // { ok: true, value: 7, index: 1, furthest: -1, expected: [] }
-validate(digit, (n) => n > 5)('3'); // { ok: false, index: 0, furthest: 0, expected: ['valid value'] }
+validate(digit, (n) => n > 5)('7'); // { ok: true, value: 7, index: 1 }
+validate(digit, (n) => n > 5)('3'); // { ok: false, index: 0, expected: ['valid value'] }
 ```
 
 ### `value`
@@ -533,8 +533,8 @@ validate(digit, (n) => n > 5)('3'); // { ok: false, index: 0, furthest: 0, expec
 Replace parsed value with a constant.
 
 ```typescript
-value(string('true'), true)('true'); // { ok: true, value: true, index: 4, furthest: -1, expected: [] }
-value(string('null'), null)('null'); // { ok: true, value: null, index: 4, furthest: -1, expected: [] }
+value(string('true'), true)('true'); // { ok: true, value: true, index: 4 }
+value(string('null'), null)('null'); // { ok: true, value: null, index: 4 }
 ```
 
 ### `when`
@@ -542,6 +542,6 @@ value(string('null'), null)('null'); // { ok: true, value: null, index: 4, furth
 Branch on a boolean parser result.
 
 ```typescript
-when(flag(char('*')), pure('many'), pure('one'))('*rest'); // { ok: true, value: 'many', index: 1, furthest: -1, expected: [] }
-when(flag(char('*')), pure('many'), pure('one'))('abc'); // { ok: true, value: 'one', index: 0, furthest: 0, expected: ["'*'"] }
+when(flag(char('*')), pure('many'), pure('one'))('*rest'); // { ok: true, value: 'many', index: 1 }
+when(flag(char('*')), pure('many'), pure('one'))('abc'); // { ok: true, value: 'one', index: 0 }
 ```

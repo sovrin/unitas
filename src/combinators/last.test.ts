@@ -7,7 +7,9 @@ import { last } from './last';
 
 describe('last', () => {
     it('should return last element of array parser result', () => {
-        const parser1 = create((input) => success(['A', 'B', 'C'] as const, input.length));
+        const parser1 = create((input) =>
+            success(['A', 'B', 'C'] as const, input.length),
+        );
         const parser = last(parser1);
         const result = parser('ABC');
 

@@ -7,7 +7,9 @@ import { nth } from './nth';
 
 describe('nth', () => {
     it('should return element at specified index', () => {
-        const parser1 = create((input) => success(['A', 'B', 'C'] as const, input.length));
+        const parser1 = create((input) =>
+            success(['A', 'B', 'C'] as const, input.length),
+        );
 
         {
             const parser = nth(parser1, 0);
@@ -30,7 +32,9 @@ describe('nth', () => {
     });
 
     it('should return undefined for out-of-bounds index', () => {
-        const parser1 = create((_input, _index = 0) => success(['A', 'B', 'C'] as const, 3));
+        const parser1 = create((_input, _index = 0) =>
+            success(['A', 'B', 'C'] as const, 3),
+        );
 
         {
             const parser = nth(parser1, 5);

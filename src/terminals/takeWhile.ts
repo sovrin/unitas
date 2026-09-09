@@ -5,7 +5,7 @@ import { success } from '../core/success';
  * Takes characters while the predicate returns true.
  *
  * @example
- * takeWhile((c) => c !== 'x')('abcx') // { ok: true, value: 'abc', index: 3, furthest: -1, expected: [] }
+ * takeWhile((c) => c !== 'x')('abcx') // { ok: true, value: 'abc', index: 3 }
  */
 export const takeWhile = (predicate: (char: string) => boolean) => {
     return create<string>((input, index = 0) => {

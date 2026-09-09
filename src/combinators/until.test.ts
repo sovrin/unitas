@@ -21,7 +21,9 @@ describe('until', () => {
     });
 
     it('should return empty array when terminator is at start', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = until(failureParser, bParser);
         const result = parser('BAAAA');
 

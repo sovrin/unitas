@@ -9,7 +9,10 @@ import { success } from '../core/success';
 import { postfix } from './postfix';
 
 describe('postfix', () => {
-    const postfixOps: Parser<(value: number) => number> = (input, index = 0) => {
+    const postfixOps: Parser<(value: number) => number> = (
+        input,
+        index = 0,
+    ) => {
         if (input.startsWith('!', index)) {
             return success((value) => {
                 let result = 1;
@@ -23,7 +26,7 @@ describe('postfix', () => {
         if (input.startsWith('²', index)) {
             return success((value) => value * value, index + 1);
         }
-        return failure(index);
+        return failure(undefined, index);
     };
 
     it('should handle atom without postfix operators', () => {

@@ -15,8 +15,8 @@ type Node<T extends string, U extends Record<string, unknown>> = {
  * Create a node from parser fields.
  *
  * @example
- * node('binop', { left: digits, op: char('+'), right: digits })('1+2') // { ok: true, value: { type: 'binop', left: 1, op: '+', right: 2 }, index: 3, furthest: -1, expected: [] }
- * node('number', { value: digits })('123') // { ok: true, value: { type: 'number', value: 123 }, index: 3, furthest: -1, expected: [] }
+ * node('binop', { left: digits, op: char('+'), right: digits })('1+2') // { ok: true, value: { type: 'binop', left: 1, op: '+', right: 2 }, index: 3 }
+ * node('number', { value: digits })('123') // { ok: true, value: { type: 'number', value: 123 }, index: 3 }
  */
 export function node<
     U extends Record<string, unknown>,

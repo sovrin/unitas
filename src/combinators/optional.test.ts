@@ -16,7 +16,9 @@ describe('optional', () => {
     });
 
     it('should return null when parser fails', () => {
-        const parser1 = create<'A'>((_input, index = 0) => failure(index));
+        const parser1 = create<'A'>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = optional(parser1);
         const result = parser('ABC');
 

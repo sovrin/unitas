@@ -9,7 +9,7 @@ import { fold } from './fold';
 describe('fold', () => {
     const stringParser = create<string>((input, index = 0) => {
         if (index >= input.length) {
-            return failure(index);
+            return failure(undefined, index);
         }
         return success(input[index], index + 1);
     });
@@ -27,7 +27,7 @@ describe('fold', () => {
 
     it('should work with empty input (return initial value and not consume input)', () => {
         const parser = fold(
-            create<string>((_input, index = 0) => failure(index)),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -38,7 +38,7 @@ describe('fold', () => {
 
     it('should work with empty input (return initial value)', () => {
         const parser = fold(
-            create<string>((_input, index = 0) => failure(index)),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -75,7 +75,9 @@ describe('fold', () => {
     });
 
     it('should not fail and return the initial value and not consume', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = fold(failureParser, 0, (acc) => acc + 1);
         const result = parser('ABC');
 

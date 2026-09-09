@@ -8,7 +8,9 @@ import { map } from './map';
 
 describe('map', () => {
     it('should transform parser result with single transform', () => {
-        const parser1 = create<'42'>((_input, index = 0) => success('42', index + 2));
+        const parser1 = create<'42'>((_input, index = 0) =>
+            success('42', index + 2),
+        );
         const parser = map(parser1, parseInt);
         const result = parser('42abc');
 
@@ -29,7 +31,9 @@ describe('map', () => {
     });
 
     it('should fail if underlying parser fails', () => {
-        const parser1 = create<string>((_input, _index = 0) => failure(0));
+        const parser1 = create<string>((_input, _index = 0) =>
+            failure(undefined, 0),
+        );
         const parser = map(parser1, (s) => s.toUpperCase());
         const result = parser('goodbye');
 
@@ -53,7 +57,9 @@ describe('map', () => {
     });
 
     it('should maintain original input consumption', () => {
-        const parser1 = create<'test'>((_input, index = 0) => success('test', index + 4));
+        const parser1 = create<'test'>((_input, index = 0) =>
+            success('test', index + 4),
+        );
         const parser = map(parser1, (s) => s.length);
         const result = parser('testing');
 

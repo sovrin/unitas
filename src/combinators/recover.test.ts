@@ -16,7 +16,9 @@ describe('recover', () => {
     });
 
     it('should not consume input when parser fails', () => {
-        const parserFail = create<'A'>((_input, index = 0) => failure(index));
+        const parserFail = create<'A'>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = recover(parserFail, 'world');
         const result = parser('goodbye');
 
@@ -31,7 +33,9 @@ describe('recover', () => {
     });
 
     it('should work with complex default values', () => {
-        const parser1 = create<string>((_input, index = 0) => failure(index));
+        const parser1 = create<string>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = recover<{ default: boolean; value: number } | string>(
             parser1,
             {

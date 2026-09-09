@@ -36,7 +36,7 @@ describe('lazy', () => {
                 if (input[index] === expected) {
                     return success(expected, index + 1);
                 }
-                return failure(index, expected);
+                return failure(undefined, index, expected);
             });
         };
 
@@ -45,7 +45,7 @@ describe('lazy', () => {
 
             const recursiveCase = create<string>((input, index = 0) => {
                 if (input[index] !== '(') {
-                    return failure(index, "'('");
+                    return failure(undefined, index, "'('");
                 }
 
                 const innerResult = parent(input, index + 1);
@@ -55,7 +55,7 @@ describe('lazy', () => {
 
                 const after = innerResult.index;
                 if (input[after] !== ')') {
-                    return failure(after, "')'");
+                    return failure(undefined, after, "')'");
                 }
 
                 return success(innerResult.value, after + 1);
@@ -92,7 +92,9 @@ describe('lazy', () => {
     });
 
     it('should handle parser that fails', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const result = failureParser('goodbye');
 
         assertFailure<unknown>(result);

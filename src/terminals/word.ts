@@ -10,9 +10,9 @@ import { string } from './string';
  * Use this when parsing keywords that should not be part of a longer identifier.
  *
  * @example
- * word('let')('let x') // { ok: true, value: 'let', index: 4, furthest: -1, expected: [] }
- * word('let')('let1') // { ok: false, index: 3, furthest: 3, expected: ['/(?!\\w)/'] }
- * word('if')('if (x)') // { ok: true, value: 'if', index: 3, furthest: -1, expected: [] }
+ * word('let')('let x') // { ok: true, value: 'let', index: 4 }
+ * word('let')('let1') // { ok: false, index: 3, expected: ['/(?!\\w)/'] }
+ * word('if')('if (x)') // { ok: true, value: 'if', index: 3 }
  */
 export const word = (targetWord: string) => {
     return create<string>(

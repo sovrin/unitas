@@ -9,7 +9,7 @@ import { sequence } from './sequence';
  * Parser that consumes trailing whitespace.
  *
  * @example
- * lexeme(string('hello'))('hello   world') // { ok: true, value: 'hello', index: 8, furthest: -1, expected: [] }
+ * lexeme(string('hello'))('hello   world') // { ok: true, value: 'hello', index: 8 }
  */
 export const lexeme = <T>(parser: Parser<T>) => {
     return create<T>(map(sequence(parser, regex(/^\s*/)), ([value]) => value));

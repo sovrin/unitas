@@ -10,7 +10,7 @@ describe('fold1', () => {
     it('should fold left over parsed items', () => {
         const stringParser = create<string>((input, index = 0) => {
             if (index >= input.length) {
-                return failure(index);
+                return failure(undefined, index);
             }
             return success(input[index], index + 1);
         });
@@ -22,7 +22,9 @@ describe('fold1', () => {
     });
 
     it('should return null, one or more successful parser returns are required', () => {
-        const failureParser = create<number>((_input, index = 0) => failure(index));
+        const failureParser = create<number>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = fold1(failureParser, 42, (acc, digit) => acc + digit);
         const result = parser('ABC');
 

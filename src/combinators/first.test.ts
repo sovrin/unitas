@@ -7,7 +7,9 @@ import { first } from './first';
 
 describe('first', () => {
     it('should return first element of array parser result', () => {
-        const parser1 = create((input) => success(['A', 'B', 'C'] as const, input.length));
+        const parser1 = create((input) =>
+            success(['A', 'B', 'C'] as const, input.length),
+        );
         const parser = first(parser1);
         const result = parser('ABC');
 

@@ -13,7 +13,7 @@ export const createTestParser = <T extends string | number>(tester: T) => {
             return success(tester, index + stringTester.length);
         }
 
-        return failure(index, stringTester);
+        return failure(undefined, index, stringTester);
     });
 };
 
@@ -53,6 +53,7 @@ export const assertFailure = <T>(
     }
 
     if (expected !== undefined) {
-        expect([...result.expected].sort()).toEqual([...expected].sort());
+        const actual = (result as { expected: readonly string[] }).expected;
+        expect([...actual].sort()).toEqual([...expected].sort());
     }
 };

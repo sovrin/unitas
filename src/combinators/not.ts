@@ -1,5 +1,6 @@
 import type { Parser } from '../core/parser';
 
+import { context } from '../core/context';
 import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
@@ -7,16 +8,17 @@ import { success } from '../core/success';
 /**
  * Succeed if parser fails (without consuming input).
  *
- * The inner failure is deliberately not traced: it is the expected outcome, so
- * reporting it would produce a misleading expectation.
+ * The inner parser runs against an isolated context: its failure is the
+ * expected outcome here, so reporting it would produce a misleading
+ * expectation in the final message.
  *
  * @example
- * not(string('hello'))('world') // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
+ * not(string('hello'))('world') // { ok: true, value: null, index: 0 }
  */
 export const not = <T>(parser: Parser<T>) => {
-    return create<null>((input, index = 0) => {
-        const result = parser(input, index);
+    return create<null>((input, index = 0, ctx) => {
+        const result = parser(input, index, context());
 
-        return result.ok ? failure(index) : success(null, index);
+        return result.ok ? failure(ctx, index) : success(null, index);
     });
 };

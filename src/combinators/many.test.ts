@@ -8,7 +8,9 @@ import { many } from './many';
 
 describe('many', () => {
     it('should parse zero occurrences', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = many(failureParser);
         const result = parser('BCD');
 

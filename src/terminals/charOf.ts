@@ -1,14 +1,13 @@
-import { failure } from '../core/failure';
+import { reject } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
-import type { char } from './char';
-import { type Char } from './char';
+import { type Char, type char } from './char';
 
 /**
  * Parse any character from a set.
  *
  * @example
- * charOf(['a', 'b', 'c'])('abc') // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+ * charOf(['a', 'b', 'c'])('abc') // { ok: true, value: 'a', index: 1 }
  */
 export function charOf<S extends string>(
     chars: readonly Char<S>[],
@@ -16,11 +15,11 @@ export function charOf<S extends string>(
 export function charOf(chars: readonly string[]) {
     const described = chars.map((c) => `'${c}'`);
 
-    return create<string>((input, index = 0) => {
+    return create<string>((input, index = 0, ctx) => {
         const next = input[index];
 
         return index < input.length && chars.includes(next)
             ? success(next, index + 1)
-            : failure(index, ...described);
+            : reject(ctx, index, described);
     });
 }

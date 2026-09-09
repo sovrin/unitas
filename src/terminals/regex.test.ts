@@ -25,6 +25,14 @@ describe('regex', () => {
         assertSuccess<string>(result, 'hello', 5);
     });
 
+    it('should keep a leading caret as a line anchor when multiline', () => {
+        const parser = regex(/^# /m);
+
+        assertSuccess<string>(parser('# hi'), '# ', 2);
+        assertSuccess<string>(parser('a\n# hi', 2), '# ', 4);
+        assertFailure<string>(parser('a# hi', 1), 1);
+    });
+
     it('should handle empty matches', () => {
         const parser = regex(/\d*/);
         const result = parser('abc');

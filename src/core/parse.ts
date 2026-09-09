@@ -1,5 +1,6 @@
 import type { Parser } from './parser';
 
+import { context } from './context';
 import { format } from './format';
 import { locate } from './locate';
 import { diagnose } from './run';
@@ -22,11 +23,12 @@ export type ParseResult<T> =
  * offset, line, column, expectations and a formatted message.
  *
  * @example
- * parse(digits, '12x').message // "1:3 expected end of input, found 'x'\n  1 | 12x\n    |   ^"
+ * parse(digits, '12x').ok // false
  */
 export const parse = <T>(parser: Parser<T>, input: string): ParseResult<T> => {
-    const result = parser(input, 0);
-    const problem = diagnose(input, result);
+    const ctx = context();
+    const result = parser(input, 0, ctx);
+    const problem = diagnose(input, result, ctx);
 
     if (!problem) {
         return { ok: true, value: (result as { value: T }).value };

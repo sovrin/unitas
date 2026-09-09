@@ -11,7 +11,7 @@ const abcParser = create<string[]>((input, index = 0) => {
         return success(['a', 'b', 'c'], index + 3);
     }
 
-    return failure(index);
+    return failure(undefined, index);
 });
 
 const emptyParser = create<string[]>((input, index = 0) => success([], index));

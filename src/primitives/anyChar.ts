@@ -6,10 +6,10 @@ import { success } from '../core/success';
  * Parse any single character.
  *
  * @example
- * anyChar('abc') // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+ * anyChar('abc') // { ok: true, value: 'a', index: 1 }
  */
-export const anyChar = create<string>((input, index = 0) => {
+export const anyChar = create<string>((input, index = 0, ctx) => {
     return index < input.length
         ? success(input[index], index + 1)
-        : failure(index, 'any character');
+        : failure(ctx, index, 'any character');
 });

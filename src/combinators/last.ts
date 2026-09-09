@@ -16,7 +16,7 @@ export type Last<T extends readonly unknown[]> = T extends readonly [
  * Extract the last element from a parser result array.
  *
  * @example
- * last(sequence(char('a'), char('b')))('ab') // { ok: true, value: 'b', index: 2, furthest: -1, expected: [] }
+ * last(sequence(char('a'), char('b')))('ab') // { ok: true, value: 'b', index: 2 }
  */
 export const last = <T extends readonly unknown[]>(parser: Parser<T>) => {
     return create<Last<T>>(

@@ -7,7 +7,7 @@
 Primitives are parser _instances_, not factories. Where a terminal needs an argument (`char("a")`), a primitive is already a parser and can be passed straight to a combinator (`many(digit)`).
 
 ```typescript
-import {} from /* … */ 'unitas/primitives';
+import { digit, letters, whitespace } from 'unitas/primitives';
 ```
 
 ## Index
@@ -21,8 +21,8 @@ import {} from /* … */ 'unitas/primitives';
 Parse a single alphanumeric character.
 
 ```typescript
-alphaNum('a1'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
-alphaNum('1a'); // { ok: true, value: '1', index: 1, furthest: -1, expected: [] }
+alphaNum('a1'); // { ok: true, value: 'a', index: 1 }
+alphaNum('1a'); // { ok: true, value: '1', index: 1 }
 ```
 
 ### `alphaNums`
@@ -30,7 +30,7 @@ alphaNum('1a'); // { ok: true, value: '1', index: 1, furthest: -1, expected: [] 
 Parse one or more alphanumeric characters as a string.
 
 ```typescript
-alphaNums('placeholder'); // { ok: true, value: 'placeholder', index: 11, furthest: 11, expected: ['alphanumeric character'] }
+alphaNums('placeholder'); // { ok: true, value: 'placeholder', index: 11 }
 ```
 
 ### `anyChar`
@@ -38,7 +38,7 @@ alphaNums('placeholder'); // { ok: true, value: 'placeholder', index: 11, furthe
 Parse any single character.
 
 ```typescript
-anyChar('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+anyChar('abc'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `bool`
@@ -46,9 +46,9 @@ anyChar('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] 
 Parse a boolean literal.
 
 ```typescript
-bool('true'); // { ok: true, value: true, index: 4, furthest: -1, expected: [] }
-bool('false'); // { ok: true, value: false, index: 5, furthest: 0, expected: ["'true'"] }
-bool('trueABC'); // { ok: true, value: true, index: 4, furthest: -1, expected: [] }
+bool('true'); // { ok: true, value: true, index: 4 }
+bool('false'); // { ok: true, value: false, index: 5 }
+bool('trueABC'); // { ok: true, value: true, index: 4 }
 ```
 
 ### `crlf`
@@ -56,7 +56,7 @@ bool('trueABC'); // { ok: true, value: true, index: 4, furthest: -1, expected: [
 Parse CRLF line ending.
 
 ```typescript
-crlf('\r\nabc'); // { ok: true, value: '\r\n', index: 2, furthest: -1, expected: [] }
+crlf('\r\nabc'); // { ok: true, value: '\r\n', index: 2 }
 ```
 
 ### `digit`
@@ -64,7 +64,7 @@ crlf('\r\nabc'); // { ok: true, value: '\r\n', index: 2, furthest: -1, expected:
 Parse a single digit and return as number.
 
 ```typescript
-digit('5abc'); // { ok: true, value: 5, index: 1, furthest: -1, expected: [] }
+digit('5abc'); // { ok: true, value: 5, index: 1 }
 ```
 
 ### `digits`
@@ -72,7 +72,7 @@ digit('5abc'); // { ok: true, value: 5, index: 1, furthest: -1, expected: [] }
 Parse one or more digits and return as a number.
 
 ```typescript
-digits('123'); // { ok: true, value: 123, index: 3, furthest: -1, expected: [] }
+digits('123'); // { ok: true, value: 123, index: 3 }
 ```
 
 ### `eof`
@@ -80,7 +80,7 @@ digits('123'); // { ok: true, value: 123, index: 3, furthest: -1, expected: [] }
 Match the end of the input.
 
 ```typescript
-eof(''); // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
+eof(''); // { ok: true, value: null, index: 0 }
 ```
 
 ### `eol`
@@ -88,7 +88,7 @@ eof(''); // { ok: true, value: null, index: 0, furthest: -1, expected: [] }
 Parse end of line (\\n, \\r\\n, or EOF).
 
 ```typescript
-eol('\nabc'); // { ok: true, value: '\n', index: 1, furthest: -1, expected: [] }
+eol('\nabc'); // { ok: true, value: '\n', index: 1 }
 ```
 
 ### `float`
@@ -96,9 +96,9 @@ eol('\nabc'); // { ok: true, value: '\n', index: 1, furthest: -1, expected: [] }
 Parse a floating point number.
 
 ```typescript
-float('1.23'); // { ok: true, value: 1.23, index: 4, furthest: -1, expected: [] }
-float('-2.5'); // { ok: true, value: -2.5, index: 4, furthest: -1, expected: [] }
-float('1.23abc'); // { ok: true, value: 1.23, index: 4, furthest: -1, expected: [] }
+float('1.23'); // { ok: true, value: 1.23, index: 4 }
+float('-2.5'); // { ok: true, value: -2.5, index: 4 }
+float('1.23abc'); // { ok: true, value: 1.23, index: 4 }
 ```
 
 ### `hexDigit`
@@ -106,7 +106,7 @@ float('1.23abc'); // { ok: true, value: 1.23, index: 4, furthest: -1, expected: 
 Parse a single hexadecimal digit.
 
 ```typescript
-hexDigit('fF9'); // { ok: true, value: 'f', index: 1, furthest: -1, expected: [] }
+hexDigit('fF9'); // { ok: true, value: 'f', index: 1 }
 ```
 
 ### `hexDigits`
@@ -114,7 +114,7 @@ hexDigit('fF9'); // { ok: true, value: 'f', index: 1, furthest: -1, expected: []
 Parse one or more hex digits as a string.
 
 ```typescript
-hexDigits('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['hex digit'] }
+hexDigits('deadbeef'); // { ok: true, value: 'deadbeef', index: 8 }
 ```
 
 ### `identifier`
@@ -122,7 +122,7 @@ hexDigits('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['hex
 Parse an identifier — starts with letter or underscore, no leading digit, no hyphen.
 
 ```typescript
-identifier('variable_name'); // { ok: true, value: 'variable_name', index: 13, furthest: -1, expected: [] }
+identifier('variable_name'); // { ok: true, value: 'variable_name', index: 13 }
 ```
 
 ### `integer`
@@ -130,9 +130,9 @@ identifier('variable_name'); // { ok: true, value: 'variable_name', index: 13, f
 Parse a signed integer.
 
 ```typescript
-integer('42'); // { ok: true, value: 42, index: 2, furthest: -1, expected: [] }
-integer('-7'); // { ok: true, value: -7, index: 2, furthest: -1, expected: [] }
-integer('123abc'); // { ok: true, value: 123, index: 3, furthest: -1, expected: [] }
+integer('42'); // { ok: true, value: 42, index: 2 }
+integer('-7'); // { ok: true, value: -7, index: 2 }
+integer('123abc'); // { ok: true, value: 123, index: 3 }
 ```
 
 ### `letter`
@@ -140,7 +140,7 @@ integer('123abc'); // { ok: true, value: 123, index: 3, furthest: -1, expected: 
 Parse a single letter.
 
 ```typescript
-letter('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+letter('abc'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `letters`
@@ -148,7 +148,7 @@ letter('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
 Parse one or more letters as a string.
 
 ```typescript
-letters('placeholder'); // { ok: true, value: 'placeholder', index: 11, furthest: 11, expected: ['letter'] }
+letters('placeholder'); // { ok: true, value: 'placeholder', index: 11 }
 ```
 
 ### `line`
@@ -156,7 +156,7 @@ letters('placeholder'); // { ok: true, value: 'placeholder', index: 11, furthest
 Parse until end of line.
 
 ```typescript
-line('hello\nworld'); // { ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
+line('hello\nworld'); // { ok: true, value: 'hello', index: 5 }
 ```
 
 ### `literal`
@@ -164,8 +164,8 @@ line('hello\nworld'); // { ok: true, value: 'hello', index: 5, furthest: -1, exp
 Parse a word-like value including hyphens.
 
 ```typescript
-literal('foo-bar'); // { ok: true, value: 'foo-bar', index: 7, furthest: -1, expected: [] }
-literal('123abc'); // { ok: true, value: '123abc', index: 6, furthest: -1, expected: [] }
+literal('foo-bar'); // { ok: true, value: 'foo-bar', index: 7 }
+literal('123abc'); // { ok: true, value: '123abc', index: 6 }
 ```
 
 ### `lowercase`
@@ -173,7 +173,7 @@ literal('123abc'); // { ok: true, value: '123abc', index: 6, furthest: -1, expec
 Parse a single lowercase letter.
 
 ```typescript
-lowercase('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [] }
+lowercase('abc'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `lowercases`
@@ -181,7 +181,7 @@ lowercase('abc'); // { ok: true, value: 'a', index: 1, furthest: -1, expected: [
 Parse one or more lowercase letters as a string.
 
 ```typescript
-lowercases('placeholder'); // { ok: true, value: 'placeholder', index: 11, furthest: 11, expected: ['lowercase letter'] }
+lowercases('placeholder'); // { ok: true, value: 'placeholder', index: 11 }
 ```
 
 ### `nl`
@@ -189,7 +189,7 @@ lowercases('placeholder'); // { ok: true, value: 'placeholder', index: 11, furth
 Parse a newline character.
 
 ```typescript
-nl('\ntext'); // { ok: true, value: '\n', index: 1, furthest: -1, expected: [] }
+nl('\ntext'); // { ok: true, value: '\n', index: 1 }
 ```
 
 ### `number`
@@ -197,10 +197,10 @@ nl('\ntext'); // { ok: true, value: '\n', index: 1, furthest: -1, expected: [] }
 Parse an integer or float.
 
 ```typescript
-number('42'); // { ok: true, value: 42, index: 2, furthest: 0, expected: ['/-?\\d+\\.\\d+/'] }
-number('3.14'); // { ok: true, value: 3.14, index: 4, furthest: -1, expected: [] }
-number('-7'); // { ok: true, value: -7, index: 2, furthest: 0, expected: ['/-?\\d+\\.\\d+/'] }
-number('-2.5'); // { ok: true, value: -2.5, index: 4, furthest: -1, expected: [] }
+number('42'); // { ok: true, value: 42, index: 2 }
+number('3.14'); // { ok: true, value: 3.14, index: 4 }
+number('-7'); // { ok: true, value: -7, index: 2 }
+number('-2.5'); // { ok: true, value: -2.5, index: 4 }
 ```
 
 ### `octDigit`
@@ -208,7 +208,7 @@ number('-2.5'); // { ok: true, value: -2.5, index: 4, furthest: -1, expected: []
 Parse a single octal digit.
 
 ```typescript
-octDigit('7abc'); // { ok: true, value: '7', index: 1, furthest: -1, expected: [] }
+octDigit('7abc'); // { ok: true, value: '7', index: 1 }
 ```
 
 ### `octDigits`
@@ -216,16 +216,16 @@ octDigit('7abc'); // { ok: true, value: '7', index: 1, furthest: -1, expected: [
 Parse one or more octal digits as a string.
 
 ```typescript
-octDigits('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['octal digit'] }
+octDigits('755rest'); // { ok: true, value: '755', index: 3 }
 ```
 
 ### `position`
 
-Get the current offset into the input, without consuming anything. Counts forward from the start of the input, so it can be paired with {@link locate} to attach line/column information to a parsed node.
+Get the current offset into the input, without consuming anything. Counts forward from the start of the input, so it can be paired with `locate` to attach line/column information to a parsed node.
 
 ```typescript
-position('abc'); // { ok: true, value: 0, index: 0, furthest: -1, expected: [] }
-right(string('ab'), position)('abc'); // { ok: true, value: 2, index: 2, furthest: -1, expected: [] }
+position('abc'); // { ok: true, value: 0, index: 0 }
+right(string('ab'), position)('abc'); // { ok: true, value: 2, index: 2 }
 ```
 
 ### `rest`
@@ -233,7 +233,7 @@ right(string('ab'), position)('abc'); // { ok: true, value: 2, index: 2, furthes
 Consume and return everything left in the input.
 
 ```typescript
-rest('abc'); // { ok: true, value: 'abc', index: 3, furthest: -1, expected: [] }
+rest('abc'); // { ok: true, value: 'abc', index: 3 }
 ```
 
 ### `space`
@@ -241,7 +241,7 @@ rest('abc'); // { ok: true, value: 'abc', index: 3, furthest: -1, expected: [] }
 Parse a single space character.
 
 ```typescript
-space(' abc'); // { ok: true, value: ' ', index: 1, furthest: -1, expected: [] }
+space(' abc'); // { ok: true, value: ' ', index: 1 }
 ```
 
 ### `spaces`
@@ -249,7 +249,7 @@ space(' abc'); // { ok: true, value: ' ', index: 1, furthest: -1, expected: [] }
 Parse one or more spaces as a string.
 
 ```typescript
-spaces('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['space'] }
+spaces('   abc'); // { ok: true, value: '   ', index: 3 }
 ```
 
 ### `tab`
@@ -257,7 +257,7 @@ spaces('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['space'
 Parse tab character.
 
 ```typescript
-tab('\ttext'); // { ok: true, value: '\t', index: 1, furthest: -1, expected: [] }
+tab('\ttext'); // { ok: true, value: '\t', index: 1 }
 ```
 
 ### `uppercase`
@@ -265,7 +265,7 @@ tab('\ttext'); // { ok: true, value: '\t', index: 1, furthest: -1, expected: [] 
 Parses a single uppercase letter.
 
 ```typescript
-uppercase('ABC'); // { ok: true, value: 'A', index: 1, furthest: -1, expected: [] }
+uppercase('ABC'); // { ok: true, value: 'A', index: 1 }
 ```
 
 ### `uppercases`
@@ -273,7 +273,7 @@ uppercase('ABC'); // { ok: true, value: 'A', index: 1, furthest: -1, expected: [
 Parse one or more uppercase letters as a string.
 
 ```typescript
-uppercases('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['uppercase letter'] }
+uppercases('ABCdef'); // { ok: true, value: 'ABC', index: 3 }
 ```
 
 ### `whitespace`
@@ -281,7 +281,7 @@ uppercases('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['up
 Parses a single whitespace character.
 
 ```typescript
-whitespace(' abc'); // { ok: true, value: ' ', index: 1, furthest: -1, expected: [] }
+whitespace(' abc'); // { ok: true, value: ' ', index: 1 }
 ```
 
 ### `whitespaces`
@@ -289,5 +289,5 @@ whitespace(' abc'); // { ok: true, value: ' ', index: 1, furthest: -1, expected:
 Parse one or more whitespaces as a string.
 
 ```typescript
-whitespaces('placeholder'); // { ok: false, index: 0, furthest: 0, expected: ['whitespace'] }
+whitespaces(' \t\nabc'); // { ok: true, value: ' \t\n', index: 3 }
 ```

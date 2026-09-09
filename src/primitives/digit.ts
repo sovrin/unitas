@@ -13,6 +13,6 @@ const parser = map<Digit, number>(
  * Parse a single digit and return as number.
  *
  * @example
- * digit('5abc') // { ok: true, value: 5, index: 1, furthest: -1, expected: [] }
+ * digit('5abc') // { ok: true, value: 5, index: 1 }
  */
 export const digit = create<number>(parser);

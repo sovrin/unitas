@@ -8,8 +8,8 @@ import { success } from '../core/success';
  * {@link locate} to attach line/column information to a parsed node.
  *
  * @example
- * position('abc') // { ok: true, value: 0, index: 0, furthest: -1, expected: [] }
- * right(string('ab'), position)('abc') // { ok: true, value: 2, index: 2, furthest: -1, expected: [] }
+ * position('abc') // { ok: true, value: 0, index: 0 }
+ * right(string('ab'), position)('abc') // { ok: true, value: 2, index: 2 }
  */
 export const position = create<number>((_input, index = 0) =>
     success(index, index),

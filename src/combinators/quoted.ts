@@ -8,7 +8,7 @@ import { string } from '../terminals/string';
  * Parse content surrounded by single or double quotes.
  *
  * @example
- * quoted(string('hello'))('"hello"') // { ok: true, value: 'hello', index: 7, furthest: -1, expected: [] }
+ * quoted(string('hello'))('"hello"') // { ok: true, value: 'hello', index: 7 }
  */
 export const quoted = <T>(content: Parser<T>) => {
     return choice(

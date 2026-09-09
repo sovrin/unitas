@@ -7,7 +7,7 @@ import { string } from '../terminals/string';
  * Parse content surrounded by parentheses.
  *
  * @example
- * parenthesized(string('hi'))('(hi)') // { ok: true, value: 'hi', index: 4, furthest: -1, expected: [] }
+ * parenthesized(string('hi'))('(hi)') // { ok: true, value: 'hi', index: 4 }
  */
 export const parenthesized = <T>(content: Parser<T>) => {
     return surrounded(string('('), content, string(')'));

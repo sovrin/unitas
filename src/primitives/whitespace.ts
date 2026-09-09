@@ -7,6 +7,6 @@ const parser = satisfy<string>((c) => /\s/.test(c), 'whitespace');
  * Parses a single whitespace character.
  *
  * @example
- * whitespace(' abc') // { ok: true, value: ' ', index: 1, furthest: -1, expected: [] }
+ * whitespace(' abc') // { ok: true, value: ' ', index: 1 }
  */
 export const whitespace = create<string>(parser);

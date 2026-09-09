@@ -13,10 +13,19 @@ const readmePath = path.join(rootDir, 'README.md');
 
 const COMMENT_REGEX = /\/\*\*([\s\S]*?)\*\//g;
 
+const DECLARATION_REGEX =
+    /^\s*export\s+(?:const|function|class|let|var)\s+([A-Za-z_$][\w$]*)/;
+
 const CHEAT_SHEET_HEADING = '## Which function do I need?';
 
 /** Covered by the "Core concepts" prose instead of the cheat sheet. */
-const CHEAT_SHEET_EXEMPT = new Set(['failure', 'parser', 'run', 'success']);
+const CHEAT_SHEET_EXEMPT = new Set([
+    'create',
+    'failure',
+    'reject',
+    'run',
+    'success',
+]);
 
 /**
  * Module metadata. Order here drives the order of the API index in the README
@@ -27,43 +36,61 @@ const MODULES = [
         key: 'core',
         title: 'Core',
         entry: 'unitas',
+        imports: 'run, parse, grammar',
         tagline: 'Types, constructors and the grammar runner.',
-        intro:
-            'The core entry point holds everything a parser is built from: the `Parser<T>` and `Result<T>` types, the `success`/`failure` constructors, and the tools for running and wiring parsers together (`run`, `grammar`, `lazy`, `memoize`).',
+        intro: 'The core entry point holds everything a parser is built from: the `Parser<T>` and `Result<T>` types, the `success`/`failure` constructors, and the tools for running and wiring parsers together (`run`, `grammar`, `lazy`, `memoize`).',
     },
     {
         key: 'terminals',
         title: 'Terminals',
         entry: 'unitas/terminals',
+        imports: 'char, string, regex',
         tagline: 'Factories that match the input string directly.',
-        intro:
-            'Terminals are the leaves of a grammar. They do not take other parsers — they inspect the input string themselves. Each one is a factory: call it with what you want to match and it hands back a `Parser`.',
+        intro: 'Terminals are the leaves of a grammar. They do not take other parsers — they inspect the input string themselves. Each one is a factory: call it with what you want to match and it hands back a `Parser`.',
     },
     {
         key: 'primitives',
         title: 'Primitives',
         entry: 'unitas/primitives',
+        imports: 'digit, letters, whitespace',
         tagline: 'Ready-made parsers for the usual suspects.',
-        intro:
-            'Primitives are parser *instances*, not factories. Where a terminal needs an argument (`char("a")`), a primitive is already a parser and can be passed straight to a combinator (`many(digit)`).',
+        intro: 'Primitives are parser *instances*, not factories. Where a terminal needs an argument (`char("a")`), a primitive is already a parser and can be passed straight to a combinator (`many(digit)`).',
     },
     {
         key: 'combinators',
         title: 'Combinators',
         entry: 'unitas/combinators',
+        imports: 'map, choice, sequence',
         tagline: 'Take parsers, return a new parser.',
-        intro:
-            'Combinators are the glue. Every one of them takes one or more parsers and returns a new parser, which is what lets a grammar stay a set of small, independently testable pieces.',
+        intro: 'Combinators are the glue. Every one of them takes one or more parsers and returns a new parser, which is what lets a grammar stay a set of small, independently testable pieces.',
     },
     {
         key: 'utils',
         title: 'Utils',
         entry: 'unitas/utils',
+        imports: 'pick, join, pipe',
         tagline: 'Plain helpers for `map` callbacks.',
-        intro:
-            'Utils are not parsers. They are small curried helpers meant to be dropped into a `map` callback so reshaping a result stays a one-liner instead of an arrow function.',
+        intro: 'Utils are not parsers. They are small curried helpers meant to be dropped into a `map` callback so reshaping a result stays a one-liner instead of an arrow function.',
     },
 ];
+
+/**
+ * The exported name a doc block belongs to. One file may document several
+ * exports, so the file name is not enough — it would collide in the index and
+ * point every entry at the same anchor.
+ */
+function declaredName(source) {
+    const [, name] = source.match(DECLARATION_REGEX) || [];
+
+    return name;
+}
+
+/**
+ * `{@link foo}` means nothing to a markdown reader, so it becomes code.
+ */
+function resolveLinks(description) {
+    return description.replace(/\{@link\s+([^}\s|]+)[^}]*\}/g, '`$1`');
+}
 
 function extractDocs(filePath) {
     const content = fs.readFileSync(filePath, 'utf-8');
@@ -98,10 +125,13 @@ function extractDocs(filePath) {
             }
 
             if (exampleLines.length > 0) {
+                const after = match.index + match[0].length;
                 docs.push({
-                    description: descriptionParts.join(' '),
+                    description: resolveLinks(descriptionParts.join(' ')),
                     example: exampleLines.join('\n'),
-                    name: basename(filePath, '.ts'),
+                    name:
+                        declaredName(content.slice(after)) ??
+                        basename(filePath, '.ts'),
                 });
             }
         }
@@ -204,6 +234,7 @@ function generateApiPage(module, items) {
     return template
         .replaceAll('<$title>', module.title)
         .replaceAll('<$entry>', module.entry)
+        .replaceAll('<$imports>', module.imports)
         .replaceAll('<$intro>', module.intro)
         .replaceAll('<$count>', String(items.length))
         .replaceAll('<$nav>', nav)
@@ -294,8 +325,7 @@ function warnAboutCheatSheetGaps(template, docsByNamespace) {
         (docsByNamespace[key] || [])
             .map(({ name }) => name)
             .filter(
-                (name) =>
-                    !mentioned.has(name) && !CHEAT_SHEET_EXEMPT.has(name),
+                (name) => !mentioned.has(name) && !CHEAT_SHEET_EXEMPT.has(name),
             ),
     );
 

@@ -1,4 +1,4 @@
-import { failure } from '../core/failure';
+import { reject } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
@@ -9,7 +9,7 @@ export type Char<S extends string = string> =
  * Parse a specific character.
  *
  * @example
- * char('A')('ABC') // { ok: true, value: 'A', index: 1, furthest: -1, expected: [] }
+ * char('A')('ABC') // { ok: true, value: 'A', index: 1 }
  */
 export const char = <S extends string>(expected: Char<S>) => {
     if ((expected as string).length !== 1) {
@@ -18,11 +18,11 @@ export const char = <S extends string>(expected: Char<S>) => {
         );
     }
 
-    const described = `'${expected}'`;
+    const described = [`'${expected}'`];
 
-    return create<Char<S>>((input, index = 0) =>
+    return create<Char<S>>((input, index = 0, ctx) =>
         input[index] === expected
             ? success(expected, index + 1)
-            : failure(index, described),
+            : reject(ctx, index, described),
     );
 };

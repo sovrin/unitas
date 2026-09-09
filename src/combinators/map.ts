@@ -80,14 +80,14 @@ export function map<A, B, C, D, E, F, G, H, I, J>(
  * Transform a parsed value through one or more functions.
  *
  * @example
- * map(digits, (n) => n * 2)('21') // { ok: true, value: 42, index: 2, furthest: -1, expected: [] }
+ * map(digits, (n) => n * 2)('21') // { ok: true, value: 42, index: 2 }
  */
 export function map<A>(
     parser: Parser<A>,
     ...transforms: Array<(value: unknown) => unknown>
 ) {
-    return create((input, index = 0) => {
-        const result = parser(input, index);
+    return create((input, index = 0, ctx) => {
+        const result = parser(input, index, ctx);
         if (!result.ok) {
             return result;
         }
@@ -97,10 +97,6 @@ export function map<A>(
             result.value as unknown,
         );
 
-        return {
-            ...success(finalValue, result.index),
-            furthest: result.furthest,
-            expected: result.expected,
-        };
+        return success(finalValue, result.index);
     });
 }

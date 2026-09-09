@@ -16,7 +16,7 @@ describe('prefix', () => {
         if (input.startsWith('+', index)) {
             return success((value) => Math.abs(value), index + 1);
         }
-        return failure(index);
+        return failure(undefined, index);
     };
 
     it('should handle atom without prefix operators', () => {

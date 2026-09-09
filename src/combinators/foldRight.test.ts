@@ -9,7 +9,7 @@ import { foldRight } from './foldRight';
 describe('foldRight', () => {
     const stringParser = create<string>((input, index = 0) => {
         if (index >= input.length) {
-            return failure(index);
+            return failure(undefined, index);
         }
 
         return success(input[index], index + 1);
@@ -28,7 +28,7 @@ describe('foldRight', () => {
 
     it('should work with empty input (return initial value and not consume input)', () => {
         const parser = foldRight(
-            create<string>((_input, index = 0) => failure(index)),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -39,7 +39,7 @@ describe('foldRight', () => {
 
     it('should work with empty input (return initial value)', () => {
         const parser = foldRight(
-            create<string>((_input, index = 0) => failure(index)),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
@@ -76,7 +76,9 @@ describe('foldRight', () => {
     });
 
     it('should not fail and return the initial value and not consume', () => {
-        const parserFail = create((_input, index = 0) => failure(index));
+        const parserFail = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = foldRight(parserFail, 0, (acc) => acc + 1);
         const result = parser('ABC');
 

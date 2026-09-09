@@ -33,7 +33,7 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 
 - **Zero dependencies**, ESM-only, fully typed
 - **Tree-shakeable** — five entry points, import only what you touch
-- **131 composable exports** — grouped by what they do, indexed below
+- **134 composable exports** — grouped by what they do, indexed below
 - **Mutual recursion out of the box** via `grammar`, no forward declarations
 - **Errors that point at the problem** — line, column and what was expected
 
@@ -81,7 +81,7 @@ The library is broad on purpose: each function does one small thing, so grammars
 | a character class                           | `letter`, `digit`, `alphaNum`, `hexDigit`, `octDigit`, `lowercase`, `uppercase`, `anyChar` |
 | whitespace or a line break                  | `whitespace`, `space`, `tab`, `nl`, `crlf`, `eol`, `eof`                                   |
 
-Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how much input is left? `position`.
+Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how far into the input you are? `position`.
 
 ### Repeating
 
@@ -138,8 +138,8 @@ Most primitives come in a singular and a plural form: `letter` matches one, `let
 | attach a readable error message              | `label`                                                |
 | parse without throwing, with line and column | `parse`                                                |
 | turn an offset into a line and column        | `locate`                                               |
-| render a failure with a caret under it       | `format`, `error`                                      |
-| carry a failure trace through a combinator   | `merge`                                                |
+| render a failure with a caret under it       | `format`, `ParseError`                                 |
+| record what a hand-written parser expected   | `context`, `record`, `union`                           |
 | parse infix operators with precedence        | `chainLeft`, `chainLeft1`, `chainRight`, `chainRight1` |
 | parse prefix / postfix operators             | `prefix`, `postfix`                                    |
 | handle both outcomes of a `Result`           | `match`                                                |
@@ -148,38 +148,27 @@ Most primitives come in a singular and a plural form: `letter` matches one, `let
 
 ### The `Parser` type
 
-A `Parser<T>` reads `input` from an offset and returns a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one. The offset defaults to `0`, so a parser can still be called with just an input.
+A `Parser<T>` reads `input` from an offset and returns a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one. Both extra arguments are optional, so a parser can still be called with just an input.
 
 ```typescript
-type Parser<T> = (input: string, index?: number) => Result<T>;
+type Parser<T> = (input: string, index?: number, ctx?: Context) => Result<T>;
 ```
 
 Parsers never slice the input. They pass the same string down and move an integer instead, which is what lets an error know where in the original source it happened.
 
+`ctx` is the parse context, created by `run` and `parse`. It is where error information accumulates — see [Error reporting](#error-reporting). If you write your own combinator, pass it on to every parser you call.
+
 ### The `Result` type
 
 ```typescript
-type Success<T> = {
-    ok: true;
-    value: T;
-    index: number;
-    furthest: number;
-    expected: readonly string[];
-};
-type Failure = {
-    ok: false;
-    index: number;
-    furthest: number;
-    expected: readonly string[];
-};
+type Success<T> = { ok: true; value: T; index: number };
+type Failure = { ok: false; index: number; expected: readonly string[] };
 type Result<T> = Success<T> | Failure;
 ```
 
 ```typescript
-{ ok: true, value: 'hello', index: 5, furthest: -1, expected: [] }
-       │           │               │            │             │
-       │           │               │            │             └── what was wanted there
-       │           │               │            └── furthest offset any branch reached
+{ ok: true, value: 'hello', index: 5 }
+       │           │               │
        │           │               └── how far this parser got
        │           └── the parsed value
        └── always true for success
@@ -188,16 +177,14 @@ type Result<T> = Success<T> | Failure;
 `index` is the important part: it is how input gets consumed and how parsers chain. A failure reports the same `index`, plus the set of things that would have matched there:
 
 ```typescript
-{ ok: false, index: 6, furthest: 6, expected: ['digit'] }
+{ ok: false, index: 6, expected: ['digit'] }
 ```
-
-`furthest` and `expected` are bookkeeping for error messages. A parser that backtracks still remembers the furthest point it reached, so `run` can report _that_ instead of the place the parse happened to stop. You only need them if you write a combinator by hand — `merge` threads them for you.
 
 ### Backtracking is free
 
 Combinators hand every alternative the same offset they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the same starting offset, however far `a` got.
 
-If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into. What a failed branch _does_ leave behind is its expectation, recorded at the offset it reached, so a later error can still mention it.
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into. What a failed branch _does_ leave behind is its expectation, recorded in the parse context at the offset it reached, so a later error can still mention it.
 
 ### Writing one by hand
 
@@ -206,13 +193,28 @@ Most of the time you compose existing pieces, but nothing stops you from droppin
 ```typescript
 import { create, success, failure } from 'unitas';
 
-const parser = create<string>((input, index = 0) => {
+const parser = create<string>((input, index = 0, ctx) => {
     if (input.startsWith('hello', index)) {
         return success('hello', index + 5);
     }
 
-    return failure(index, '"hello"');
+    return failure(ctx, index, '"hello"');
 });
+```
+
+Passing `ctx` to `failure` is what lets this parser's expectation appear in an error message even when a `choice` backtracks past it. Do the same for any parser you call:
+
+```typescript
+const twice = <T>(parser: Parser<T>) =>
+    create<[T, T]>((input, index = 0, ctx) => {
+        const first = parser(input, index, ctx);
+        if (!first.ok) return first;
+
+        const second = parser(input, first.index, ctx);
+        if (!second.ok) return second;
+
+        return success([first.value, second.value], second.index);
+    });
 ```
 
 ### Grammars
@@ -382,24 +384,27 @@ One line per export. Every name links to its full description and runnable examp
 
 ### Core — `unitas`
 
-Types, constructors and the grammar runner. **14** exports — [full reference →][api-core]
+Types, constructors and the grammar runner. **17** exports — [full reference →][api-core]
 
-|                           |                                                                                                                                          |
-| ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------- |
-| [`error`][core-error]     | Error thrown by {@link run} when a parse fails, carrying the offset, the 1-based line/column and the set of expectations at that offset. |
-| [`failure`][core-failure] | Creates a failed result at an offset, describing what was expected there.                                                                |
-| [`format`][core-format]   | Renders a parse failure as a source excerpt with a caret under the offset.                                                               |
-| [`grammar`][core-grammar] | Creates a recursive grammar where rules can reference each other.                                                                        |
-| [`label`][core-label]     | Replaces the expectations of a parser with a single description.                                                                         |
-| [`lazy`][core-lazy]       | Defers parser creation, useful for recursive grammars.                                                                                   |
-| [`locate`][core-locate]   | Converts a character offset into a 1-based line and column.                                                                              |
-| [`match`][core-match]     | Pattern matching on a Result to handle success and failure cases.                                                                        |
-| [`memoize`][core-memoize] | Memoizes a parser so each offset is parsed at most once (packrat caching).                                                               |
-| [`merge`][core-merge]     | Carries the furthest-failure trace of an earlier result into a later one.                                                                |
-| [`parse`][core-parse]     | Runs a parser over the whole input without throwing.                                                                                     |
-| [`parser`][core-parser]   | Creates a parser from a parser function.                                                                                                 |
-| [`run`][core-run]         | Runs a parser over the whole input and returns the value.                                                                                |
-| [`success`][core-success] | Creates a successful result with a value and the offset reached in the input.                                                            |
+|                                 |                                                                                                                                    |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [`context`][core-context]       | Creates a fresh context. `run` and `parse` make one per call.                                                                      |
+| [`create`][core-create]         | Creates a parser from a parser function.                                                                                           |
+| [`failure`][core-failure]       | Creates a failed result at an offset and notes it in the parse context.                                                            |
+| [`format`][core-format]         | Renders a parse failure as a source excerpt with a caret under the offset.                                                         |
+| [`grammar`][core-grammar]       | Creates a recursive grammar where rules can reference each other.                                                                  |
+| [`label`][core-label]           | Replaces the expectations of a parser with a single description.                                                                   |
+| [`lazy`][core-lazy]             | Defers parser creation, useful for recursive grammars.                                                                             |
+| [`locate`][core-locate]         | Converts a character offset into a 1-based line and column.                                                                        |
+| [`match`][core-match]           | Pattern matching on a Result to handle success and failure cases.                                                                  |
+| [`memoize`][core-memoize]       | Memoizes a parser so each offset is parsed at most once (packrat caching).                                                         |
+| [`parse`][core-parse]           | Runs a parser over the whole input without throwing.                                                                               |
+| [`ParseError`][core-parseerror] | Error thrown by `run` when a parse fails, carrying the offset, the 1-based line/column and the set of expectations at that offset. |
+| [`record`][core-record]         | Notes what was expected at an offset, keeping only the furthest one seen.                                                          |
+| [`reject`][core-reject]         | Creates a failed result from an expectation list that is already allocated, avoiding a fresh array on every failure.               |
+| [`run`][core-run]               | Runs a parser over the whole input and returns the value.                                                                          |
+| [`success`][core-success]       | Creates a successful result with a value and the offset reached in the input.                                                      |
+| [`union`][core-union]           | Adds the entries of `b` to `a`, returning `a` itself when it already covers them.                                                  |
 
 ### Terminals — `unitas/terminals`
 
@@ -547,7 +552,8 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 | [`spread`][utils-spread]   | Collect spread arguments into an array. |
 
 [api-core]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md
-[core-error]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#error
+[core-context]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#context
+[core-create]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#create
 [core-failure]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#failure
 [core-format]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#format
 [core-grammar]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#grammar
@@ -556,11 +562,13 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 [core-locate]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#locate
 [core-match]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#match
 [core-memoize]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#memoize
-[core-merge]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#merge
 [core-parse]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parse
-[core-parser]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parser
+[core-parseerror]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parseerror
+[core-record]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#record
+[core-reject]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#reject
 [core-run]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#run
 [core-success]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#success
+[core-union]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#union
 [api-terminals]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md
 [terminals-char]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md#char
 [terminals-charof]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md#charof
@@ -687,7 +695,7 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 
 `0.3.0` changes how a parser reports where it got to. Parsers now take an offset into the input instead of receiving a sliced suffix, which is what makes line/column error reporting possible.
 
-**If you only compose the built-in parsers, nothing changes.** `run`, `grammar`, `map`, `choice` and everything built on them behave the same, and the offset argument defaults to `0`, so `myParser('input')` still works.
+**If you only compose the built-in parsers, nothing changes.** `run`, `grammar`, `map`, `choice` and everything built on them behave the same, and both new arguments are optional, so `myParser('input')` still works.
 
 Two things do change for everyone:
 
@@ -714,12 +722,12 @@ create<string>((input) => {
 });
 
 // 0.3.0
-create<string>((input, index = 0) => {
+create<string>((input, index = 0, ctx) => {
     if (input.startsWith('hello', index)) {
         return success('hello', index + 5);
     }
 
-    return failure(index, '"hello"');
+    return failure(ctx, index, '"hello"');
 });
 ```
 
@@ -727,16 +735,17 @@ The rest, in full:
 
 | 0.2.x                              | 0.3.0                                                           |
 | ---------------------------------- | --------------------------------------------------------------- |
-| `Parser<T> = (input) => Result<T>` | `Parser<T> = (input, index?) => Result<T>`                      |
+| `Parser<T> = (input) => Result<T>` | `Parser<T> = (input, index?, ctx?) => Result<T>`                |
 | `success(value, remaining)`        | `success(value, index)`                                         |
-| `failure()` / `failure(message)`   | `failure(index, ...expected)`                                   |
-| `{ ok: false, error?: string }`    | `{ ok: false, index, furthest, expected }`                      |
+| `failure()` / `failure(message)`   | `failure(ctx, index, ...expected)`                              |
+| `{ ok: true, value, remaining }`   | `{ ok: true, value, index }`                                    |
+| `{ ok: false, error?: string }`    | `{ ok: false, index, expected }`                                |
 | `match`'s `failure: (error) => …`  | `failure: (index, expected) => …`                               |
 | `position` → remaining length      | `position` → offset from the start                              |
 | `label(p, 'x')` → `'expected x'`   | `label(p, 'x')` → `expected: ['x']`, only when nothing consumed |
-| `regex(/^\w+/)`                    | same, but sticky — a leading `^` is redundant and stripped      |
+| `regex(/^\w+/)`                    | same, but sticky — a leading `^` is stripped unless multiline   |
 
-New in this release: `parse` (non-throwing), `ParseError`, `locate`, `format` and `merge`. `memoize` is now keyed by offset rather than by the remaining input, so its cache entries are cheap and are dropped when a different input is parsed. Left-recursive `grammar` rules now throw a named error instead of overflowing the stack.
+New in this release: `parse` (non-throwing), `ParseError`, `locate`, `format`, and `context`/`record` for hand-written parsers. `memoize` is now keyed by offset rather than by the remaining input, so its cache entries are cheap and are dropped when a different input is parsed. Left-recursive `grammar` rules now throw a named error instead of overflowing the stack.
 
 ## Contributing
 

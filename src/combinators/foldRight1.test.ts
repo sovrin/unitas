@@ -9,7 +9,7 @@ import { foldRight1 } from './foldRight1';
 describe('foldRight1', () => {
     const stringParser = create<string>((input, index = 0) => {
         if (index >= input.length) {
-            return failure(index);
+            return failure(undefined, index);
         }
         return success(input[index], index + 1);
     });
@@ -26,7 +26,9 @@ describe('foldRight1', () => {
     });
 
     it('should return null, one or more successful parser returns are required', () => {
-        const failureParser = create<number>((_input, index = 0) => failure(index));
+        const failureParser = create<number>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = foldRight1(
             failureParser,
             42,

@@ -8,10 +8,13 @@ export type Grammar<T extends Record<string, unknown>> = {
  * Wraps a rule so re-entering it at an offset it is already parsing throws a
  * named error instead of overflowing the stack.
  */
-const guardLeftRecursion = <T>(name: string, thunk: () => Parser<T>): Parser<T> => {
+const guardLeftRecursion = <T>(
+    name: string,
+    thunk: () => Parser<T>,
+): Parser<T> => {
     const active: number[] = [];
 
-    return (input, index = 0) => {
+    return (input, index = 0, ctx) => {
         if (active.includes(index)) {
             throw new Error(
                 `Left recursion detected in grammar rule "${name}" at offset ${index}. ` +
@@ -22,7 +25,7 @@ const guardLeftRecursion = <T>(name: string, thunk: () => Parser<T>): Parser<T> 
         active.push(index);
 
         try {
-            return thunk()(input, index);
+            return thunk()(input, index, ctx);
         } finally {
             active.pop();
         }

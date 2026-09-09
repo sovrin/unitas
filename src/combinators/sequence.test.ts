@@ -31,7 +31,9 @@ describe('sequence', () => {
     });
 
     it('should fail if first parser fails', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser2 = createTestParser('B');
         const parser = sequence(failureParser, parser2);
         const result = parser('xxx');
@@ -41,7 +43,9 @@ describe('sequence', () => {
 
     it('should fail if middle parser fails', () => {
         const parser1 = createTestParser('A');
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser3 = createTestParser('C');
         const parser = sequence(parser1, failureParser, parser3);
         const result = parser('xxx');
@@ -57,7 +61,9 @@ describe('sequence', () => {
     });
 
     it('should preserve parser result types', () => {
-        const strParser = create<'text'>((input) => success('text', input.length));
+        const strParser = create<'text'>((input) =>
+            success('text', input.length),
+        );
         const numParser = create<42>((input) => success(42, input.length));
         const parser = sequence(strParser, numParser);
         const result = parser('xx');

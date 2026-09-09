@@ -1,4 +1,3 @@
-import { merge } from '../core/merge';
 import { create, type Parser } from '../core/parser';
 import { type Success } from '../core/success';
 import { many } from './many';
@@ -7,20 +6,20 @@ import { many } from './many';
  * One or more occurrences.
  *
  * @example
- * many1(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], index: 3, furthest: 3, expected: ["'a'"] }
+ * many1(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], index: 3 }
  */
 export const many1 = <T>(parser: Parser<T>) => {
-    return create<T[]>((input, index = 0) => {
-        const result = parser(input, index);
+    return create<T[]>((input, index = 0, ctx) => {
+        const result = parser(input, index, ctx);
         if (!result.ok) {
             return result;
         }
 
-        const rest = many(parser)(input, result.index) as Success<T[]>;
+        const rest = many(parser)(input, result.index, ctx) as Success<T[]>;
 
-        return merge(result, {
+        return {
             ...rest,
             value: [result.value, ...rest.value],
-        });
+        };
     });
 };

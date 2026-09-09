@@ -8,8 +8,8 @@ const parser = map(regex(/^-?\d+\.\d+/), (match: string) => parseFloat(match));
  * Parse a floating point number.
  *
  * @example
- * float('1.23') // { ok: true, value: 1.23, index: 4, furthest: -1, expected: [] }
- * float('-2.5') // { ok: true, value: -2.5, index: 4, furthest: -1, expected: [] }
- * float('1.23abc') // { ok: true, value: 1.23, index: 4, furthest: -1, expected: [] }
+ * float('1.23') // { ok: true, value: 1.23, index: 4 }
+ * float('-2.5') // { ok: true, value: -2.5, index: 4 }
+ * float('1.23abc') // { ok: true, value: 1.23, index: 4 }
  */
 export const float = create<number>(parser);

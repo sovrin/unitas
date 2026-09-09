@@ -16,7 +16,9 @@ describe('flag', () => {
     });
 
     it('should return false when parser fails', () => {
-        const parser = flag(create<'A'>((_input, index = 0) => failure(index)));
+        const parser = flag(
+            create<'A'>((_input, index = 0) => failure(undefined, index)),
+        );
         const result = parser('ABC');
 
         assertSuccess<boolean>(result, false, 0);

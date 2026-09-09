@@ -7,6 +7,6 @@ const parser = satisfy<string>((c) => c === ' ', 'space');
  * Parse a single space character.
  *
  * @example
- * space(' abc') // { ok: true, value: ' ', index: 1, furthest: -1, expected: [] }
+ * space(' abc') // { ok: true, value: ' ', index: 1 }
  */
 export const space = create<string>(parser);

@@ -18,7 +18,9 @@ const boolParser = create<boolean>((input, index = 0) => {
     return success(false, index);
 });
 
-const failingCondition = create<boolean>((_input, index = 0) => failure(index));
+const failingCondition = create<boolean>((_input, index = 0) =>
+    failure(undefined, index),
+);
 
 describe('when', () => {
     const thenP = createTestParser('yes');

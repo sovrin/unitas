@@ -1,6 +1,5 @@
 import type { Parser } from '../core/parser';
 
-import { merge } from '../core/merge';
 import { create } from '../core/parser';
 import { type Result } from '../core/result';
 import { success } from '../core/success';
@@ -9,44 +8,39 @@ import { success } from '../core/success';
  * Parse items separated by a separator, allowing empty slots.
  *
  * @example
- * optionalSeparatedBy(digits, char(','))('1,2') // { ok: true, value: [1, 2], index: 3, furthest: 3, expected: ["','"] }
+ * optionalSeparatedBy(digits, char(','))('1,2') // { ok: true, value: [1, 2], index: 3 }
  */
 export const optionalSeparatedBy = <T>(
     parser: Parser<T>,
     separator: Parser,
 ) => {
-    return create<(T | null)[]>((input, index = 0) => {
+    return create<(T | null)[]>((input, index = 0, ctx) => {
         const results: (T | null)[] = [];
         let at = index;
 
-        const leadingSep = separator(input, at);
-        let trace: Result<unknown> = leadingSep;
+        const leadingSep = separator(input, at, ctx);
 
         if (leadingSep.ok) {
             results.push(null);
             at = leadingSep.index;
         }
 
-        const firstResult: Result<T> = merge(trace, parser(input, at));
-        trace = firstResult;
-
+        const firstResult: Result<T> = parser(input, at, ctx);
         if (firstResult.ok) {
             results.push(firstResult.value);
             at = firstResult.index;
         } else if (!leadingSep.ok) {
-            return merge(trace, success([], index));
+            return success([], index);
         }
 
         while (true) {
-            const sepResult: Result<unknown> = merge(trace, separator(input, at));
-            trace = sepResult;
+            const sepResult: Result<unknown> = separator(input, at, ctx);
             if (!sepResult.ok) {
                 break;
             }
             at = sepResult.index;
 
-            const nextResult: Result<T> = merge(trace, parser(input, at));
-            trace = nextResult;
+            const nextResult: Result<T> = parser(input, at, ctx);
             if (!nextResult.ok) {
                 break;
             }
@@ -55,6 +49,6 @@ export const optionalSeparatedBy = <T>(
             at = nextResult.index;
         }
 
-        return merge(trace, success(results, at));
+        return success(results, at);
     });
 };

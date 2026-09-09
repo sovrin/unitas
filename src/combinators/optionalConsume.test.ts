@@ -15,7 +15,9 @@ describe('optionalConsume', () => {
     });
 
     it('should not consume input on failure', () => {
-        const failureParser = create((_input, index = 0) => failure(index));
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = optionalConsume(failureParser);
         const result = parser('ABCD');
 

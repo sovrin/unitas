@@ -23,7 +23,7 @@ describe('match', () => {
     });
 
     it('should call failure branch with offset and expectations', () => {
-        const result = failure(2, 'digit');
+        const result = failure(undefined, 2, 'digit');
         let capturedIndex = -1;
         let capturedExpected: readonly string[] = [];
 
@@ -40,7 +40,7 @@ describe('match', () => {
     });
 
     it('should call failure branch with no expectations when none were recorded', () => {
-        const result = failure(0);
+        const result = failure(undefined, 0);
         let capturedExpected: readonly string[] = ['not called'];
 
         match(result, {

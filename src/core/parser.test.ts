@@ -14,7 +14,7 @@ describe('create', () => {
     });
 
     it('should return null when the parser function fails', () => {
-        const parser = create((_input, index = 0) => failure(index));
+        const parser = create((_input, index = 0) => failure(undefined, index));
         const result = parser('hello');
 
         assertFailure(result);

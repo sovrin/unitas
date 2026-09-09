@@ -46,14 +46,18 @@ describe('pipe', () => {
             (s: string) => s + '!',
         );
 
-        const parser = create<string>((_input, index = 0) => success('  hello  ', index));
+        const parser = create<string>((_input, index = 0) =>
+            success('  hello  ', index),
+        );
         const result = transform.call(parser, '  hello  ');
 
         expect(result).toBe('HELLO!');
     });
 
     it('should allow accessing parser state via this', () => {
-        const parser = create<number>((_input, index = 0) => success(100, index));
+        const parser = create<number>((_input, index = 0) =>
+            success(100, index),
+        );
 
         const transform = pipe(function (n: number) {
             return n + (this ? 1 : 0);

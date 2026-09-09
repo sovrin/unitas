@@ -1,3 +1,4 @@
+export * from './context';
 export * from './error';
 export * from './failure';
 export * from './format';
@@ -7,7 +8,6 @@ export * from './lazy';
 export * from './locate';
 export * from './match';
 export * from './memoize';
-export * from './merge';
 export * from './parse';
 export * from './parser';
 export * from './result';
