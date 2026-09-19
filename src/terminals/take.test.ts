@@ -31,4 +31,16 @@ describe('take', () => {
 
         assertSuccess<string>(result, '', 0);
     });
+
+    it('should describe a single character in the singular', () => {
+        const result = take(1)('');
+
+        assertFailure(result, 0, ['1 more character']);
+    });
+
+    it('should describe several characters in the plural', () => {
+        const result = take(3)('ab');
+
+        assertFailure(result, 0, ['3 more characters']);
+    });
 });

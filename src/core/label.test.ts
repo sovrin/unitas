@@ -5,6 +5,9 @@ import {
     assertSuccess,
     createTestParser,
 } from '../../test/utils';
+import { sequence } from '../combinators/sequence';
+import { char } from '../terminals/char';
+import { string } from '../terminals/string';
 import { label } from './label';
 
 describe('label', () => {
@@ -22,5 +25,12 @@ describe('label', () => {
         const result = labeled('BCD');
 
         assertFailure(result, 0, ['letter']);
+    });
+
+    it('should keep the inner error once the parser has consumed input', () => {
+        const parser = label(sequence(string('aa'), char('!')), 'a bang');
+        const result = parser('aab');
+
+        assertFailure(result, 2, ["'!'"]);
     });
 });
