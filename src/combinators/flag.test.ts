@@ -12,20 +12,22 @@ describe('flag', () => {
         const parser = flag(aParser);
         const result = parser('ABC');
 
-        assertSuccess<boolean>(result, true, 'BC');
+        assertSuccess<boolean>(result, true, 1);
     });
 
     it('should return false when parser fails', () => {
-        const parser = flag(create<'A'>(() => failure()));
+        const parser = flag(
+            create<'A'>((_input, index = 0) => failure(undefined, index)),
+        );
         const result = parser('ABC');
 
-        assertSuccess<boolean>(result, false, 'ABC');
+        assertSuccess<boolean>(result, false, 0);
     });
 
     it('should not consume input on failure', () => {
         const parser = flag(aParser);
         const result = parser('XYZ');
 
-        assertSuccess<boolean>(result, false, 'XYZ');
+        assertSuccess<boolean>(result, false, 0);
     });
 });

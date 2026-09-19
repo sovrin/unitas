@@ -35,6 +35,7 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 - **Tree-shakeable** — five entry points, import only what you touch
 - **<$total> composable exports** — grouped by what they do, indexed below
 - **Mutual recursion out of the box** via `grammar`, no forward declarations
+- **Errors that point at the problem** — line, column and what was expected
 
 > **Note:** This library is in active development. The API may change before v1.0.0.
 
@@ -43,20 +44,22 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 - [Entry points](#entry-points)
 - [Which function do I need?](#which-function-do-i-need)
 - [Core concepts](#core-concepts)
+- [Error reporting](#error-reporting)
 - [More examples](#more-examples)
 - [API index](#api-index)
+- [Migrating from 0.2.x](#migrating-from-02x)
 
 ## Entry points
 
-Nothing is re-exported across entry points, so your bundler only ever sees what you import.
+Nothing is re-exported across entry points, so your bundler only ever sees what you import. Code shared between them ships once, however many you import from.
 
-| Import from            | Contains                                                              |
-| ---------------------- | --------------------------------------------------------------------- |
-| `unitas`               | Types, `success`/`failure`, `run`, `grammar`, `lazy`, `memoize`        |
-| `unitas/terminals`     | Factories that match input directly — `char`, `string`, `regex`, …    |
-| `unitas/primitives`    | Ready-made parsers — `digit`, `letters`, `whitespace`, …              |
-| `unitas/combinators`   | Parsers that take parsers — `map`, `choice`, `sequence`, `many`, …    |
-| `unitas/utils`         | Helpers for `map` callbacks — `pick`, `join`, `pipe`, …               |
+| Import from          | Contains                                                           |
+| -------------------- | ------------------------------------------------------------------ |
+| `unitas`             | Types, `success`/`failure`, `run`, `grammar`, `lazy`, `memoize`    |
+| `unitas/terminals`   | Factories that match input directly — `char`, `string`, `regex`, … |
+| `unitas/primitives`  | Ready-made parsers — `digit`, `letters`, `whitespace`, …           |
+| `unitas/combinators` | Parsers that take parsers — `map`, `choice`, `sequence`, `many`, … |
+| `unitas/utils`       | Helpers for `map` callbacks — `pick`, `join`, `pipe`, …            |
 
 ## Which function do I need?
 
@@ -64,117 +67,124 @@ The library is broad on purpose: each function does one small thing, so grammars
 
 ### Matching a single thing
 
-| I want to match…                            | Reach for                                            |
-| ------------------------------------------- | ---------------------------------------------------- |
-| an exact character or string                | `char`, `string`                                     |
-| one of several strings (longest wins)       | `oneOf`                                              |
-| any character in / not in a set             | `charOf`, `stringOf`, `noneOf`                       |
-| a character passing a predicate             | `satisfy`                                            |
-| a regular expression                        | `regex`                                              |
-| a fixed number of characters, or a run      | `take`, `takeWhile`                                  |
-| a keyword not glued to more word characters | `word`                                               |
-| a token, eating trailing whitespace         | `token`, `lexeme`                                    |
-| a value — no need to build it               | `number`, `integer`, `float`, `bool`, `identifier`, `literal`, `line`, `rest` |
+| I want to match…                            | Reach for                                                                                  |
+| ------------------------------------------- | ------------------------------------------------------------------------------------------ |
+| an exact character or string                | `char`, `string`                                                                           |
+| one of several strings (longest wins)       | `oneOf`                                                                                    |
+| any character in / not in a set             | `charOf`, `stringOf`, `noneOf`                                                             |
+| a character passing a predicate             | `satisfy`                                                                                  |
+| a regular expression                        | `regex`                                                                                    |
+| a fixed number of characters, or a run      | `take`, `takeWhile`                                                                        |
+| a keyword not glued to more word characters | `word`                                                                                     |
+| a token, eating trailing whitespace         | `token`, `lexeme`                                                                          |
+| a value — no need to build it               | `number`, `integer`, `float`, `bool`, `identifier`, `literal`, `line`, `rest`              |
 | a character class                           | `letter`, `digit`, `alphaNum`, `hexDigit`, `octDigit`, `lowercase`, `uppercase`, `anyChar` |
-| whitespace or a line break                  | `whitespace`, `space`, `tab`, `nl`, `crlf`, `eol`, `eof`   |
+| whitespace or a line break                  | `whitespace`, `space`, `tab`, `nl`, `crlf`, `eol`, `eof`                                   |
 
-Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how much input is left? `position`.
+Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how far into the input you are? `position`.
 
 ### Repeating
 
-| I want to…                                   | Reach for                                            |
-| -------------------------------------------- | ---------------------------------------------------- |
-| repeat zero or more / one or more times      | `many`, `many1`                                      |
-| repeat a bounded number of times             | `exactly`, `manyAtLeast`, `manyAtMost`, `manyBetween` |
-| repeat with a separator between items        | `separatedBy`, `separatedBy1`, `optionalSeparatedBy` |
-| …and allow a trailing separator              | `separatedEndBy`, `separatedEndBy1`                  |
-| …where every item ends with the separator    | `endBy`, `endBy1`, `interleaved`                     |
-| repeat until something else shows up         | `manyTill`, `until`, `separatedUntil`                |
-| repeat but throw the values away             | `skip`, `skipMany`, `skipMany1`                      |
-| reduce the repetitions as I go               | `fold`, `fold1`, `foldRight`, `foldRight1`           |
+| I want to…                                | Reach for                                             |
+| ----------------------------------------- | ----------------------------------------------------- |
+| repeat zero or more / one or more times   | `many`, `many1`                                       |
+| repeat a bounded number of times          | `exactly`, `manyAtLeast`, `manyAtMost`, `manyBetween` |
+| repeat with a separator between items     | `separatedBy`, `separatedBy1`, `optionalSeparatedBy`  |
+| …and allow a trailing separator           | `separatedEndBy`, `separatedEndBy1`                   |
+| …where every item ends with the separator | `endBy`, `endBy1`, `interleaved`                      |
+| repeat until something else shows up      | `manyTill`, `until`, `separatedUntil`                 |
+| repeat but throw the values away          | `skip`, `skipMany`, `skipMany1`                       |
+| reduce the repetitions as I go            | `fold`, `fold1`, `foldRight`, `foldRight1`            |
 
 ### Choosing and branching
 
-| I want to…                                   | Reach for                                            |
-| -------------------------------------------- | ---------------------------------------------------- |
-| take the first alternative that matches      | `choice`                                             |
-| succeed either way                           | `optional`, `optionalConsume`, `recover`, `flag`     |
-| succeed only when something *doesn't* match  | `not`                                                |
-| gate on a boolean I already have             | `guard`, `unless`, `when`                            |
-| look ahead without consuming input           | `peek`                                               |
+| I want to…                                  | Reach for                                        |
+| ------------------------------------------- | ------------------------------------------------ |
+| take the first alternative that matches     | `choice`                                         |
+| succeed either way                          | `optional`, `optionalConsume`, `recover`, `flag` |
+| succeed only when something _doesn't_ match | `not`                                            |
+| gate on a boolean I already have            | `guard`, `unless`, `when`                        |
+| look ahead without consuming input          | `peek`                                           |
 
 ### Sequencing and pulling values out
 
-| I want to…                                   | Reach for                                            |
-| -------------------------------------------- | ---------------------------------------------------- |
-| run parsers in order and keep every result   | `sequence`                                           |
-| keep only one side of a pair                 | `left`, `right`                                      |
-| keep specific positions of a sequence        | `first`, `last`, `nth`, `pick`                       |
-| drop the delimiters, keep the middle         | `inner`, `outer`                                     |
-| glue string results together                 | `concat`, `fuse`, `join`                             |
-| match content inside delimiters              | `surrounded`, `parenthesized`, `braced`, `bracketed`, `quoted`, `padded` |
+| I want to…                                 | Reach for                                                                |
+| ------------------------------------------ | ------------------------------------------------------------------------ |
+| run parsers in order and keep every result | `sequence`                                                               |
+| keep only one side of a pair               | `left`, `right`                                                          |
+| keep specific positions of a sequence      | `first`, `last`, `nth`, `pick`                                           |
+| drop the delimiters, keep the middle       | `inner`, `outer`                                                         |
+| glue string results together               | `concat`, `fuse`, `join`                                                 |
+| match content inside delimiters            | `surrounded`, `parenthesized`, `braced`, `bracketed`, `quoted`, `padded` |
 
 ### Shaping the result
 
-| I want to…                                   | Reach for                                            |
-| -------------------------------------------- | ---------------------------------------------------- |
-| transform the parsed value                   | `map`, `pipe`                                        |
-| replace it with a constant                   | `value`, `pure`, `consume`                           |
-| build a typed AST node                       | `node`                                               |
-| reject a value after parsing it              | `validate`                                           |
-| choose the next parser from the last value   | `bind`                                               |
-| tidy up arrays inside a `map`                | `pick`, `filter`, `flatten`, `shift`, `pop`, `spread` |
+| I want to…                                 | Reach for                                             |
+| ------------------------------------------ | ----------------------------------------------------- |
+| transform the parsed value                 | `map`, `pipe`                                         |
+| replace it with a constant                 | `value`, `pure`, `consume`                            |
+| build a typed AST node                     | `node`                                                |
+| reject a value after parsing it            | `validate`                                            |
+| choose the next parser from the last value | `bind`                                                |
+| tidy up arrays inside a `map`              | `pick`, `filter`, `flatten`, `shift`, `pop`, `spread` |
 
 ### Grammars, recursion and errors
 
-| I want to…                                   | Reach for                                            |
-| -------------------------------------------- | ---------------------------------------------------- |
-| let rules reference each other by name       | `grammar`                                            |
-| refer to a parser defined further down       | `lazy`                                               |
-| cache results and avoid exponential blowup   | `memoize`                                            |
-| attach a readable error message              | `label`                                              |
+| I want to…                                   | Reach for                                              |
+| -------------------------------------------- | ------------------------------------------------------ |
+| let rules reference each other by name       | `grammar`                                              |
+| refer to a parser defined further down       | `lazy`                                                 |
+| cache results and avoid exponential blowup   | `memoize`                                              |
+| attach a readable error message              | `label`                                                |
+| parse without throwing, with line and column | `parse`                                                |
+| turn an offset into a line and column        | `locate`                                               |
+| render a failure with a caret under it       | `format`, `ParseError`                                 |
+| record what a hand-written parser expected   | `context`, `record`, `union`                           |
 | parse infix operators with precedence        | `chainLeft`, `chainLeft1`, `chainRight`, `chainRight1` |
-| parse prefix / postfix operators             | `prefix`, `postfix`                                  |
-| handle both outcomes of a `Result`           | `match`                                              |
+| parse prefix / postfix operators             | `prefix`, `postfix`                                    |
+| handle both outcomes of a `Result`           | `match`                                                |
 
 ## Core concepts
 
 ### The `Parser` type
 
-A `Parser<T>` is a function from an input string to a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one.
+A `Parser<T>` reads `input` from an offset and returns a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one. Both extra arguments are optional, so a parser can still be called with just an input.
 
 ```typescript
-type Parser<T> = (input: string) => Result<T>;
+type Parser<T> = (input: string, index?: number, ctx?: Context) => Result<T>;
 ```
+
+Parsers never slice the input. They pass the same string down and move an integer instead, which is what lets an error know where in the original source it happened.
+
+`ctx` is the parse context, created by `run` and `parse`. It is where error information accumulates — see [Error reporting](#error-reporting). If you write your own combinator, pass it on to every parser you call.
 
 ### The `Result` type
 
 ```typescript
-type Success<T> = { ok: true; value: T; remaining: string };
-type Failure = { ok: false; error?: string };
+type Success<T> = { ok: true; value: T; index: number };
+type Failure = { ok: false; index: number; expected: readonly string[] };
 type Result<T> = Success<T> | Failure;
 ```
 
 ```typescript
-{ ok: true, value: 'hello', remaining: ' world' }
-       │           │                   │
-       │           │                   └── what is left to parse
+{ ok: true, value: 'hello', index: 5 }
+       │           │               │
+       │           │               └── how far this parser got
        │           └── the parsed value
        └── always true for success
 ```
 
-`remaining` is the important part: it is how input gets consumed and how parsers chain. A failure carries an optional message, which you can always supply later with `label`.
+`index` is the important part: it is how input gets consumed and how parsers chain. A failure reports the same `index`, plus the set of things that would have matched there:
 
 ```typescript
-{ ok: false }                      // generic failure
-{ ok: false, error: 'expected a' } // failure with a message
+{ ok: false, index: 6, expected: ['digit'] }
 ```
 
 ### Backtracking is free
 
-Note what a `Failure` does *not* carry: a position. There is nowhere to record how much input a failed parser got through, and combinators hand every alternative the same string they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the full input, however far `a` got.
+Combinators hand every alternative the same offset they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the same starting offset, however far `a` got.
 
-If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into.
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into. What a failed branch _does_ leave behind is its expectation, recorded in the parse context at the offset it reached, so a later error can still mention it.
 
 ### Writing one by hand
 
@@ -183,13 +193,28 @@ Most of the time you compose existing pieces, but nothing stops you from droppin
 ```typescript
 import { create, success, failure } from 'unitas';
 
-const parser = create<string>((input) => {
-    if (input.startsWith('hello')) {
-        return success('hello', input.slice(5));
+const parser = create<string>((input, index = 0, ctx) => {
+    if (input.startsWith('hello', index)) {
+        return success('hello', index + 5);
     }
 
-    return failure('expected "hello"');
+    return failure(ctx, index, '"hello"');
 });
+```
+
+Passing `ctx` to `failure` is what lets this parser's expectation appear in an error message even when a `choice` backtracks past it. Do the same for any parser you call:
+
+```typescript
+const twice = <T>(parser: Parser<T>) =>
+    create<[T, T]>((input, index = 0, ctx) => {
+        const first = parser(input, index, ctx);
+        if (!first.ok) return first;
+
+        const second = parser(input, first.index, ctx);
+        if (!second.ok) return second;
+
+        return success([first.value, second.value], second.index);
+    });
 ```
 
 ### Grammars
@@ -220,6 +245,60 @@ const g = grammar<Math>({
 
 run(g.expr, '1+2+3'); // 6
 run(g.expr, '(1+2)'); // 3
+```
+
+## Error reporting
+
+When a parse fails, `run` throws a `ParseError` that says where and what was expected:
+
+```typescript
+import { run } from 'unitas';
+import { separatedBy, sequence } from 'unitas/combinators';
+import { char } from 'unitas/terminals';
+import { digits, letters } from 'unitas/primitives';
+
+const pair = sequence(letters, char('='), digits);
+const config = separatedBy(pair, char('\n'));
+
+run(config, 'host=1\nport=8080\ndebug=yes');
+// ParseError: 3:7 expected digit, found 'y'
+//   3 | debug=yes
+//     |       ^
+```
+
+The position is the _furthest_ offset any branch reached, not wherever the parse happened to stop. That distinction is what makes the message useful: `separatedBy` succeeded with two pairs and left the rest unconsumed, but the error still points at the `y` that actually broke it.
+
+Alternatives are reported together, since `choice` unions the expectations of every branch it tried at the same offset:
+
+```typescript
+run(sequence(choice(string('let'), string('const')), char(' ')), 'lot x');
+// ParseError: 1:1 expected 'const' or 'let', found 'l'
+//   1 | lot x
+//     | ^
+```
+
+Use `parse` when you would rather branch on the failure than catch it:
+
+```typescript
+import { parse } from 'unitas';
+
+const result = parse(config, 'host=1\nport=oops');
+
+if (!result.ok) {
+    result.line; // 2
+    result.column; // 6
+    result.expected; // ['digit']
+    result.message; // the formatted excerpt above
+}
+```
+
+`label` replaces the expectations of a whole parser with one description, so errors can talk about your grammar instead of its characters:
+
+```typescript
+import { label } from 'unitas';
+
+run(label(pair, 'a key=value pair'), '!!!');
+// ParseError: 1:1 expected a key=value pair, found '!'
 ```
 
 ## More examples
@@ -304,6 +383,62 @@ run(ini.section, '[database]\nhost=localhost'); // { name: 'database', entry: ['
 One line per export. Every name links to its full description and runnable example in the reference pages under [`doc/api`](https://github.com/sovrin/unitas/tree/master/doc/api).
 
 <$index>
+
+## Migrating from 0.2.x
+
+`0.3.0` changes how a parser reports where it got to. Parsers now take an offset into the input instead of receiving a sliced suffix, which is what makes line/column error reporting possible.
+
+**If you only compose the built-in parsers, nothing changes.** `run`, `grammar`, `map`, `choice` and everything built on them behave the same, and both new arguments are optional, so `myParser('input')` still works.
+
+Two things do change for everyone:
+
+```typescript
+// reading a result
+result.remaining; // 0.2.x
+input.slice(result.index); // 0.3.0 — or just use result.index
+
+// a failed run
+run(p, 'bad'); // 0.2.x: Error: Parsing failed: Unexpected error
+run(p, 'bad'); // 0.3.0: ParseError, with .line, .column and .expected
+```
+
+If you write parsers by hand, the shape changed:
+
+```typescript
+// 0.2.x
+create<string>((input) => {
+    if (input.startsWith('hello')) {
+        return success('hello', input.slice(5));
+    }
+
+    return failure('expected "hello"');
+});
+
+// 0.3.0
+create<string>((input, index = 0, ctx) => {
+    if (input.startsWith('hello', index)) {
+        return success('hello', index + 5);
+    }
+
+    return failure(ctx, index, '"hello"');
+});
+```
+
+The rest, in full:
+
+| 0.2.x                              | 0.3.0                                                           |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `Parser<T> = (input) => Result<T>` | `Parser<T> = (input, index?, ctx?) => Result<T>`                |
+| `success(value, remaining)`        | `success(value, index)`                                         |
+| `failure()` / `failure(message)`   | `failure(ctx, index, ...expected)`                              |
+| `{ ok: true, value, remaining }`   | `{ ok: true, value, index }`                                    |
+| `{ ok: false, error?: string }`    | `{ ok: false, index, expected }`                                |
+| `match`'s `failure: (error) => …`  | `failure: (index, expected) => …`                               |
+| `position` → remaining length      | `position` → offset from the start                              |
+| `label(p, 'x')` → `'expected x'`   | `label(p, 'x')` → `expected: ['x']`, only when nothing consumed |
+| `regex(/^\w+/)`                    | same, but sticky — a leading `^` is stripped unless multiline   |
+
+New in this release: `parse` (non-throwing), `ParseError`, `locate`, `format`, and `context`/`record` for hand-written parsers. `memoize` is now keyed by offset rather than by the remaining input, so its cache entries are cheap and are dropped when a different input is parsed. Left-recursive `grammar` rules now throw a named error instead of overflowing the stack.
 
 ## Contributing
 

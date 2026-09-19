@@ -8,9 +8,9 @@ import { string } from './string';
  * strings that might be followed by any character.
  *
  * @example
- * token('let')('let x')   // { ok: true, value: 'let', remaining: 'x' }
- * token('let')('let1')    // { ok: true, value: 'let', remaining: '1' }
- * token('let')('let  x')  // { ok: true, value: 'let', remaining: 'x' }
+ * token('let')('let x') // { ok: true, value: 'let', index: 4 }
+ * token('let')('let1') // { ok: true, value: 'let', index: 3 }
+ * token('let')('let  x') // { ok: true, value: 'let', index: 5 }
  */
 export const token = <T extends string>(input: T) => {
     return create<T>(lexeme(string(input)));

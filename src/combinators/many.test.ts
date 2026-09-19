@@ -8,11 +8,13 @@ import { many } from './many';
 
 describe('many', () => {
     it('should parse zero occurrences', () => {
-        const failureParser = create(() => failure());
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = many(failureParser);
         const result = parser('BCD');
 
-        assertSuccess<unknown[]>(result, [], 'BCD');
+        assertSuccess<unknown[]>(result, [], 0);
     });
 
     it('should parse one occurrence', () => {
@@ -20,7 +22,7 @@ describe('many', () => {
         const parser = many(parser1);
         const result = parser('ABCD');
 
-        assertSuccess<'A'[]>(result, ['A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A'], 1);
     });
 
     it('should parse multiple occurrences', () => {
@@ -28,7 +30,7 @@ describe('many', () => {
         const parser = many(parser1);
         const result = parser('AAABCD');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 'BCD');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 3);
     });
 
     it('should handle empty input', () => {
@@ -36,32 +38,34 @@ describe('many', () => {
         const parser = many(parser1);
         const result = parser('');
 
-        assertSuccess<'A'[]>(result, [], '');
+        assertSuccess<'A'[]>(result, [], 0);
     });
 
     it('should prevent infinite loops with non-consuming parsers', () => {
-        const nonConsumingParser = () => ['', 'AB'] as [string, string];
-        const parser = many(nonConsumingParser as any);
+        const nonConsumingParser = create<string>((_input, index = 0) =>
+            success('', index),
+        );
+        const parser = many(nonConsumingParser);
         const result = parser('AB');
 
-        assertSuccess<unknown[]>(result, [], 'AB');
+        assertSuccess<unknown[]>(result, [], 0);
     });
 
     it('should stop after partial progress when parser later stalls', () => {
         let callCount = 0;
-        const partiallyConsumingParser = create((input: string) => {
+        const partiallyConsumingParser = create((input, index = 0) => {
             callCount++;
-            if (input.startsWith('A')) {
-                return success('A', input.slice(1));
+            if (input.startsWith('A', index)) {
+                return success('A', index + 1);
             }
 
-            return success('X', input);
+            return success('X', index);
         });
 
         const parser = many(partiallyConsumingParser);
         const result = parser('ABCD');
 
-        assertSuccess(result, ['A'], 'BCD');
+        assertSuccess(result, ['A'], 1);
         expect(callCount).toBe(2);
     });
 });

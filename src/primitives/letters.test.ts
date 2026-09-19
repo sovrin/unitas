@@ -8,17 +8,17 @@ describe('letters', () => {
         {
             const result = letters('abc123');
 
-            assertSuccess<string>(result, 'abc', '123');
+            assertSuccess<string>(result, 'abc', 3);
         }
         {
             const result = letters('Hello World');
 
-            assertSuccess<string>(result, 'Hello', ' World');
+            assertSuccess<string>(result, 'Hello', 5);
         }
         {
             const result = letters('ABC');
 
-            assertSuccess<string>(result, 'ABC', '');
+            assertSuccess<string>(result, 'ABC', 3);
         }
     });
 
@@ -43,6 +43,6 @@ describe('letters', () => {
     it('should handle single letter', () => {
         const result = letters('a1b2');
 
-        assertSuccess<string>(result, 'a', '1b2');
+        assertSuccess<string>(result, 'a', 1);
     });
 });

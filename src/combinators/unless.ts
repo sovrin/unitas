@@ -7,11 +7,11 @@ import { success } from '../core/success';
  * Parse unless condition is true (inverse of guard).
  *
  * @example
- * unless(false, string('hello'))('hello') // { ok: true, value: 'hello', remaining: '' }
- * unless(true, string('hello'))('hello') // { ok: true, value: null, remaining: 'hello' }
+ * unless(false, string('hello'))('hello') // { ok: true, value: 'hello', index: 5 }
+ * unless(true, string('hello'))('hello') // { ok: true, value: null, index: 0 }
  */
 export const unless = <T>(condition: boolean, parser: Parser<T>) => {
-    return create<T | null>((input) => {
-        return !condition ? parser(input) : success(null, input);
+    return create<T | null>((input, index = 0, ctx) => {
+        return !condition ? parser(input, index, ctx) : success(null, index);
     });
 };

@@ -25,75 +25,76 @@ describe('lazy', () => {
         expect(called).toBe(false);
         const result = parser('ABC');
 
-        assertSuccess<'A'>(result, 'A', 'BC');
+        assertSuccess<'A'>(result, 'A', 1);
 
         expect(called).toBe(true);
     });
 
     it('should enable recursive parsers', () => {
         const charParser = (expected: string) => {
-            return create<string>((input) => {
-                if (input.length > 0 && input[0] === expected) {
-                    return success(expected, input.slice(1));
+            return create<string>((input, index = 0) => {
+                if (input[index] === expected) {
+                    return success(expected, index + 1);
                 }
-                return failure();
+                return failure(undefined, index, expected);
             });
         };
 
         const parent: Parser<string> = lazy<string>(() => {
             const baseCase = charParser('x');
 
-            const recursiveCase = create<string>((input) => {
-                if (input.length === 0 || input[0] !== '(') {
-                    return failure();
+            const recursiveCase = create<string>((input, index = 0) => {
+                if (input[index] !== '(') {
+                    return failure(undefined, index, "'('");
                 }
 
-                const innerResult = parent(input.slice(1));
+                const innerResult = parent(input, index + 1);
                 if (!innerResult.ok) {
-                    return failure();
+                    return innerResult;
                 }
 
-                const { value: innerValue, remaining: afterInner } =
-                    innerResult;
-                if (afterInner.length === 0 || afterInner[0] !== ')') {
-                    return failure();
+                const after = innerResult.index;
+                if (input[after] !== ')') {
+                    return failure(undefined, after, "')'");
                 }
 
-                return success(innerValue, afterInner.slice(1));
+                return success(innerResult.value, after + 1);
             });
 
             // Try the recursive case first, then base case
-            return create<string>((input) => {
-                const recursiveResult = recursiveCase(input);
+            return create<string>((input, index = 0) => {
+                const recursiveResult = recursiveCase(input, index);
                 if (recursiveResult.ok) return recursiveResult;
 
-                return baseCase(input);
+                return baseCase(input, index);
             });
         });
 
         {
             const result = parent('x');
-            assertSuccess<string>(result, 'x', '');
+            assertSuccess<string>(result, 'x', 1);
         }
         {
             const result = parent('(x)');
 
-            assertSuccess<string>(result, 'x', '');
+            assertSuccess<string>(result, 'x', 3);
         }
         {
             const result = parent('((x))');
 
-            assertSuccess<string>(result, 'x', '');
+            assertSuccess<string>(result, 'x', 5);
         }
         {
             const result = parent('(((x)))');
 
-            assertSuccess<string>(result, 'x', '');
+            assertSuccess<string>(result, 'x', 7);
         }
     });
 
     it('should handle parser that fails', () => {
-        const failureParser = create(() => failure());
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const result = failureParser('goodbye');
 
         assertFailure<unknown>(result);

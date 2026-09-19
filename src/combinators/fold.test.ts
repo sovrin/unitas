@@ -7,11 +7,11 @@ import { success } from '../core/success';
 import { fold } from './fold';
 
 describe('fold', () => {
-    const stringParser = create<string>((input: string) => {
-        if (input.length === 0) {
-            return failure();
+    const stringParser = create<string>((input, index = 0) => {
+        if (index >= input.length) {
+            return failure(undefined, index);
         }
-        return success(input[0], input.slice(1));
+        return success(input[index], index + 1);
     });
 
     it('should fold left over parsed items', () => {
@@ -22,29 +22,29 @@ describe('fold', () => {
         );
         const result = parser('ABC');
 
-        assertSuccess<string>(result, '(((ZA)B)C)', '');
+        assertSuccess<string>(result, '(((ZA)B)C)', 3);
     });
 
     it('should work with empty input (return initial value and not consume input)', () => {
         const parser = fold(
-            create<string>(() => failure()),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
         const result = parser('ABC');
 
-        assertSuccess<string>(result, 'Z', 'ABC');
+        assertSuccess<string>(result, 'Z', 0);
     });
 
     it('should work with empty input (return initial value)', () => {
         const parser = fold(
-            create<string>(() => failure()),
+            create<string>((_input, index = 0) => failure(undefined, index)),
             'Z',
             (acc, item) => `(${acc}${item})`,
         );
         const result = parser('');
 
-        assertSuccess<string>(result, 'Z', '');
+        assertSuccess<string>(result, 'Z', 0);
     });
 
     it('should work with complex accumulator types', () => {
@@ -61,7 +61,7 @@ describe('fold', () => {
         assertSuccess<{
             label: string;
             count: number;
-        }>(result, { label: 'ABC', count: 3 }, '');
+        }>(result, { label: 'ABC', count: 3 }, 3);
     });
 
     it('should work with array building', () => {
@@ -71,14 +71,16 @@ describe('fold', () => {
         ]);
         const result = parser('ABC');
 
-        assertSuccess<string[]>(result, ['AZ', 'BZ', 'CZ'], '');
+        assertSuccess<string[]>(result, ['AZ', 'BZ', 'CZ'], 3);
     });
 
     it('should not fail and return the initial value and not consume', () => {
-        const failureParser = create(() => failure());
+        const failureParser = create((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = fold(failureParser, 0, (acc) => acc + 1);
         const result = parser('ABC');
 
-        assertSuccess<number>(result, 0, 'ABC');
+        assertSuccess<number>(result, 0, 0);
     });
 });

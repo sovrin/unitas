@@ -8,17 +8,17 @@ describe('alphaNums', () => {
         {
             const result = alphaNums('abc123 rest');
 
-            assertSuccess<string>(result, 'abc123', ' rest');
+            assertSuccess<string>(result, 'abc123', 6);
         }
         {
             const result = alphaNums('Hello2World!');
 
-            assertSuccess<string>(result, 'Hello2World', '!');
+            assertSuccess<string>(result, 'Hello2World', 11);
         }
         {
             const result = alphaNums('abc123');
 
-            assertSuccess<string>(result, 'abc123', '');
+            assertSuccess<string>(result, 'abc123', 6);
         }
     });
 
@@ -43,12 +43,12 @@ describe('alphaNums', () => {
     it('should handle single alphanumeric character', () => {
         const result = alphaNums('a!');
 
-        assertSuccess<string>(result, 'a', '!');
+        assertSuccess<string>(result, 'a', 1);
     });
 
     it('should stop at first non-alphanumeric character', () => {
         const result = alphaNums('abc_def');
 
-        assertSuccess<string>(result, 'abc', '_def');
+        assertSuccess<string>(result, 'abc', 3);
     });
 });

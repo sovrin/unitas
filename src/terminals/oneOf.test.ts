@@ -8,14 +8,14 @@ describe('oneOf', () => {
         const parser = oneOf(['foo', 'bar', 'baz'] as const);
         const result = parser('foorest');
 
-        assertSuccess<'foo' | 'bar' | 'baz'>(result, 'foo', 'rest');
+        assertSuccess<'foo' | 'bar' | 'baz'>(result, 'foo', 3);
     });
 
     it('should match a later string in the set', () => {
         const parser = oneOf(['foo', 'bar', 'baz'] as const);
         const result = parser('barbarian');
 
-        assertSuccess<'foo' | 'bar' | 'baz'>(result, 'bar', 'barian');
+        assertSuccess<'foo' | 'bar' | 'baz'>(result, 'bar', 3);
     });
 
     it('should fail when no string matches', () => {
@@ -29,7 +29,7 @@ describe('oneOf', () => {
         const parser = oneOf(['foo', 'bar'] as const);
         const result = parser('foo');
 
-        assertSuccess<'foo' | 'bar'>(result, 'foo', '');
+        assertSuccess<'foo' | 'bar'>(result, 'foo', 3);
     });
 
     it('should fail on empty input', () => {
@@ -43,21 +43,21 @@ describe('oneOf', () => {
         const parser = oneOf(['hello'] as const);
         const result = parser('hello world');
 
-        assertSuccess<'hello'>(result, 'hello', ' world');
+        assertSuccess<'hello'>(result, 'hello', 5);
     });
 
     it('should match strings with multi-character tokens', () => {
         const parser = oneOf(['+=', '+', '='] as const);
         const result = parser('+=1');
 
-        assertSuccess<'+=' | '+' | '='>(result, '+=', '1');
+        assertSuccess<'+=' | '+' | '='>(result, '+=', 2);
     });
 
     it('should match the first candidate even when a later one is also a prefix', () => {
         const parser = oneOf(['+', '+='] as const);
         const result = parser('+=1');
 
-        assertSuccess<'+' | '+='>(result, '+', '=1');
+        assertSuccess<'+' | '+='>(result, '+', 1);
     });
 
     it('should fail when input is a prefix of a candidate but not a full match', () => {

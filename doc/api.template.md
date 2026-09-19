@@ -7,7 +7,7 @@
 <$intro>
 
 ```typescript
-import { /* … */ } from '<$entry>';
+import { <$imports> } from '<$entry>';
 ```
 
 ## Index

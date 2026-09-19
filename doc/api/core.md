@@ -7,26 +7,50 @@
 The core entry point holds everything a parser is built from: the `Parser<T>` and `Result<T>` types, the `success`/`failure` constructors, and the tools for running and wiring parsers together (`run`, `grammar`, `lazy`, `memoize`).
 
 ```typescript
-import {} from /* … */ 'unitas';
+import { run, parse, grammar } from 'unitas';
 ```
 
 ## Index
 
-9 exports: [`failure`](#failure) · [`grammar`](#grammar) · [`label`](#label) · [`lazy`](#lazy) · [`match`](#match) · [`memoize`](#memoize) · [`parser`](#parser) · [`run`](#run) · [`success`](#success)
+17 exports: [`context`](#context) · [`create`](#create) · [`failure`](#failure) · [`format`](#format) · [`grammar`](#grammar) · [`label`](#label) · [`lazy`](#lazy) · [`locate`](#locate) · [`match`](#match) · [`memoize`](#memoize) · [`parse`](#parse) · [`ParseError`](#parseerror) · [`record`](#record) · [`reject`](#reject) · [`run`](#run) · [`success`](#success) · [`union`](#union)
 
 ## Reference
 
-### `failure`
+### `context`
 
-Creates a failed result with an optional error message.
+Creates a fresh context. `run` and `parse` make one per call.
 
 ```typescript
-failure('unexpected input'); // { ok: false, error: 'unexpected input' }
+context(); // { furthest: -1, expected: [] }
+```
+
+### `create`
+
+Creates a parser from a parser function. A parser reads `input` from `index` and never slices it. The third argument is the parse context — pass it on to any parser you call, so expectations recorded inside your parser reach the final error message.
+
+```typescript
+create((input, index = 0) => success('parsed', index + 6))('hello world'); // { ok: true, value: 'parsed', index: 6 }
+```
+
+### `failure`
+
+Creates a failed result at an offset and notes it in the parse context. Expectations are phrased as nouns ('digit', "'{'"). Pass the context through from the parser so the message can name this position even if the branch is later backtracked over.
+
+```typescript
+failure(undefined, 3, 'digit'); // { ok: false, index: 3, expected: ['digit'] }
+```
+
+### `format`
+
+Renders a parse failure as a source excerpt with a caret under the offset.
+
+```typescript
+format('a=1,b=x', 6, ['digit']); // "1:7 expected digit, found 'x'\n  1 | a=1,b=x\n    |       ^"
 ```
 
 ### `grammar`
 
-Creates a recursive grammar where rules can reference each other.
+Creates a recursive grammar where rules can reference each other. Rules are resolved lazily through a shared record, so they may refer to one another by name without forward declarations. Left-recursive rules are reported by name rather than overflowing the stack.
 
 ```typescript
 type Math = {
@@ -54,10 +78,10 @@ run(g.expr, '(1+2)'); // 3
 
 ### `label`
 
-Labels a parser with a custom error message on failure.
+Replaces the expectations of a parser with a single description. Only applies when the parser failed without consuming input: once a branch has committed, its own deeper error is more useful than the label. The labelled parser runs against an isolated context so that its internals can be suppressed rather than leaking into the message.
 
 ```typescript
-label(char('x'), 'letter x')(''); // { ok: false, error: 'expected letter x' }
+label(char('x'), 'letter x')(''); // { ok: false, index: 0, expected: ['letter x'] }
 ```
 
 ### `lazy`
@@ -65,7 +89,15 @@ label(char('x'), 'letter x')(''); // { ok: false, error: 'expected letter x' }
 Defers parser creation, useful for recursive grammars.
 
 ```typescript
-lazy(() => char('a'))('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+lazy(() => char('a'))('abc'); // { ok: true, value: 'a', index: 1 }
+```
+
+### `locate`
+
+Converts a character offset into a 1-based line and column.
+
+```typescript
+locate('a=1\nb=x', 5); // { index: 5, line: 2, column: 2 }
 ```
 
 ### `match`
@@ -73,29 +105,56 @@ lazy(() => char('a'))('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 Pattern matching on a Result to handle success and failure cases.
 
 ```typescript
-match(success('hello', ''), { success: (v) => v, failure: () => 'failed' }); // 'hello'
+match(success('hello', 5), { success: (v) => v, failure: () => 'failed' }); // 'hello'
 ```
 
 ### `memoize`
 
-Memoizes a parser to cache results by input string. Useful for expensive parsers and recursive grammars to avoid exponential backtracking.
+Memoizes a parser so each offset is parsed at most once (packrat caching). Keyed by offset rather than by the remaining input, so entries are cheap and the cache is dropped as soon as a different input is parsed. Each entry also remembers what the parse expected, so a cache hit still contributes to the error message rather than silently weakening it.
 
 ```typescript
 const memoDigits = memoize(digits);
-memoDigits('123'); // { ok: true, value: 123, remaining: '' }
+memoDigits('123'); // { ok: true, value: 123, index: 3 }
 ```
 
-### `parser`
+### `parse`
 
-Creates a parser from a parser function.
+Runs a parser over the whole input without throwing. The non-throwing counterpart of `run`: on failure it reports the offset, line, column, expectations and a formatted message.
 
 ```typescript
-create((input) => success('parsed', input.slice(6)))('hello world'); // { ok: true, value: 'parsed', remaining: 'world' }
+parse(digits, '12x').ok; // false
+```
+
+### `ParseError`
+
+Error thrown by `run` when a parse fails, carrying the offset, the 1-based line/column and the set of expectations at that offset.
+
+```typescript
+new ParseError('a=1,b=x', 6, ['digit']).line; // 1
+```
+
+### `record`
+
+Notes what was expected at an offset, keeping only the furthest one seen. Replaces `expected` rather than mutating it, so a parser may pass the same array every time without it being altered underneath.
+
+```typescript
+const ctx = context();
+record(ctx, 3, ['digit']);
+ctx; // { furthest: 3, expected: ['digit'] }
+```
+
+### `reject`
+
+Creates a failed result from an expectation list that is already allocated, avoiding a fresh array on every failure.
+
+```typescript
+const expected = ['digit'];
+reject(undefined, 3, expected); // { ok: false, index: 3, expected: ['digit'] }
 ```
 
 ### `run`
 
-Runs a parser and returns the value, throws on failure or unconsumed input.
+Runs a parser over the whole input and returns the value. Throws a `ParseError` — with line, column and the expectations at that point — if the parse fails or leaves input unconsumed.
 
 ```typescript
 run(string('hello'), 'hello'); // 'hello'
@@ -103,8 +162,16 @@ run(string('hello'), 'hello'); // 'hello'
 
 ### `success`
 
-Creates a successful result with a value and remaining input.
+Creates a successful result with a value and the offset reached in the input.
 
 ```typescript
-success('hello', ' world'); // { ok: true, value: 'hello', remaining: ' world' }
+success('hello', 5); // { ok: true, value: 'hello', index: 5 }
+```
+
+### `union`
+
+Adds the entries of `b` to `a`, returning `a` itself when it already covers them. Callers rely on that identity to skip allocating.
+
+```typescript
+union(['digit'], ['digit']); // ['digit']
 ```

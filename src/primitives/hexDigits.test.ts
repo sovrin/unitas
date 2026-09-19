@@ -8,17 +8,17 @@ describe('hexDigits', () => {
         {
             const result = hexDigits('1a2bXY');
 
-            assertSuccess<string>(result, '1a2b', 'XY');
+            assertSuccess<string>(result, '1a2b', 4);
         }
         {
             const result = hexDigits('DEADBEEF');
 
-            assertSuccess<string>(result, 'DEADBEEF', '');
+            assertSuccess<string>(result, 'DEADBEEF', 8);
         }
         {
             const result = hexDigits('ff00ff rest');
 
-            assertSuccess<string>(result, 'ff00ff', ' rest');
+            assertSuccess<string>(result, 'ff00ff', 6);
         }
     });
 
@@ -43,12 +43,12 @@ describe('hexDigits', () => {
     it('should handle single hex digit', () => {
         const result = hexDigits('fXY');
 
-        assertSuccess<string>(result, 'f', 'XY');
+        assertSuccess<string>(result, 'f', 1);
     });
 
     it('should stop at first non-hex character', () => {
         const result = hexDigits('a1g9');
 
-        assertSuccess<string>(result, 'a1', 'g9');
+        assertSuccess<string>(result, 'a1', 2);
     });
 });

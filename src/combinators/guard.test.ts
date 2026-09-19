@@ -13,7 +13,7 @@ describe('guard', () => {
         const parser = guard(true, parser1);
         const result = parser('AAA');
 
-        assertSuccess<'A' | null>(result, 'A', 'AA');
+        assertSuccess<'A' | null>(result, 'A', 1);
     });
 
     it('should fail when condition is false', () => {

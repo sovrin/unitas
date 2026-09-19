@@ -9,17 +9,20 @@ import { optional } from './optional';
  * Chain left-associative operations (right-to-left for same precedence).
  *
  * @example
- * chainLeft(digits, operation)('1+2+3') // { ok: true, value: 6, remaining: '' }
- * chainLeft(digits, operation)('10-3+2') // { ok: true, value: 9, remaining: '' }
+ * chainLeft(digits, operation)('1+2+3') // { ok: true, value: 6, index: 5 }
  */
 export const chainLeft = <T>(
     parser: Parser<T>,
     operator: Parser<(a: T, b: T) => T>,
 ) => {
-    return create<T | null>((input) => {
-        const result = optional(chainLeft1(parser, operator))(input);
+    return create<T | null>((input, index = 0, ctx) => {
+        const result = optional(chainLeft1(parser, operator))(
+            input,
+            index,
+            ctx,
+        );
         if (!result.ok || result.value === null) {
-            return failure();
+            return failure(ctx, index);
         }
 
         return result;

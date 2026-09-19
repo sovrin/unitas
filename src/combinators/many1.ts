@@ -1,25 +1,25 @@
-import { failure } from '../core/failure';
 import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import { type Success } from '../core/success';
 import { many } from './many';
 
 /**
- * One or more occurrences (fails if no matches).
+ * One or more occurrences.
  *
  * @example
- * many1(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * many1(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], index: 3 }
  */
 export const many1 = <T>(parser: Parser<T>) => {
-    return create<T[]>((input) => {
-        const result = parser(input);
+    return create<T[]>((input, index = 0, ctx) => {
+        const result = parser(input, index, ctx);
         if (!result.ok) {
-            return failure();
+            return result;
         }
 
-        const { value: manyValue, remaining: manyRemainder } = many(parser)(
-            result.remaining,
-        ) as Success<T[]>;
+        const rest = many(parser)(input, result.index, ctx) as Success<T[]>;
 
-        return success([result.value, ...manyValue], manyRemainder);
+        return {
+            ...rest,
+            value: [result.value, ...rest.value],
+        };
     });
 };

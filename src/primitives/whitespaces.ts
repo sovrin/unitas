@@ -1,5 +1,4 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { whitespace } from './whitespace';
@@ -7,18 +6,16 @@ import { whitespace } from './whitespace';
 const parser = many1(whitespace);
 
 /**
- * Parses one or more whitespace characters.
+ * Parse one or more whitespaces as a string.
  *
  * @example
- * whitespaces('  abc') // { ok: true, value: '  ', remaining: 'abc' }
+ * whitespaces(' \t\nabc') // { ok: true, value: ' \t\n', index: 3 }
  */
-export const whitespaces = create<string>((input) => {
-    const result = parser(input);
+export const whitespaces = create<string>((input, index = 0, ctx) => {
+    const result = parser(input, index, ctx);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return success(result.value.join(''), result.index);
 });

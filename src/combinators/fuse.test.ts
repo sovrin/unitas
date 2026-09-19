@@ -16,7 +16,7 @@ describe('fuse', () => {
         );
         const result = parser('abc');
 
-        assertSuccess<string>(result, 'abc', '');
+        assertSuccess<string>(result, 'abc', 3);
     });
 
     it('should fail on non-matching input', () => {
@@ -38,20 +38,20 @@ describe('fuse', () => {
         );
         const result = parser('hello world');
 
-        assertSuccess<string>(result, 'hello world', '');
+        assertSuccess<string>(result, 'hello world', 11);
     });
 
     it('should fuse two parsers into string', () => {
         const parser = fuse(createTestParser('a'), createTestParser('b'));
         const result = parser('ab');
 
-        assertSuccess<string>(result, 'ab', '');
+        assertSuccess<string>(result, 'ab', 2);
     });
 
     it('should work with single parser', () => {
         const parser = fuse(createTestParser('a'));
         const result = parser('a');
 
-        assertSuccess<string>(result, 'a', '');
+        assertSuccess<string>(result, 'a', 1);
     });
 });

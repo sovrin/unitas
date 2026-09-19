@@ -1,35 +1,37 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
- * Parse items with interleaved separators.
+ * Parse items separated by separators, keeping both in the result.
  *
  * @example
- * interleaved(char('a'), char(','))('a,a,a') // { ok: true, value: ['a', ',', 'a', ',', 'a'], remaining: '' }
+ * interleaved(digits, char('+'))('1+2') // { ok: true, value: [1, '+', 2], index: 3 }
  */
 export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {
-    return create<Array<T | S>>((input) => {
-        const firstResult = item(input);
-        if (!firstResult.ok) return failure();
+    return create<Array<T | S>>((input, index = 0, ctx) => {
+        const firstResult = item(input, index, ctx);
+        if (!firstResult.ok) {
+            return firstResult;
+        }
 
         const results: Array<T | S> = [firstResult.value];
-        let remaining = firstResult.remaining;
+        let at = firstResult.index;
 
         while (true) {
-            const sepResult = separator(remaining);
+            const sepResult: Result<S> = separator(input, at, ctx);
             if (!sepResult.ok) break;
 
-            const nextResult = item(sepResult.remaining);
+            const nextResult: Result<T> = item(input, sepResult.index, ctx);
             if (!nextResult.ok) break;
 
             results.push(sepResult.value);
             results.push(nextResult.value);
-            remaining = nextResult.remaining;
+            at = nextResult.index;
         }
 
-        return success(results, remaining);
+        return success(results, at);
     });
 };

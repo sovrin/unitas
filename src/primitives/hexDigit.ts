@@ -1,3 +1,4 @@
+import { type Context } from '../core/context';
 import { create } from '../core/parser';
 import { type Result } from '../core/result';
 import { satisfy } from '../terminals/satisfy';
@@ -19,18 +20,24 @@ export type HexDigit =
     | 'E'
     | 'F';
 
-const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c));
+const parser = satisfy<HexDigit>((c) => /[0-9a-fA-F]/.test(c), 'hex digit');
 
 /**
  * Parse a single hexadecimal digit.
  *
  * @example
- * hexDigit('fF9') // { ok: true, value: 'f', remaining: 'F9' }
+ * hexDigit('fF9') // { ok: true, value: 'f', index: 1 }
  */
 export function hexDigit<S extends `${HexDigit}${string}`>(
     input: S,
+    index?: number,
+    ctx?: Context,
 ): Result<Head<S> & HexDigit>;
-export function hexDigit(input: string): Result<HexDigit>;
-export function hexDigit(input: string) {
-    return create<HexDigit>(parser)(input);
+export function hexDigit(
+    input: string,
+    index?: number,
+    ctx?: Context,
+): Result<HexDigit>;
+export function hexDigit(input: string, index = 0, ctx?: Context) {
+    return create<HexDigit>(parser)(input, index, ctx);
 }

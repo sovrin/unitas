@@ -7,7 +7,7 @@
 Terminals are the leaves of a grammar. They do not take other parsers — they inspect the input string themselves. Each one is a factory: call it with what you want to match and it hands back a `Parser`.
 
 ```typescript
-import {} from /* … */ 'unitas/terminals';
+import { char, string, regex } from 'unitas/terminals';
 ```
 
 ## Index
@@ -21,7 +21,7 @@ import {} from /* … */ 'unitas/terminals';
 Parse a specific character.
 
 ```typescript
-char('A')('ABC'); // { ok: true, value: 'A', remaining: 'BC' }
+char('A')('ABC'); // { ok: true, value: 'A', index: 1 }
 ```
 
 ### `charOf`
@@ -29,7 +29,7 @@ char('A')('ABC'); // { ok: true, value: 'A', remaining: 'BC' }
 Parse any character from a set.
 
 ```typescript
-charOf(['a', 'b', 'c'])('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+charOf(['a', 'b', 'c'])('abc'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `noneOf`
@@ -37,7 +37,7 @@ charOf(['a', 'b', 'c'])('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 Parse any character not in the set.
 
 ```typescript
-noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', remaining: 'yz' }
+noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', index: 1 }
 ```
 
 ### `oneOf`
@@ -45,15 +45,15 @@ noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', remaining: 'yz' }
 Parse one string from a set of strings (longest match wins).
 
 ```typescript
-oneOf(['hello', 'hell', 'help'])('helpful'); // { ok: true, value: 'help', remaining: 'ful' }
+oneOf(['hello', 'hell', 'help'])('helpful'); // { ok: true, value: 'help', index: 4 }
 ```
 
 ### `regex`
 
-Parse with a regular expression.
+Parse with a regular expression. The pattern is matched with the sticky flag at the current offset, so it is anchored by construction and never scans ahead. A leading `^` is redundant and is stripped — unless the pattern is multiline, where it asserts a line start and still carries meaning.
 
 ```typescript
-regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', index: 5 }
 ```
 
 ### `satisfy`
@@ -61,7 +61,7 @@ regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', remaining: ' world'
 Parse a character satisfying a predicate.
 
 ```typescript
-satisfy((c) => c === 'a')('abc'); // { ok: true, value: 'a', remaining: 'bc' }
+satisfy((c) => c === 'a')('abc'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `string`
@@ -69,7 +69,7 @@ satisfy((c) => c === 'a')('abc'); // { ok: true, value: 'a', remaining: 'bc' }
 Parse a specific string.
 
 ```typescript
-string('hello')('hello world'); // { ok: true, value: 'hello', remaining: ' world' }
+string('hello')('hello world'); // { ok: true, value: 'hello', index: 5 }
 ```
 
 ### `stringOf`
@@ -77,7 +77,7 @@ string('hello')('hello world'); // { ok: true, value: 'hello', remaining: ' worl
 Parse first character that exists in string (like charOf but for a string).
 
 ```typescript
-stringOf('abc')('abcdef'); // { ok: true, value: 'a', remaining: 'bcdef' }
+stringOf('abc')('abcdef'); // { ok: true, value: 'a', index: 1 }
 ```
 
 ### `take`
@@ -85,7 +85,7 @@ stringOf('abc')('abcdef'); // { ok: true, value: 'a', remaining: 'bcdef' }
 Take n characters.
 
 ```typescript
-take(3)('abcdef'); // { ok: true, value: 'abc', remaining: 'def' }
+take(3)('abcdef'); // { ok: true, value: 'abc', index: 3 }
 ```
 
 ### `takeWhile`
@@ -93,7 +93,7 @@ take(3)('abcdef'); // { ok: true, value: 'abc', remaining: 'def' }
 Takes characters while the predicate returns true.
 
 ```typescript
-takeWhile((c) => c !== 'x')('abcx'); // { ok: true, value: 'abc', remaining: 'x' }
+takeWhile((c) => c !== 'x')('abcx'); // { ok: true, value: 'abc', index: 3 }
 ```
 
 ### `token`
@@ -101,9 +101,9 @@ takeWhile((c) => c !== 'x')('abcx'); // { ok: true, value: 'abc', remaining: 'x'
 Parses a string as a token, skipping trailing whitespace. Unlike word, it does not enforce word boundaries - useful for parsing strings that might be followed by any character.
 
 ```typescript
-token('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
-token('let')('let1'); // { ok: true, value: 'let', remaining: '1' }
-token('let')('let  x'); // { ok: true, value: 'let', remaining: 'x' }
+token('let')('let x'); // { ok: true, value: 'let', index: 4 }
+token('let')('let1'); // { ok: true, value: 'let', index: 3 }
+token('let')('let  x'); // { ok: true, value: 'let', index: 5 }
 ```
 
 ### `word`
@@ -111,7 +111,7 @@ token('let')('let  x'); // { ok: true, value: 'let', remaining: 'x' }
 Parses a specific word and ensures it is not followed by word characters. Use this when parsing keywords that should not be part of a longer identifier.
 
 ```typescript
-word('let')('let x'); // { ok: true, value: 'let', remaining: 'x' }
-word('let')('let1'); // { ok: false }
-word('if')('if (x)'); // { ok: true, value: 'if', remaining: '(x)' }
+word('let')('let x'); // { ok: true, value: 'let', index: 4 }
+word('let')('let1'); // { ok: false, index: 3, expected: ['/(?!\\w)/'] }
+word('if')('if (x)'); // { ok: true, value: 'if', index: 3 }
 ```

@@ -5,6 +5,7 @@ import { choice } from '../combinators/choice';
 import { map } from '../combinators/map';
 import { sequence } from '../combinators/sequence';
 import { surrounded } from '../combinators/surrounded';
+import { digits } from '../primitives/digits';
 import { char } from '../terminals/char';
 import { regex } from '../terminals/regex';
 import { string } from '../terminals/string';
@@ -44,12 +45,12 @@ describe('grammar', () => {
 
         {
             const result = a('abc');
-            assertSuccess<'a'>(result, 'a', 'bc');
+            assertSuccess<'a'>(result, 'a', 1);
         }
 
         {
             const result = b('bcd');
-            assertSuccess<'b'>(result, 'b', 'cd');
+            assertSuccess<'b'>(result, 'b', 1);
         }
     });
 
@@ -73,22 +74,36 @@ describe('grammar', () => {
 
         {
             const result = add('2+3');
-            assertSuccess<unknown>(result, 5, '');
+            assertSuccess<unknown>(result, 5, 3);
         }
 
         {
             const result = number('5');
-            assertSuccess<number>(result, 5, '');
+            assertSuccess<number>(result, 5, 1);
         }
 
         {
             const result = term('(2+3)');
-            assertSuccess<unknown>(result, 5, '');
+            assertSuccess<unknown>(result, 5, 5);
         }
 
         {
             const result = expr('1+(2+3)'); // [6, '']
-            assertSuccess<unknown>(result, 6, '');
+            assertSuccess<unknown>(result, 6, 7);
         }
+    });
+
+    it('should name a left-recursive rule instead of overflowing the stack', () => {
+        const g = grammar<{ expr: number }>({
+            expr: (p) =>
+                choice(
+                    map(sequence(p.expr, char('+'), digits), ([l, , r]) => l + r),
+                    digits,
+                ),
+        });
+
+        expect(() => g.expr('1+2')).toThrowError(
+            'Left recursion detected in grammar rule "expr" at offset 0',
+        );
     });
 });

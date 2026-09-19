@@ -1,6 +1,7 @@
-import { failure } from '../core/failure';
-import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import type { Parser } from '../core/parser';
+
+import { create } from '../core/parser';
+import { type Success } from '../core/success';
 import { exactly } from './exactly';
 import { manyAtMost } from './manyAtMost';
 
@@ -8,20 +9,24 @@ import { manyAtMost } from './manyAtMost';
  * Parse between min and max occurrences.
  *
  * @example
- * manyBetween(char('a'), 2, 3)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * manyBetween(char('a'), 1, 2)('aaa') // { ok: true, value: ['a', 'a'], index: 2 }
  */
 export const manyBetween = <T>(parser: Parser<T>, min: number, max: number) => {
-    return create<T[]>((input) => {
-        const required = exactly(parser, min)(input);
+    return create<T[]>((input, index = 0, ctx) => {
+        const required = exactly(parser, min)(input, index, ctx);
         if (!required.ok) {
-            return failure();
+            return required;
         }
 
-        const { value: more, remaining: rest } = manyAtMost(
-            parser,
-            max - min,
-        )(required.remaining) as Success<T[]>;
+        const rest = manyAtMost(parser, max - min)(
+            input,
+            required.index,
+            ctx,
+        ) as Success<T[]>;
 
-        return success([...required.value, ...more], rest);
+        return {
+            ...rest,
+            value: [...required.value, ...rest.value],
+        };
     });
 };

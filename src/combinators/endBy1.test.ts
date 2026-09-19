@@ -23,7 +23,7 @@ describe('endBy1', () => {
         const parser = endBy1(parser1, parser2);
         const result = parser('A,');
 
-        assertSuccess<'A'[]>(result, ['A'], '');
+        assertSuccess<'A'[]>(result, ['A'], 2);
     });
 
     it('should parse multiple elements each with terminator', () => {
@@ -32,7 +32,7 @@ describe('endBy1', () => {
         const parser = endBy1(parser1, parser2);
         const result = parser('A,A,A,');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A'], 6);
     });
 
     it('should not match when element lacks terminator', () => {
@@ -41,7 +41,7 @@ describe('endBy1', () => {
         const parser = endBy1(parser1, parser2);
         const result = parser('A,A,A');
 
-        assertSuccess<'A'[]>(result, ['A', 'A'], 'A');
+        assertSuccess<'A'[]>(result, ['A', 'A'], 4);
     });
 
     it('should fail on empty input', () => {

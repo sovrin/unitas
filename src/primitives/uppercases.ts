@@ -1,5 +1,4 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { uppercase } from './uppercase';
@@ -7,18 +6,16 @@ import { uppercase } from './uppercase';
 const parser = many1(uppercase);
 
 /**
- * Parses one or more uppercase letters.
+ * Parse one or more uppercase letters as a string.
  *
  * @example
- * uppercases('ABCdef') // { ok: true, value: 'ABC', remaining: 'def' }
+ * uppercases('ABCdef') // { ok: true, value: 'ABC', index: 3 }
  */
-export const uppercases = create<string>((input) => {
-    const result = parser(input);
+export const uppercases = create<string>((input, index = 0, ctx) => {
+    const result = parser(input, index, ctx);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return success(result.value.join(''), result.index);
 });

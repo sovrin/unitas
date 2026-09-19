@@ -13,7 +13,7 @@ describe('consume', () => {
         const parser = consume(parser1);
         const result = parser('ABBB');
 
-        assertSuccess<unknown>(result, null, 'BBB');
+        assertSuccess<unknown>(result, null, 1);
     });
 
     it('should fail when underlying parser fails', () => {

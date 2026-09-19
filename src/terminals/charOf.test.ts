@@ -8,7 +8,7 @@ describe('charOf', () => {
         const parser = charOf(['A', 'B', 'C'] as const);
         const result = parser('ABCDEFG');
 
-        assertSuccess<'A' | 'B' | 'C'>(result, 'A', 'BCDEFG');
+        assertSuccess<'A' | 'B' | 'C'>(result, 'A', 1);
     });
 
     it('should fail when character is not in set', () => {

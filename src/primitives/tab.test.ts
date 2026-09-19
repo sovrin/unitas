@@ -7,7 +7,7 @@ describe('tab', () => {
     it('should parse tab character', () => {
         const result = tab('\tabc');
 
-        assertSuccess<string>(result, '\t', 'abc');
+        assertSuccess<string>(result, '\t', 1);
     });
 
     it('should fail on non-tab characters', () => {

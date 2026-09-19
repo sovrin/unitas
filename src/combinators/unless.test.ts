@@ -12,14 +12,14 @@ describe('unless', () => {
         const parser = unless(false, createTestParser('A'));
         const result = parser('AAA');
 
-        assertSuccess<'A' | null>(result, 'A', 'AA');
+        assertSuccess<'A' | null>(result, 'A', 1);
     });
 
     it('should return null and consume no input when condition is true', () => {
         const parser = unless(true, createTestParser('A'));
         const result = parser('AAA');
 
-        assertSuccess<'A' | null>(result, null, 'AAA');
+        assertSuccess<'A' | null>(result, null, 0);
     });
 
     it('should fail when condition is false but parser fails', () => {

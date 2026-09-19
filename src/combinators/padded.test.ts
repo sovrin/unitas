@@ -12,28 +12,28 @@ describe('padded', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('  A  ');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 5);
     });
 
     it('should parse content with no padding', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('A');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 1);
     });
 
     it('should parse content with padding on left only', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('  A');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 3);
     });
 
     it('should parse content with padding on right only', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('A  ');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 3);
     });
 
     it('should fail if content fails', () => {
@@ -47,13 +47,13 @@ describe('padded', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('  A  B');
 
-        assertSuccess<'A'>(result, 'A', 'B');
+        assertSuccess<'A'>(result, 'A', 5);
     });
 
     it('should handle multiple whitespace characters', () => {
         const parser = createTestParser('A');
         const result = padded(parser)('\t\n  A  \r\n');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 9);
     });
 });

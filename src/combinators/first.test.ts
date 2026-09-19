@@ -7,18 +7,20 @@ import { first } from './first';
 
 describe('first', () => {
     it('should return first element of array parser result', () => {
-        const parser1 = create(() => success(['A', 'B', 'C'] as const, ''));
+        const parser1 = create((input) =>
+            success(['A', 'B', 'C'] as const, input.length),
+        );
         const parser = first(parser1);
         const result = parser('ABC');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 3);
     });
 
     it('should return undefined for empty array', () => {
-        const parser1 = create(() => success([] as const, 'ABC'));
+        const parser1 = create((_input, _index = 0) => success([] as const, 0));
         const parser = first(parser1);
         const result = parser('ABC');
 
-        assertSuccess<undefined>(result, undefined, 'ABC');
+        assertSuccess<undefined>(result, undefined, 0);
     });
 });

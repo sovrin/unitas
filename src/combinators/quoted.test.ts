@@ -12,14 +12,14 @@ describe('quoted', () => {
         const parser = quoted(createTestParser('ABC'));
         const result = parser('"ABC"');
 
-        assertSuccess<'ABC'>(result, 'ABC', '');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should parse single-quoted content', () => {
         const parser = quoted(createTestParser('ABC'));
         const result = parser("'ABC'");
 
-        assertSuccess<'ABC'>(result, 'ABC', '');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should fail with mismatched quotes', () => {
@@ -33,13 +33,13 @@ describe('quoted', () => {
         const parser = quoted(createTestParser('ABC'));
         const result = parser('"ABC"rest');
 
-        assertSuccess<'ABC'>(result, 'ABC', 'rest');
+        assertSuccess<'ABC'>(result, 'ABC', 5);
     });
 
     it('should handle empty quotes input', () => {
         const parser = quoted(createTestParser(''));
         const result = parser('""');
 
-        assertSuccess<''>(result, '', '');
+        assertSuccess<''>(result, '', 2);
     });
 });

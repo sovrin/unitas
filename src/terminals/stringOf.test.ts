@@ -8,7 +8,7 @@ describe('stringOf', () => {
 
     it('should parse a character from the set', () => {
         const result = parser('abc');
-        assertSuccess<string>(result, 'a', 'bc');
+        assertSuccess<string>(result, 'a', 1);
     });
 
     it('should fail on character not in set', () => {

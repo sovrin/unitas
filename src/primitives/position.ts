@@ -2,9 +2,15 @@ import { create } from '../core/parser';
 import { success } from '../core/success';
 
 /**
- * Get current position (remaining input length).
+ * Get the current offset into the input, without consuming anything.
+ *
+ * Counts forward from the start of the input, so it can be paired with
+ * {@link locate} to attach line/column information to a parsed node.
  *
  * @example
- * position('abc') // { ok: true, value: 3, remaining: 'abc' }
+ * position('abc') // { ok: true, value: 0, index: 0 }
+ * right(string('ab'), position)('abc') // { ok: true, value: 2, index: 2 }
  */
-export const position = create<number>((input) => success(input.length, input));
+export const position = create<number>((_input, index = 0) =>
+    success(index, index),
+);

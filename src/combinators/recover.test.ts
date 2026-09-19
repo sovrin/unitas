@@ -12,26 +12,30 @@ describe('recover', () => {
         const parser = recover(parserA, 'default');
         const result = parser('BCD');
 
-        assertSuccess<'A' | 'default'>(result, 'default', 'BCD');
+        assertSuccess<'A' | 'default'>(result, 'default', 0);
     });
 
     it('should not consume input when parser fails', () => {
-        const parserFail = create<'A'>(() => failure());
+        const parserFail = create<'A'>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = recover(parserFail, 'world');
         const result = parser('goodbye');
 
-        assertSuccess<'A' | 'world'>(result, 'world', 'goodbye');
+        assertSuccess<'A' | 'world'>(result, 'world', 0);
     });
 
     it('should handle empty input', () => {
         const parser = recover(parserA, 'empty');
         const result = parser('');
 
-        assertSuccess<'A' | 'empty'>(result, 'empty', '');
+        assertSuccess<'A' | 'empty'>(result, 'empty', 0);
     });
 
     it('should work with complex default values', () => {
-        const parser1 = create<string>(() => failure());
+        const parser1 = create<string>((_input, index = 0) =>
+            failure(undefined, index),
+        );
         const parser = recover<{ default: boolean; value: number } | string>(
             parser1,
             {
@@ -44,7 +48,7 @@ describe('recover', () => {
         assertSuccess<{ default: boolean; value: number } | string>(
             result,
             { default: true, value: 42 },
-            'y',
+            0,
         );
     });
 
@@ -52,6 +56,6 @@ describe('recover', () => {
         const parser = recover(parserA, 'default');
         const result = parser('ABCD');
 
-        assertSuccess<'A' | 'default'>(result, 'A', 'BCD');
+        assertSuccess<'A' | 'default'>(result, 'A', 1);
     });
 });

@@ -33,8 +33,9 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 
 - **Zero dependencies**, ESM-only, fully typed
 - **Tree-shakeable** — five entry points, import only what you touch
-- **126 composable exports** — grouped by what they do, indexed below
+- **134 composable exports** — grouped by what they do, indexed below
 - **Mutual recursion out of the box** via `grammar`, no forward declarations
+- **Errors that point at the problem** — line, column and what was expected
 
 > **Note:** This library is in active development. The API may change before v1.0.0.
 
@@ -43,12 +44,14 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 - [Entry points](#entry-points)
 - [Which function do I need?](#which-function-do-i-need)
 - [Core concepts](#core-concepts)
+- [Error reporting](#error-reporting)
 - [More examples](#more-examples)
 - [API index](#api-index)
+- [Migrating from 0.2.x](#migrating-from-02x)
 
 ## Entry points
 
-Nothing is re-exported across entry points, so your bundler only ever sees what you import.
+Nothing is re-exported across entry points, so your bundler only ever sees what you import. Code shared between them ships once, however many you import from.
 
 | Import from          | Contains                                                           |
 | -------------------- | ------------------------------------------------------------------ |
@@ -78,7 +81,7 @@ The library is broad on purpose: each function does one small thing, so grammars
 | a character class                           | `letter`, `digit`, `alphaNum`, `hexDigit`, `octDigit`, `lowercase`, `uppercase`, `anyChar` |
 | whitespace or a line break                  | `whitespace`, `space`, `tab`, `nl`, `crlf`, `eol`, `eof`                                   |
 
-Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how much input is left? `position`.
+Most primitives come in a singular and a plural form: `letter` matches one, `letters` matches a run of them. The same holds for `digit`/`digits`, `alphaNum`/`alphaNums`, `hexDigit`/`hexDigits`, `octDigit`/`octDigits`, `lowercase`/`lowercases`, `uppercase`/`uppercases`, `space`/`spaces` and `whitespace`/`whitespaces`. Need to know how far into the input you are? `position`.
 
 ### Repeating
 
@@ -127,54 +130,61 @@ Most primitives come in a singular and a plural form: `letter` matches one, `let
 
 ### Grammars, recursion and errors
 
-| I want to…                                 | Reach for                                              |
-| ------------------------------------------ | ------------------------------------------------------ |
-| let rules reference each other by name     | `grammar`                                              |
-| refer to a parser defined further down     | `lazy`                                                 |
-| cache results and avoid exponential blowup | `memoize`                                              |
-| attach a readable error message            | `label`                                                |
-| parse infix operators with precedence      | `chainLeft`, `chainLeft1`, `chainRight`, `chainRight1` |
-| parse prefix / postfix operators           | `prefix`, `postfix`                                    |
-| handle both outcomes of a `Result`         | `match`                                                |
+| I want to…                                   | Reach for                                              |
+| -------------------------------------------- | ------------------------------------------------------ |
+| let rules reference each other by name       | `grammar`                                              |
+| refer to a parser defined further down       | `lazy`                                                 |
+| cache results and avoid exponential blowup   | `memoize`                                              |
+| attach a readable error message              | `label`                                                |
+| parse without throwing, with line and column | `parse`                                                |
+| turn an offset into a line and column        | `locate`                                               |
+| render a failure with a caret under it       | `format`, `ParseError`                                 |
+| record what a hand-written parser expected   | `context`, `record`, `union`                           |
+| parse infix operators with precedence        | `chainLeft`, `chainLeft1`, `chainRight`, `chainRight1` |
+| parse prefix / postfix operators             | `prefix`, `postfix`                                    |
+| handle both outcomes of a `Result`           | `match`                                                |
 
 ## Core concepts
 
 ### The `Parser` type
 
-A `Parser<T>` is a function from an input string to a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one.
+A `Parser<T>` reads `input` from an offset and returns a `Result<T>`. That is the whole abstraction — everything else in this library either produces one or wraps one. Both extra arguments are optional, so a parser can still be called with just an input.
 
 ```typescript
-type Parser<T> = (input: string) => Result<T>;
+type Parser<T> = (input: string, index?: number, ctx?: Context) => Result<T>;
 ```
+
+Parsers never slice the input. They pass the same string down and move an integer instead, which is what lets an error know where in the original source it happened.
+
+`ctx` is the parse context, created by `run` and `parse`. It is where error information accumulates — see [Error reporting](#error-reporting). If you write your own combinator, pass it on to every parser you call.
 
 ### The `Result` type
 
 ```typescript
-type Success<T> = { ok: true; value: T; remaining: string };
-type Failure = { ok: false; error?: string };
+type Success<T> = { ok: true; value: T; index: number };
+type Failure = { ok: false; index: number; expected: readonly string[] };
 type Result<T> = Success<T> | Failure;
 ```
 
 ```typescript
-{ ok: true, value: 'hello', remaining: ' world' }
-       │           │                   │
-       │           │                   └── what is left to parse
+{ ok: true, value: 'hello', index: 5 }
+       │           │               │
+       │           │               └── how far this parser got
        │           └── the parsed value
        └── always true for success
 ```
 
-`remaining` is the important part: it is how input gets consumed and how parsers chain. A failure carries an optional message, which you can always supply later with `label`.
+`index` is the important part: it is how input gets consumed and how parsers chain. A failure reports the same `index`, plus the set of things that would have matched there:
 
 ```typescript
-{ ok: false }                      // generic failure
-{ ok: false, error: 'expected a' } // failure with a message
+{ ok: false, index: 6, expected: ['digit'] }
 ```
 
 ### Backtracking is free
 
-Note what a `Failure` does _not_ carry: a position. There is nowhere to record how much input a failed parser got through, and combinators hand every alternative the same string they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the full input, however far `a` got.
+Combinators hand every alternative the same offset they started with, so a branch that fails can never leave the cursor moved. `choice(a, b)` always offers `b` the same starting offset, however far `a` got.
 
-If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into.
+If you are coming from Parsec, this is why there is no `try`/`attempt` here — backtracking is unconditional, so there is nothing to opt into. What a failed branch _does_ leave behind is its expectation, recorded in the parse context at the offset it reached, so a later error can still mention it.
 
 ### Writing one by hand
 
@@ -183,13 +193,28 @@ Most of the time you compose existing pieces, but nothing stops you from droppin
 ```typescript
 import { create, success, failure } from 'unitas';
 
-const parser = create<string>((input) => {
-    if (input.startsWith('hello')) {
-        return success('hello', input.slice(5));
+const parser = create<string>((input, index = 0, ctx) => {
+    if (input.startsWith('hello', index)) {
+        return success('hello', index + 5);
     }
 
-    return failure('expected "hello"');
+    return failure(ctx, index, '"hello"');
 });
+```
+
+Passing `ctx` to `failure` is what lets this parser's expectation appear in an error message even when a `choice` backtracks past it. Do the same for any parser you call:
+
+```typescript
+const twice = <T>(parser: Parser<T>) =>
+    create<[T, T]>((input, index = 0, ctx) => {
+        const first = parser(input, index, ctx);
+        if (!first.ok) return first;
+
+        const second = parser(input, first.index, ctx);
+        if (!second.ok) return second;
+
+        return success([first.value, second.value], second.index);
+    });
 ```
 
 ### Grammars
@@ -220,6 +245,60 @@ const g = grammar<Math>({
 
 run(g.expr, '1+2+3'); // 6
 run(g.expr, '(1+2)'); // 3
+```
+
+## Error reporting
+
+When a parse fails, `run` throws a `ParseError` that says where and what was expected:
+
+```typescript
+import { run } from 'unitas';
+import { separatedBy, sequence } from 'unitas/combinators';
+import { char } from 'unitas/terminals';
+import { digits, letters } from 'unitas/primitives';
+
+const pair = sequence(letters, char('='), digits);
+const config = separatedBy(pair, char('\n'));
+
+run(config, 'host=1\nport=8080\ndebug=yes');
+// ParseError: 3:7 expected digit, found 'y'
+//   3 | debug=yes
+//     |       ^
+```
+
+The position is the _furthest_ offset any branch reached, not wherever the parse happened to stop. That distinction is what makes the message useful: `separatedBy` succeeded with two pairs and left the rest unconsumed, but the error still points at the `y` that actually broke it.
+
+Alternatives are reported together, since `choice` unions the expectations of every branch it tried at the same offset:
+
+```typescript
+run(sequence(choice(string('let'), string('const')), char(' ')), 'lot x');
+// ParseError: 1:1 expected 'const' or 'let', found 'l'
+//   1 | lot x
+//     | ^
+```
+
+Use `parse` when you would rather branch on the failure than catch it:
+
+```typescript
+import { parse } from 'unitas';
+
+const result = parse(config, 'host=1\nport=oops');
+
+if (!result.ok) {
+    result.line; // 2
+    result.column; // 6
+    result.expected; // ['digit']
+    result.message; // the formatted excerpt above
+}
+```
+
+`label` replaces the expectations of a whole parser with one description, so errors can talk about your grammar instead of its characters:
+
+```typescript
+import { label } from 'unitas';
+
+run(label(pair, 'a key=value pair'), '!!!');
+// ParseError: 1:1 expected a key=value pair, found '!'
 ```
 
 ## More examples
@@ -305,19 +384,27 @@ One line per export. Every name links to its full description and runnable examp
 
 ### Core — `unitas`
 
-Types, constructors and the grammar runner. **9** exports — [full reference →][api-core]
+Types, constructors and the grammar runner. **17** exports — [full reference →][api-core]
 
-|                           |                                                                             |
-| ------------------------- | --------------------------------------------------------------------------- |
-| [`failure`][core-failure] | Creates a failed result with an optional error message.                     |
-| [`grammar`][core-grammar] | Creates a recursive grammar where rules can reference each other.           |
-| [`label`][core-label]     | Labels a parser with a custom error message on failure.                     |
-| [`lazy`][core-lazy]       | Defers parser creation, useful for recursive grammars.                      |
-| [`match`][core-match]     | Pattern matching on a Result to handle success and failure cases.           |
-| [`memoize`][core-memoize] | Memoizes a parser to cache results by input string.                         |
-| [`parser`][core-parser]   | Creates a parser from a parser function.                                    |
-| [`run`][core-run]         | Runs a parser and returns the value, throws on failure or unconsumed input. |
-| [`success`][core-success] | Creates a successful result with a value and remaining input.               |
+|                                 |                                                                                                                                    |
+| ------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| [`context`][core-context]       | Creates a fresh context. `run` and `parse` make one per call.                                                                      |
+| [`create`][core-create]         | Creates a parser from a parser function.                                                                                           |
+| [`failure`][core-failure]       | Creates a failed result at an offset and notes it in the parse context.                                                            |
+| [`format`][core-format]         | Renders a parse failure as a source excerpt with a caret under the offset.                                                         |
+| [`grammar`][core-grammar]       | Creates a recursive grammar where rules can reference each other.                                                                  |
+| [`label`][core-label]           | Replaces the expectations of a parser with a single description.                                                                   |
+| [`lazy`][core-lazy]             | Defers parser creation, useful for recursive grammars.                                                                             |
+| [`locate`][core-locate]         | Converts a character offset into a 1-based line and column.                                                                        |
+| [`match`][core-match]           | Pattern matching on a Result to handle success and failure cases.                                                                  |
+| [`memoize`][core-memoize]       | Memoizes a parser so each offset is parsed at most once (packrat caching).                                                         |
+| [`parse`][core-parse]           | Runs a parser over the whole input without throwing.                                                                               |
+| [`ParseError`][core-parseerror] | Error thrown by `run` when a parse fails, carrying the offset, the 1-based line/column and the set of expectations at that offset. |
+| [`record`][core-record]         | Notes what was expected at an offset, keeping only the furthest one seen.                                                          |
+| [`reject`][core-reject]         | Creates a failed result from an expectation list that is already allocated, avoiding a fresh array on every failure.               |
+| [`run`][core-run]               | Runs a parser over the whole input and returns the value.                                                                          |
+| [`success`][core-success]       | Creates a successful result with a value and the offset reached in the input.                                                      |
+| [`union`][core-union]           | Adds the entries of `b` to `a`, returning `a` itself when it already covers them.                                                  |
 
 ### Terminals — `unitas/terminals`
 
@@ -345,109 +432,109 @@ Ready-made parsers for the usual suspects. **33** exports — [full reference �
 |                                         |                                                                                      |
 | --------------------------------------- | ------------------------------------------------------------------------------------ |
 | [`alphaNum`][primitives-alphanum]       | Parse a single alphanumeric character.                                               |
-| [`alphaNums`][primitives-alphanums]     | Parse one or more alphanumeric characters.                                           |
+| [`alphaNums`][primitives-alphanums]     | Parse one or more alphanumeric characters as a string.                               |
 | [`anyChar`][primitives-anychar]         | Parse any single character.                                                          |
 | [`bool`][primitives-bool]               | Parse a boolean literal.                                                             |
 | [`crlf`][primitives-crlf]               | Parse CRLF line ending.                                                              |
 | [`digit`][primitives-digit]             | Parse a single digit and return as number.                                           |
-| [`digits`][primitives-digits]           | Parse one or more digits and return as number.                                       |
-| [`eof`][primitives-eof]                 | Parse end of file (succeeds only on empty input).                                    |
+| [`digits`][primitives-digits]           | Parse one or more digits and return as a number.                                     |
+| [`eof`][primitives-eof]                 | Match the end of the input.                                                          |
 | [`eol`][primitives-eol]                 | Parse end of line (\\n, \\r\\n, or EOF).                                             |
 | [`float`][primitives-float]             | Parse a floating point number.                                                       |
 | [`hexDigit`][primitives-hexdigit]       | Parse a single hexadecimal digit.                                                    |
-| [`hexDigits`][primitives-hexdigits]     | Parse one or more hexadecimal digits.                                                |
+| [`hexDigits`][primitives-hexdigits]     | Parse one or more hex digits as a string.                                            |
 | [`identifier`][primitives-identifier]   | Parse an identifier — starts with letter or underscore, no leading digit, no hyphen. |
 | [`integer`][primitives-integer]         | Parse a signed integer.                                                              |
 | [`letter`][primitives-letter]           | Parse a single letter.                                                               |
-| [`letters`][primitives-letters]         | Parse one or more letters.                                                           |
+| [`letters`][primitives-letters]         | Parse one or more letters as a string.                                               |
 | [`line`][primitives-line]               | Parse until end of line.                                                             |
 | [`literal`][primitives-literal]         | Parse a word-like value including hyphens.                                           |
 | [`lowercase`][primitives-lowercase]     | Parse a single lowercase letter.                                                     |
-| [`lowercases`][primitives-lowercases]   | Parses one or more lowercase letters.                                                |
+| [`lowercases`][primitives-lowercases]   | Parse one or more lowercase letters as a string.                                     |
 | [`nl`][primitives-nl]                   | Parse a newline character.                                                           |
 | [`number`][primitives-number]           | Parse an integer or float.                                                           |
 | [`octDigit`][primitives-octdigit]       | Parse a single octal digit.                                                          |
-| [`octDigits`][primitives-octdigits]     | Parse one or more octal digits.                                                      |
-| [`position`][primitives-position]       | Get current position (remaining input length).                                       |
-| [`rest`][primitives-rest]               | Parse the rest of the input.                                                         |
+| [`octDigits`][primitives-octdigits]     | Parse one or more octal digits as a string.                                          |
+| [`position`][primitives-position]       | Get the current offset into the input, without consuming anything.                   |
+| [`rest`][primitives-rest]               | Consume and return everything left in the input.                                     |
 | [`space`][primitives-space]             | Parse a single space character.                                                      |
-| [`spaces`][primitives-spaces]           | Parse one or more space characters.                                                  |
+| [`spaces`][primitives-spaces]           | Parse one or more spaces as a string.                                                |
 | [`tab`][primitives-tab]                 | Parse tab character.                                                                 |
 | [`uppercase`][primitives-uppercase]     | Parses a single uppercase letter.                                                    |
-| [`uppercases`][primitives-uppercases]   | Parses one or more uppercase letters.                                                |
+| [`uppercases`][primitives-uppercases]   | Parse one or more uppercase letters as a string.                                     |
 | [`whitespace`][primitives-whitespace]   | Parses a single whitespace character.                                                |
-| [`whitespaces`][primitives-whitespaces] | Parses one or more whitespace characters.                                            |
+| [`whitespaces`][primitives-whitespaces] | Parse one or more whitespaces as a string.                                           |
 
 ### Combinators — `unitas/combinators`
 
 Take parsers, return a new parser. **64** exports — [full reference →][api-combinators]
 
-|                                                          |                                                                             |
-| -------------------------------------------------------- | --------------------------------------------------------------------------- |
-| [`bind`][combinators-bind]                               | Chain parsers where the second parser depends on the first result.          |
-| [`braced`][combinators-braced]                           | Parse content surrounded by braces.                                         |
-| [`bracketed`][combinators-bracketed]                     | Parse content surrounded by brackets.                                       |
-| [`chainLeft`][combinators-chainleft]                     | Chain left-associative operations (right-to-left for same precedence).      |
-| [`chainLeft1`][combinators-chainleft1]                   | Chain left-associative operations (fails on empty input).                   |
-| [`chainRight`][combinators-chainright]                   | Chain right-associative operations (right-to-left grouping).                |
-| [`chainRight1`][combinators-chainright1]                 | Chain right-associative operations (fails on empty input).                  |
-| [`choice`][combinators-choice]                           | Try each parser in order, return first success.                             |
-| [`concat`][combinators-concat]                           | Join string array parser result into a single string.                       |
-| [`consume`][combinators-consume]                         | Consume input but discard the result (return null).                         |
-| [`endBy`][combinators-endby]                             | Zero or more items separated and ending with terminator.                    |
-| [`endBy1`][combinators-endby1]                           | One or more items separated and ending with terminator.                     |
-| [`exactly`][combinators-exactly]                         | Parse exactly n occurrences.                                                |
-| [`first`][combinators-first]                             | Extract the first element from a parser result array.                       |
-| [`flag`][combinators-flag]                               | Return true if parser succeeds, false otherwise.                            |
-| [`fold`][combinators-fold]                               | Parse zero or more and fold into a single value.                            |
-| [`fold1`][combinators-fold1]                             | Parse one or more and fold into a single value.                             |
-| [`foldRight`][combinators-foldright]                     | Parse zero or more and fold right-to-left.                                  |
-| [`foldRight1`][combinators-foldright1]                   | Parse one or more and fold right-to-left.                                   |
-| [`fuse`][combinators-fuse]                               | Fuse multiple string parsers into a single one.                             |
-| [`guard`][combinators-guard]                             | Conditionally apply parser based on a condition.                            |
-| [`inner`][combinators-inner]                             | Extract inner value from surrounded content (like inner of braced).         |
-| [`interleaved`][combinators-interleaved]                 | Parse items with interleaved separators.                                    |
-| [`last`][combinators-last]                               | Extract the last element from a parser result array.                        |
-| [`left`][combinators-left]                               | Keep only the left result from a sequence.                                  |
-| [`lexeme`][combinators-lexeme]                           | Parser that consumes trailing whitespace.                                   |
-| [`many`][combinators-many]                               | Zero or more occurrences (never fails).                                     |
-| [`many1`][combinators-many1]                             | One or more occurrences (fails if no matches).                              |
-| [`manyAtLeast`][combinators-manyatleast]                 | Parse at least n occurrences.                                               |
-| [`manyAtMost`][combinators-manyatmost]                   | Parse at most n occurrences.                                                |
-| [`manyBetween`][combinators-manybetween]                 | Parse between min and max occurrences.                                      |
-| [`manyTill`][combinators-manytill]                       | Parse zero or more until terminator matches.                                |
-| [`map`][combinators-map]                                 | Transform the parsed value.                                                 |
-| [`node`][combinators-node]                               | Create a node from parser fields.                                           |
-| [`not`][combinators-not]                                 | Succeed if parser fails (without consuming input).                          |
-| [`nth`][combinators-nth]                                 | Extract the nth element from a parser result array.                         |
-| [`optional`][combinators-optional]                       | Make parser optional (return null on failure, without consuming input).     |
-| [`optionalConsume`][combinators-optionalconsume]         | Optionally consume input (always succeeds, returns void).                   |
-| [`optionalSeparatedBy`][combinators-optionalseparatedby] | Zero or more items separated by a separator, with optional null values.     |
-| [`outer`][combinators-outer]                             | Extract outer values from a sequence of 3 parsers (skip middle).            |
-| [`padded`][combinators-padded]                           | Parse content with optional whitespace on both sides.                       |
-| [`parenthesized`][combinators-parenthesized]             | Parse content surrounded by parentheses.                                    |
-| [`peek`][combinators-peek]                               | Parse without consuming input.                                              |
-| [`postfix`][combinators-postfix]                         | Parse postfix operators (chains atom with operators that return functions). |
-| [`prefix`][combinators-prefix]                           | Parse prefix operators (like - in -5).                                      |
-| [`pure`][combinators-pure]                               | Always return a value without consuming input.                              |
-| [`quoted`][combinators-quoted]                           | Parse content surrounded by single or double quotes.                        |
-| [`recover`][combinators-recover]                         | Use fallback value when parser fails.                                       |
-| [`right`][combinators-right]                             | Keep only the right result from a sequence.                                 |
-| [`separatedBy`][combinators-separatedby]                 | Zero or more items separated by a separator.                                |
-| [`separatedBy1`][combinators-separatedby1]               | One or more items separated by a separator.                                 |
-| [`separatedEndBy`][combinators-separatedendby]           | Zero or more items separated by and ending with a terminator.               |
-| [`separatedEndBy1`][combinators-separatedendby1]         | One or more items separated by and ending with a terminator.                |
-| [`separatedUntil`][combinators-separateduntil]           | Parse items separated by separator until terminator matches.                |
-| [`sequence`][combinators-sequence]                       | Parse a sequence of parsers and return all results as an array.             |
-| [`skip`][combinators-skip]                               | Skip a parser n times.                                                      |
-| [`skipMany`][combinators-skipmany]                       | Skip zero or more occurrences (never fails, returns null).                  |
-| [`skipMany1`][combinators-skipmany1]                     | Skip one or more occurrences (fails if no matches).                         |
-| [`surrounded`][combinators-surrounded]                   | Parse content surrounded by delimiters.                                     |
-| [`unless`][combinators-unless]                           | Parse unless condition is true (inverse of guard).                          |
-| [`until`][combinators-until]                             | Parse until terminator matches (fails if terminator never matches).         |
-| [`validate`][combinators-validate]                       | Validate parsed value with a predicate.                                     |
-| [`value`][combinators-value]                             | Replace parsed value with a constant.                                       |
-| [`when`][combinators-when]                               | Branch on a boolean parser result.                                          |
+|                                                          |                                                                                 |
+| -------------------------------------------------------- | ------------------------------------------------------------------------------- |
+| [`bind`][combinators-bind]                               | Chain parsers where the second parser depends on the first result.              |
+| [`braced`][combinators-braced]                           | Parse content surrounded by braces.                                             |
+| [`bracketed`][combinators-bracketed]                     | Parse content surrounded by brackets.                                           |
+| [`chainLeft`][combinators-chainleft]                     | Chain left-associative operations (right-to-left for same precedence).          |
+| [`chainLeft1`][combinators-chainleft1]                   | Chain left-associative operations (fails on empty input).                       |
+| [`chainRight`][combinators-chainright]                   | Chain right-associative operations.                                             |
+| [`chainRight1`][combinators-chainright1]                 | Chain right-associative operations (fails on empty input).                      |
+| [`choice`][combinators-choice]                           | Try each parser in order, return first success.                                 |
+| [`concat`][combinators-concat]                           | Join string array parser result into a single string.                           |
+| [`consume`][combinators-consume]                         | Consume input but discard the result (return null).                             |
+| [`endBy`][combinators-endby]                             | Zero or more items separated and ending with terminator.                        |
+| [`endBy1`][combinators-endby1]                           | One or more items separated and ending with terminator.                         |
+| [`exactly`][combinators-exactly]                         | Parse exactly n occurrences.                                                    |
+| [`first`][combinators-first]                             | Extract the first element from a parser result array.                           |
+| [`flag`][combinators-flag]                               | Return true if parser succeeds, false otherwise.                                |
+| [`fold`][combinators-fold]                               | Fold zero or more occurrences into a single value.                              |
+| [`fold1`][combinators-fold1]                             | Fold one or more occurrences into a single value.                               |
+| [`foldRight`][combinators-foldright]                     | Fold zero or more occurrences from the right into a single value.               |
+| [`foldRight1`][combinators-foldright1]                   | Fold one or more occurrences from the right into a single value.                |
+| [`fuse`][combinators-fuse]                               | Fuse multiple string parsers into a single one.                                 |
+| [`guard`][combinators-guard]                             | Conditionally apply parser based on a condition.                                |
+| [`inner`][combinators-inner]                             | Extract inner value from surrounded content (like inner of braced).             |
+| [`interleaved`][combinators-interleaved]                 | Parse items separated by separators, keeping both in the result.                |
+| [`last`][combinators-last]                               | Extract the last element from a parser result array.                            |
+| [`left`][combinators-left]                               | Keep only the left result from a sequence.                                      |
+| [`lexeme`][combinators-lexeme]                           | Parser that consumes trailing whitespace.                                       |
+| [`many`][combinators-many]                               | Zero or more occurrences (never fails).                                         |
+| [`many1`][combinators-many1]                             | One or more occurrences.                                                        |
+| [`manyAtLeast`][combinators-manyatleast]                 | Parse at least n occurrences.                                                   |
+| [`manyAtMost`][combinators-manyatmost]                   | Parse at most n occurrences (never fails).                                      |
+| [`manyBetween`][combinators-manybetween]                 | Parse between min and max occurrences.                                          |
+| [`manyTill`][combinators-manytill]                       | Parse zero or more until terminator matches.                                    |
+| [`map`][combinators-map]                                 | Transform a parsed value through one or more functions.                         |
+| [`node`][combinators-node]                               | Create a node from parser fields.                                               |
+| [`not`][combinators-not]                                 | Succeed if parser fails (without consuming input).                              |
+| [`nth`][combinators-nth]                                 | Extract the nth element from a parser result array.                             |
+| [`optional`][combinators-optional]                       | Make parser optional (return null on failure, without consuming input).         |
+| [`optionalConsume`][combinators-optionalconsume]         | Consume input if the parser matches, discarding the result.                     |
+| [`optionalSeparatedBy`][combinators-optionalseparatedby] | Parse items separated by a separator, allowing empty slots.                     |
+| [`outer`][combinators-outer]                             | Extract outer values from a sequence of 3 parsers (skip middle).                |
+| [`padded`][combinators-padded]                           | Parse content surrounded by optional whitespace.                                |
+| [`parenthesized`][combinators-parenthesized]             | Parse content surrounded by parentheses.                                        |
+| [`peek`][combinators-peek]                               | Look ahead without consuming input.                                             |
+| [`postfix`][combinators-postfix]                         | Apply zero or more postfix operators to an atom.                                |
+| [`prefix`][combinators-prefix]                           | Apply zero or more prefix operators to an atom.                                 |
+| [`pure`][combinators-pure]                               | Always succeed with a value without consuming input.                            |
+| [`quoted`][combinators-quoted]                           | Parse content surrounded by single or double quotes.                            |
+| [`recover`][combinators-recover]                         | Use fallback value when parser fails.                                           |
+| [`right`][combinators-right]                             | Keep only the right result from a sequence.                                     |
+| [`separatedBy`][combinators-separatedby]                 | Parse zero or more items separated by a separator.                              |
+| [`separatedBy1`][combinators-separatedby1]               | Parse one or more items separated by a separator.                               |
+| [`separatedEndBy`][combinators-separatedendby]           | Parse zero or more items separated by a separator, allowing a trailing one.     |
+| [`separatedEndBy1`][combinators-separatedendby1]         | Parse one or more items separated by a separator, allowing a trailing one.      |
+| [`separatedUntil`][combinators-separateduntil]           | Parse items separated by a separator, up to a terminator.                       |
+| [`sequence`][combinators-sequence]                       | Parse a sequence of parsers and return all results as an array.                 |
+| [`skip`][combinators-skip]                               | Skip a parser n times.                                                          |
+| [`skipMany`][combinators-skipmany]                       | Skip zero or more occurrences (never fails, returns null).                      |
+| [`skipMany1`][combinators-skipmany1]                     | Skip one or more occurrences (fails if no matches).                             |
+| [`surrounded`][combinators-surrounded]                   | Parse content surrounded by delimiters.                                         |
+| [`unless`][combinators-unless]                           | Parse unless condition is true (inverse of guard).                              |
+| [`until`][combinators-until]                             | Parse zero or more until terminator matches, leaving the terminator unconsumed. |
+| [`validate`][combinators-validate]                       | Validate parsed value with a predicate.                                         |
+| [`value`][combinators-value]                             | Replace parsed value with a constant.                                           |
+| [`when`][combinators-when]                               | Branch on a boolean parser result.                                              |
 
 ### Utils — `unitas/utils`
 
@@ -465,15 +552,23 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 | [`spread`][utils-spread]   | Collect spread arguments into an array. |
 
 [api-core]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md
+[core-context]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#context
+[core-create]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#create
 [core-failure]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#failure
+[core-format]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#format
 [core-grammar]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#grammar
 [core-label]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#label
 [core-lazy]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#lazy
+[core-locate]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#locate
 [core-match]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#match
 [core-memoize]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#memoize
-[core-parser]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parser
+[core-parse]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parse
+[core-parseerror]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#parseerror
+[core-record]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#record
+[core-reject]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#reject
 [core-run]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#run
 [core-success]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#success
+[core-union]: https://github.com/sovrin/unitas/blob/master/doc/api/core.md#union
 [api-terminals]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md
 [terminals-char]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md#char
 [terminals-charof]: https://github.com/sovrin/unitas/blob/master/doc/api/terminals.md#charof
@@ -595,6 +690,62 @@ Plain helpers for `map` callbacks. **8** exports — [full reference →][api-ut
 [utils-pop]: https://github.com/sovrin/unitas/blob/master/doc/api/utils.md#pop
 [utils-shift]: https://github.com/sovrin/unitas/blob/master/doc/api/utils.md#shift
 [utils-spread]: https://github.com/sovrin/unitas/blob/master/doc/api/utils.md#spread
+
+## Migrating from 0.2.x
+
+`0.3.0` changes how a parser reports where it got to. Parsers now take an offset into the input instead of receiving a sliced suffix, which is what makes line/column error reporting possible.
+
+**If you only compose the built-in parsers, nothing changes.** `run`, `grammar`, `map`, `choice` and everything built on them behave the same, and both new arguments are optional, so `myParser('input')` still works.
+
+Two things do change for everyone:
+
+```typescript
+// reading a result
+result.remaining; // 0.2.x
+input.slice(result.index); // 0.3.0 — or just use result.index
+
+// a failed run
+run(p, 'bad'); // 0.2.x: Error: Parsing failed: Unexpected error
+run(p, 'bad'); // 0.3.0: ParseError, with .line, .column and .expected
+```
+
+If you write parsers by hand, the shape changed:
+
+```typescript
+// 0.2.x
+create<string>((input) => {
+    if (input.startsWith('hello')) {
+        return success('hello', input.slice(5));
+    }
+
+    return failure('expected "hello"');
+});
+
+// 0.3.0
+create<string>((input, index = 0, ctx) => {
+    if (input.startsWith('hello', index)) {
+        return success('hello', index + 5);
+    }
+
+    return failure(ctx, index, '"hello"');
+});
+```
+
+The rest, in full:
+
+| 0.2.x                              | 0.3.0                                                           |
+| ---------------------------------- | --------------------------------------------------------------- |
+| `Parser<T> = (input) => Result<T>` | `Parser<T> = (input, index?, ctx?) => Result<T>`                |
+| `success(value, remaining)`        | `success(value, index)`                                         |
+| `failure()` / `failure(message)`   | `failure(ctx, index, ...expected)`                              |
+| `{ ok: true, value, remaining }`   | `{ ok: true, value, index }`                                    |
+| `{ ok: false, error?: string }`    | `{ ok: false, index, expected }`                                |
+| `match`'s `failure: (error) => …`  | `failure: (index, expected) => …`                               |
+| `position` → remaining length      | `position` → offset from the start                              |
+| `label(p, 'x')` → `'expected x'`   | `label(p, 'x')` → `expected: ['x']`, only when nothing consumed |
+| `regex(/^\w+/)`                    | same, but sticky — a leading `^` is stripped unless multiline   |
+
+New in this release: `parse` (non-throwing), `ParseError`, `locate`, `format`, and `context`/`record` for hand-written parsers. `memoize` is now keyed by offset rather than by the remaining input, so its cache entries are cheap and are dropped when a different input is parsed. Left-recursive `grammar` rules now throw a named error instead of overflowing the stack.
 
 ## Contributing
 

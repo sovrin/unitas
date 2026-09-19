@@ -7,6 +7,6 @@ const parser = regex(/^[a-zA-Z_][a-zA-Z0-9_]*/);
  * Parse an identifier — starts with letter or underscore, no leading digit, no hyphen.
  *
  * @example
- * identifier('variable_name') // { ok: true, value: 'variable_name', remaining: '' }
+ * identifier('variable_name') // { ok: true, value: 'variable_name', index: 13 }
  */
 export const identifier = create(parser);

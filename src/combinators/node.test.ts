@@ -11,7 +11,7 @@ describe('node', () => {
         const parser = node<{ value: 'A' }>('word', { value: aParser });
         const result = parser('A');
 
-        assertSuccess(result, { type: 'word', value: 'A' }, '');
+        assertSuccess(result, { type: 'word', value: 'A' }, 1);
     });
 
     it('should create node with multiple fields', () => {
@@ -21,7 +21,7 @@ describe('node', () => {
         });
         const result = parser('AB');
 
-        assertSuccess(result, { type: 'pair', left: 'A', right: 'B' }, '');
+        assertSuccess(result, { type: 'pair', left: 'A', right: 'B' }, 2);
     });
 
     it('should handle nested nodes', () => {
@@ -34,7 +34,7 @@ describe('node', () => {
         assertSuccess(
             result,
             { type: 'outer', child: { type: 'inner', value: 'A' } },
-            '',
+            1,
         );
     });
 
@@ -42,15 +42,15 @@ describe('node', () => {
         const alpha = node<{ value: 'A' }>('alpha', { value: aParser });
         const beta = node<{ value: 'B' }>('beta', { value: bParser });
 
-        assertSuccess(alpha('A'), { type: 'alpha', value: 'A' }, '');
-        assertSuccess(beta('B'), { type: 'beta', value: 'B' }, '');
+        assertSuccess(alpha('A'), { type: 'alpha', value: 'A' }, 1);
+        assertSuccess(beta('B'), { type: 'beta', value: 'B' }, 1);
     });
 
     it('should handle empty fields', () => {
         const parser = node<Record<never, never>>('empty', {});
         const result = parser('');
 
-        assertSuccess(result, { type: 'empty' }, '');
+        assertSuccess(result, { type: 'empty' }, 0);
     });
 
     it('should parse partial input and leave remaining', () => {
@@ -60,6 +60,6 @@ describe('node', () => {
         });
         const result = parser('AB rest');
 
-        assertSuccess(result, { type: 'pair', left: 'A', right: 'B' }, ' rest');
+        assertSuccess(result, { type: 'pair', left: 'A', right: 'B' }, 2);
     });
 });

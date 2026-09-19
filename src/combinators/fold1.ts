@@ -1,35 +1,29 @@
-import { failure } from '../core/failure';
-import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import type { Parser } from '../core/parser';
+
+import { create } from '../core/parser';
+import { success, type Success } from '../core/success';
 import { many } from './many';
 
 /**
- * Parse one or more and fold into a single value.
+ * Fold one or more occurrences into a single value.
  *
  * @example
- * fold1(digit, 0, (acc, d) => acc + d)('123') // { ok: true, value: 6, remaining: '' }
+ * fold1(digit, 0, (acc, d) => acc + d)('123') // { ok: true, value: 6, index: 3 }
  */
 export const fold1 = <T, U>(
     parser: Parser<T>,
     initial: U,
     folder: (acc: U, item: T) => U,
 ): Parser<U> => {
-    return create<U>((input) => {
-        const first = parser(input);
+    return create<U>((input, index = 0, ctx) => {
+        const first = parser(input, index, ctx);
         if (!first.ok) {
-            return failure();
+            return first;
         }
 
-        const { value: firstValue, remaining } = first;
+        const rest = many(parser)(input, first.index, ctx) as Success<T[]>;
+        const acc = rest.value.reduce(folder, folder(initial, first.value));
 
-        let acc = folder(initial, firstValue);
-
-        const { value: items, remaining: finalRest } = many(parser)(
-            remaining,
-        ) as Success<T[]>;
-
-        acc = items.reduce(folder, acc);
-
-        return success(acc, finalRest);
+        return success(acc, rest.index);
     });
 };

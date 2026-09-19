@@ -1,25 +1,29 @@
 import { create, failure, success } from '../src';
 
-export const operation = create((input) => {
-    const ops: Record<string, (left: number, right: number) => number> = {
-        '+': (left, right) => left + right,
-        '-': (left, right) => left - right,
-        '*': (left, right) => left * right,
-        '/': (left, right) => left / right,
-        '**': (left, right) => Math.pow(left, right),
-    };
+const OPERATORS: Record<string, (left: number, right: number) => number> = {
+    '+': (left, right) => left + right,
+    '-': (left, right) => left - right,
+    '*': (left, right) => left * right,
+    '/': (left, right) => left / right,
+    '**': (left, right) => Math.pow(left, right),
+};
 
-    const [operator] = input.match(/\*\*|[+\-*/]/) || [];
-    if (!operator) return failure();
+const OPERATOR = /\*\*|[+\-*/]/y;
 
-    const op = ops[operator];
+export const operation = create((input, index = 0) => {
+    OPERATOR.lastIndex = index;
+    const [operator] = OPERATOR.exec(input) || [];
+    if (!operator) return failure(undefined, index, 'operator');
 
-    return success(op, input.slice(operator.length));
+    return success(OPERATORS[operator], index + operator.length);
 });
 
-export const digits = create<number>((value: string) => {
-    const [, match, rest] = value.match(/^(\d+)(.*)/) || ['0'];
-    if (!match) return failure();
+const DIGITS = /\d+/y;
 
-    return success<number>(parseInt(match), rest);
+export const digits = create<number>((input, index = 0) => {
+    DIGITS.lastIndex = index;
+    const [match] = DIGITS.exec(input) || [];
+    if (!match) return failure(undefined, index, 'digit');
+
+    return success<number>(parseInt(match), index + match.length);
 });

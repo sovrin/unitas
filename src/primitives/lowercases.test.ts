@@ -8,17 +8,17 @@ describe('lowercases', () => {
         {
             const result = lowercases('abcDEF');
 
-            assertSuccess<string>(result, 'abc', 'DEF');
+            assertSuccess<string>(result, 'abc', 3);
         }
         {
             const result = lowercases('hello world');
 
-            assertSuccess<string>(result, 'hello', ' world');
+            assertSuccess<string>(result, 'hello', 5);
         }
         {
             const result = lowercases('abc');
 
-            assertSuccess<string>(result, 'abc', '');
+            assertSuccess<string>(result, 'abc', 3);
         }
     });
 
@@ -43,6 +43,6 @@ describe('lowercases', () => {
     it('should handle single lowercase letter', () => {
         const result = lowercases('aBC');
 
-        assertSuccess<string>(result, 'a', 'BC');
+        assertSuccess<string>(result, 'a', 1);
     });
 });

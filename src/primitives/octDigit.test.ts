@@ -6,7 +6,7 @@ import { octDigit, type OctDigit } from './octDigit';
 describe('octDigit', () => {
     it('should parse octal digits', () => {
         const result = octDigit('712');
-        assertSuccess<OctDigit>(result, '7', '12');
+        assertSuccess<OctDigit>(result, '7', 1);
     });
 
     it('should fail on non-octal', () => {
@@ -21,6 +21,6 @@ describe('octDigit', () => {
 
     it('should narrow result to first character type for const string', () => {
         const result = octDigit('37x' as const);
-        assertSuccess<'3'>(result, '3', '7x');
+        assertSuccess<'3'>(result, '3', 1);
     });
 });

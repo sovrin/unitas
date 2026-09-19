@@ -7,6 +7,6 @@ const parser = char('\t');
  * Parse tab character.
  *
  * @example
- * tab('\ttext') // { ok: true, value: '\t', remaining: 'text' }
+ * tab('\ttext') // { ok: true, value: '\t', index: 1 }
  */
 export const tab = create<string>(parser);

@@ -15,6 +15,6 @@ const parser = choice(
  * Parse end of line (\\n, \\r\\n, or EOF).
  *
  * @example
- * eol('\nabc') // { ok: true, value: '\n', remaining: 'abc' }
+ * eol('\nabc') // { ok: true, value: '\n', index: 1 }
  */
 export const eol = create<string>(parser);

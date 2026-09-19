@@ -1,21 +1,28 @@
+import type { Parser } from '../core/parser';
+
 import { failure } from '../core/failure';
-import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import { create } from '../core/parser';
+import { type Success } from '../core/success';
 import { separatedBy } from './separatedBy';
 
 /**
- * One or more items separated by a separator.
+ * Parse one or more items separated by a separator.
  *
  * @example
- * separatedBy1(char('a'), char(','))('a,a,a') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * separatedBy1(digits, char(','))('1,2,3') // { ok: true, value: [1, 2, 3], index: 5 }
  */
 export const separatedBy1 = <T>(parser: Parser<T>, separator: Parser) => {
-    return create<T[]>((input) => {
-        const result = separatedBy(parser, separator)(input);
+    return create<T[]>((input, index = 0, ctx) => {
+        const result = separatedBy(parser, separator)(
+            input,
+            index,
+            ctx,
+        ) as Success<T[]>;
 
-        const { value: values, remaining } = result as Success<T[]>;
-        if (values.length === 0) return failure();
+        if (result.value.length === 0) {
+            return failure(ctx, index);
+        }
 
-        return success(values, remaining);
+        return result;
     });
 };

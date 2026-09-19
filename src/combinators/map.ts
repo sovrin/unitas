@@ -1,15 +1,8 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 
-/**
- * Transform the parsed value.
- *
- * @example
- * map(string('hello'), (v) => v.toUpperCase())('hello') // { ok: true, value: 'HELLO', remaining: '' }
- */
 export function map<A, B>(
     parser: Parser<A>,
     transform: (value: A) => B,
@@ -82,14 +75,21 @@ export function map<A, B, C, D, E, F, G, H, I, J>(
     transform8: (value: H) => I,
     transform9: (value: I) => J,
 ): Parser<J>;
+
+/**
+ * Transform a parsed value through one or more functions.
+ *
+ * @example
+ * map(digits, (n) => n * 2)('21') // { ok: true, value: 42, index: 2 }
+ */
 export function map<A>(
     parser: Parser<A>,
     ...transforms: Array<(value: unknown) => unknown>
 ) {
-    return create((input) => {
-        const result = parser(input);
+    return create((input, index = 0, ctx) => {
+        const result = parser(input, index, ctx);
         if (!result.ok) {
-            return failure();
+            return result;
         }
 
         const finalValue = transforms.reduce(
@@ -97,6 +97,6 @@ export function map<A>(
             result.value as unknown,
         );
 
-        return success(finalValue, result.remaining);
+        return success(finalValue, result.index);
     });
 }

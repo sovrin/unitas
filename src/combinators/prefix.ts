@@ -1,38 +1,41 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
- * Parse prefix operators (like - in -5).
+ * Apply zero or more prefix operators to an atom.
  *
  * @example
- * prefix(map(char('-'), () => (x) => -x), digit)('-5') // { ok: true, value: -5, remaining: '' }
+ * prefix(map(char('-'), () => (n) => -n), digits)('-3') // { ok: true, value: -3, index: 2 }
  */
 export const prefix = <T>(
     operator: Parser<(value: T) => T>,
     atom: Parser<T>,
 ) => {
-    return create<T>((input) => {
+    return create<T>((input, index = 0, ctx) => {
         const operators: Array<(value: T) => T> = [];
-        let remaining = input;
+        let at = index;
 
         while (true) {
-            const opResult = operator(remaining);
+            const opResult: Result<(value: T) => T> = operator(input, at, ctx);
             if (!opResult.ok) break;
+
             operators.push(opResult.value);
-            remaining = opResult.remaining;
+            at = opResult.index;
         }
 
-        const atomResult = atom(remaining);
-        if (!atomResult.ok) return failure();
+        const atomResult = atom(input, at, ctx);
+        if (!atomResult.ok) {
+            return atomResult;
+        }
 
         const finalValue = operators.reduceRight(
             (value, op) => op(value),
             atomResult.value,
         );
 
-        return success(finalValue, atomResult.remaining);
+        return success(finalValue, atomResult.index);
     });
 };

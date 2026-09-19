@@ -9,7 +9,7 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('AAABBB');
 
-        assertSuccess<null>(result, null, 'BBB');
+        assertSuccess<null>(result, null, 3);
     });
 
     it('should return null even when no matches found', () => {
@@ -17,7 +17,7 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('BBB');
 
-        assertSuccess<null>(result, null, 'BBB');
+        assertSuccess<null>(result, null, 0);
     });
 
     it('should handle empty input', () => {
@@ -25,6 +25,6 @@ describe('skipMany', () => {
         const parser = skipMany(parser1);
         const result = parser('');
 
-        assertSuccess<null>(result, null, '');
+        assertSuccess<null>(result, null, 0);
     });
 });

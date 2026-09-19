@@ -12,8 +12,8 @@ const parser = choice(
  * Parse a boolean literal.
  *
  * @example
- * bool('true') // { ok: true, value: true, remaining: '' }
- * bool('false') // { ok: true, value: false, remaining: '' }
- * bool('trueABC') // { ok: true, value: true, remaining: 'ABC' }
+ * bool('true') // { ok: true, value: true, index: 4 }
+ * bool('false') // { ok: true, value: false, index: 5 }
+ * bool('trueABC') // { ok: true, value: true, index: 4 }
  */
 export const bool = create<boolean>(parser);

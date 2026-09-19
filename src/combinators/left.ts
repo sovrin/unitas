@@ -8,7 +8,7 @@ import { sequence } from './sequence';
  * Keep only the left result from a sequence.
  *
  * @example
- * left(string('hello'), string('world'))('helloworld') // { ok: true, value: 'hello', remaining: '' }
+ * left(string('hello'), string('world'))('helloworld') // { ok: true, value: 'hello', index: 10 }
  */
 export const left = <A, B>(parserA: Parser<A>, parserB: Parser<B>) => {
     return create<A>(map(sequence(parserA, parserB), ([a]) => a));

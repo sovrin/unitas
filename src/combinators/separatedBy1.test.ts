@@ -25,7 +25,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('ABC');
 
-        assertSuccess<'A'[]>(result, ['A'], 'BC');
+        assertSuccess<'A'[]>(result, ['A'], 1);
     });
 
     it('should parse multiple elements', () => {
@@ -35,7 +35,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('A,A,A,A');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], '');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 7);
     });
 
     it('should handle trailing separator', () => {
@@ -45,7 +45,7 @@ describe('separatedBy1', () => {
         const parser = separatedBy1(parser1, parser2);
         const result = parser('A,A,A,A,');
 
-        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], ',');
+        assertSuccess<'A'[]>(result, ['A', 'A', 'A', 'A'], 7);
     });
 
     it('should fail on empty input', () => {

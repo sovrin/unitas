@@ -1,54 +1,54 @@
 import type { Parser } from '../core/parser';
 
 import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
- * Zero or more items separated by a separator, with optional null values.
+ * Parse items separated by a separator, allowing empty slots.
  *
  * @example
- * optionalSeparatedBy(digits, char(','))('1,2') // { ok: true, value: [1, 2], remaining: '' }
- * optionalSeparatedBy(digits, char(','))(',1') // { ok: true, value: [null, 1], remaining: '' }
- * optionalSeparatedBy(digits, char(','))('1,') // { ok: true, value: [1], remaining: '' }
+ * optionalSeparatedBy(digits, char(','))('1,2') // { ok: true, value: [1, 2], index: 3 }
  */
 export const optionalSeparatedBy = <T>(
     parser: Parser<T>,
     separator: Parser,
 ) => {
-    return create<(T | null)[]>((input) => {
+    return create<(T | null)[]>((input, index = 0, ctx) => {
         const results: (T | null)[] = [];
-        let remaining = input;
+        let at = index;
 
-        const leadingSep = separator(remaining);
+        const leadingSep = separator(input, at, ctx);
+
         if (leadingSep.ok) {
             results.push(null);
-            remaining = leadingSep.remaining;
+            at = leadingSep.index;
         }
 
-        const firstResult = parser(remaining);
+        const firstResult: Result<T> = parser(input, at, ctx);
         if (firstResult.ok) {
             results.push(firstResult.value);
-            remaining = firstResult.remaining;
+            at = firstResult.index;
         } else if (!leadingSep.ok) {
-            return success([], input);
+            return success([], index);
         }
 
         while (true) {
-            const sepResult = separator(remaining);
+            const sepResult: Result<unknown> = separator(input, at, ctx);
             if (!sepResult.ok) {
                 break;
             }
-            remaining = sepResult.remaining;
+            at = sepResult.index;
 
-            const nextResult = parser(remaining);
+            const nextResult: Result<T> = parser(input, at, ctx);
             if (!nextResult.ok) {
                 break;
             }
 
             results.push(nextResult.value);
-            remaining = nextResult.remaining;
+            at = nextResult.index;
         }
 
-        return success(results, remaining);
+        return success(results, at);
     });
 };

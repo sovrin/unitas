@@ -8,7 +8,7 @@ describe('string', () => {
         const parser = string('test');
         const result = parser('testing');
 
-        assertSuccess<'test'>(result, 'test', 'ing');
+        assertSuccess<'test'>(result, 'test', 4);
     });
 
     it('should fail when string does not match', () => {
@@ -22,13 +22,13 @@ describe('string', () => {
         const parser = string('hello');
         const result = parser('hello');
 
-        assertSuccess<'hello'>(result, 'hello', '');
+        assertSuccess<'hello'>(result, 'hello', 5);
     });
 
     it('should handle empty string', () => {
         const parser = string('');
         const result = parser('anything');
 
-        assertSuccess<''>(result, '', 'anything');
+        assertSuccess<''>(result, '', 0);
     });
 });

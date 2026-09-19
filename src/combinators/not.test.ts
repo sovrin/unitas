@@ -13,7 +13,7 @@ describe('not', () => {
         const parser = not(parser1);
         const result = parser('BCD');
 
-        assertSuccess<null>(result, null, 'BCD');
+        assertSuccess<null>(result, null, 0);
     });
 
     it('should fail when parser succeeds', () => {

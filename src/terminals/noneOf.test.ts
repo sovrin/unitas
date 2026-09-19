@@ -8,7 +8,7 @@ describe('noneOf', () => {
         const parser = noneOf(['X', 'Y', 'Z']);
         const result = parser('ABC');
 
-        assertSuccess<string>(result, 'A', 'BC');
+        assertSuccess<string>(result, 'A', 1);
     });
 
     it('should fail when character is in forbidden set', () => {
@@ -22,6 +22,6 @@ describe('noneOf', () => {
         const parser = noneOf([]);
         const result = parser('ABC');
 
-        assertSuccess<string>(result, 'A', 'BC');
+        assertSuccess<string>(result, 'A', 1);
     });
 });

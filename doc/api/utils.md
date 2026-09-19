@@ -7,7 +7,7 @@
 Utils are not parsers. They are small curried helpers meant to be dropped into a `map` callback so reshaping a result stays a one-liner instead of an arrow function.
 
 ```typescript
-import {} from /* … */ 'unitas/utils';
+import { pick, join, pipe } from 'unitas/utils';
 ```
 
 ## Index
@@ -57,7 +57,7 @@ pick(2, 4)(['a', 'b', 'c', 'd', 'e']); // ['c', 'e']
 Pipe parser functions together.
 
 ```typescript
-pipe(lexeme)(letters)('xyz   abc'); // { ok: true, value: 'xyz', remaining: 'abc' }
+pipe(lexeme)(letters)('xyz   abc'); // { ok: true, value: 'xyz', index: 6 }
 ```
 
 ### `pop`

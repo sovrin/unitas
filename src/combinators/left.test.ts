@@ -15,7 +15,7 @@ describe('left', () => {
         const parser = left(parser1, parser2);
         const result = parser('AB');
 
-        assertSuccess<'A'>(result, 'A', '');
+        assertSuccess<'A'>(result, 'A', 2);
     });
 
     it('should fail if first parser fails', () => {

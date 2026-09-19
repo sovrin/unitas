@@ -11,7 +11,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser('B');
 
-        assertSuccess<(string | null)[]>(result, [], 'B');
+        assertSuccess<(string | null)[]>(result, [], 0);
     });
 
     it('should parse single element without separator', () => {
@@ -21,7 +21,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser('AAACCC');
 
-        assertSuccess<(string | null)[]>(result, ['A'], 'AACCC');
+        assertSuccess<(string | null)[]>(result, ['A'], 1);
     });
 
     it('should parse multiple elements separated by separator', () => {
@@ -31,7 +31,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser('A,A,A');
 
-        assertSuccess<(string | null)[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<(string | null)[]>(result, ['A', 'A', 'A'], 5);
     });
 
     it('should handle leading separator as null', () => {
@@ -41,7 +41,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser(',A');
 
-        assertSuccess<(string | null)[]>(result, [null, 'A'], '');
+        assertSuccess<(string | null)[]>(result, [null, 'A'], 2);
     });
 
     it('should handle trailing separator without adding null', () => {
@@ -51,7 +51,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser('A,');
 
-        assertSuccess<(string | null)[]>(result, ['A'], '');
+        assertSuccess<(string | null)[]>(result, ['A'], 2);
     });
 
     it('should handle empty input', () => {
@@ -61,7 +61,7 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser('');
 
-        assertSuccess<(string | null)[]>(result, [], '');
+        assertSuccess<(string | null)[]>(result, [], 0);
     });
 
     it('should handle single separator only as leading null', () => {
@@ -71,6 +71,6 @@ describe('optionalSeparatedBy', () => {
         const parser = optionalSeparatedBy(parser1, parser2);
         const result = parser(',');
 
-        assertSuccess<(string | null)[]>(result, [null], '');
+        assertSuccess<(string | null)[]>(result, [null], 1);
     });
 });

@@ -1,5 +1,4 @@
 import { many1 } from '../combinators/many1';
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
 import { success } from '../core/success';
 import { hexDigit } from './hexDigit';
@@ -7,18 +6,16 @@ import { hexDigit } from './hexDigit';
 const parser = many1(hexDigit);
 
 /**
- * Parse one or more hexadecimal digits.
+ * Parse one or more hex digits as a string.
  *
  * @example
- * hexDigits('deadbeef') // { ok: true, value: 'deadbeef', remaining: '' }
+ * hexDigits('deadbeef') // { ok: true, value: 'deadbeef', index: 8 }
  */
-export const hexDigits = create<string>((input) => {
-    const result = parser(input);
+export const hexDigits = create<string>((input, index = 0, ctx) => {
+    const result = parser(input, index, ctx);
     if (!result.ok) {
-        return failure();
+        return result;
     }
 
-    const { value, remaining } = result;
-
-    return success(value.join(''), remaining);
+    return success(result.value.join(''), result.index);
 });

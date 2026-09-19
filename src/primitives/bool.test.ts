@@ -8,12 +8,12 @@ describe('bool', () => {
         {
             const result = bool('true');
 
-            assertSuccess<boolean>(result, true, '');
+            assertSuccess<boolean>(result, true, 4);
         }
         {
             const result = bool('trueabc');
 
-            assertSuccess<boolean>(result, true, 'abc');
+            assertSuccess<boolean>(result, true, 4);
         }
     });
 
@@ -21,12 +21,12 @@ describe('bool', () => {
         {
             const result = bool('false');
 
-            assertSuccess<boolean>(result, false, '');
+            assertSuccess<boolean>(result, false, 5);
         }
         {
             const result = bool('falseabc');
 
-            assertSuccess<boolean>(result, false, 'abc');
+            assertSuccess<boolean>(result, false, 5);
         }
     });
 

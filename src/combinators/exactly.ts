@@ -1,30 +1,30 @@
 import type { Parser } from '../core/parser';
 
-import { failure } from '../core/failure';
 import { create } from '../core/parser';
+import { type Result } from '../core/result';
 import { success } from '../core/success';
 
 /**
  * Parse exactly n occurrences.
  *
  * @example
- * exactly(char('a'), 3)('aaa') // { ok: true, value: ['a', 'a', 'a'], remaining: '' }
+ * exactly(char('a'), 3)('aaa') // { ok: true, value: ['a', 'a', 'a'], index: 3 }
  */
 export const exactly = <T>(parser: Parser<T>, n: number) => {
-    return create<T[]>((input) => {
+    return create<T[]>((input, index = 0, ctx) => {
         const results: T[] = [];
-        let remaining = input;
+        let at = index;
 
         for (let i = 0; i < n; i++) {
-            const result = parser(remaining);
+            const result: Result<T> = parser(input, at, ctx);
             if (!result.ok) {
-                return failure();
+                return result;
             }
 
             results.push(result.value);
-            remaining = result.remaining;
+            at = result.index;
         }
 
-        return success(results, remaining);
+        return success(results, at);
     });
 };

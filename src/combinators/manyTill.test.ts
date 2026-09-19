@@ -14,7 +14,7 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('AAAB');
 
-        assertSuccess<string[]>(result, ['A', 'A', 'A'], '');
+        assertSuccess<string[]>(result, ['A', 'A', 'A'], 4);
     });
 
     it('should return empty array if terminator matches immediately', () => {
@@ -23,7 +23,7 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('B');
 
-        assertSuccess<string[]>(result, [], '');
+        assertSuccess<string[]>(result, [], 1);
     });
 
     it('should fail if terminator never matches', () => {
@@ -41,6 +41,6 @@ describe('manyTill', () => {
         const parser = manyTill(parser1, parser2);
         const result = parser('AABAB');
 
-        assertSuccess<string[]>(result, ['A', 'A'], 'AB');
+        assertSuccess<string[]>(result, ['A', 'A'], 3);
     });
 });

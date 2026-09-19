@@ -1,21 +1,23 @@
-import { create, type Parser } from '../core/parser';
-import { type Success, success } from '../core/success';
+import type { Parser } from '../core/parser';
+
+import { create } from '../core/parser';
+import { success, type Success } from '../core/success';
 import { many } from './many';
 
 /**
- * Parse zero or more and fold right-to-left.
+ * Fold zero or more occurrences from the right into a single value.
  *
  * @example
- * foldRight(digit, [], (acc, d) => [...acc, d])('123') // { ok: true, value: [3, 2, 1], remaining: '' }
+ * foldRight(digit, 0, (acc, d) => acc + d)('123') // { ok: true, value: 6, index: 3 }
  */
 export const foldRight = <T, U>(
     parser: Parser<T>,
     initial: U,
     folder: (acc: U, item: T) => U,
 ): Parser<U> => {
-    return create<U>((input) => {
-        const { value, remaining } = many(parser)(input) as Success<T[]>;
+    return create<U>((input, index = 0, ctx) => {
+        const result = many(parser)(input, index, ctx) as Success<T[]>;
 
-        return success(value.reduceRight(folder, initial), remaining);
+        return success(result.value.reduceRight(folder, initial), result.index);
     });
 };

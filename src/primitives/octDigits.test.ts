@@ -8,17 +8,17 @@ describe('octDigits', () => {
         {
             const result = octDigits('0777rest');
 
-            assertSuccess<string>(result, '0777', 'rest');
+            assertSuccess<string>(result, '0777', 4);
         }
         {
             const result = octDigits('1234567');
 
-            assertSuccess<string>(result, '1234567', '');
+            assertSuccess<string>(result, '1234567', 7);
         }
         {
             const result = octDigits('042 end');
 
-            assertSuccess<string>(result, '042', ' end');
+            assertSuccess<string>(result, '042', 3);
         }
     });
 
@@ -43,12 +43,12 @@ describe('octDigits', () => {
     it('should handle single octal digit', () => {
         const result = octDigits('7rest');
 
-        assertSuccess<string>(result, '7', 'rest');
+        assertSuccess<string>(result, '7', 1);
     });
 
     it('should stop at first non-octal character', () => {
         const result = octDigits('0128');
 
-        assertSuccess<string>(result, '012', '8');
+        assertSuccess<string>(result, '012', 3);
     });
 });

@@ -5,8 +5,8 @@ import { success } from './success';
 
 describe('success', () => {
     it('should create successful parse result', () => {
-        const result = success('test', 'remaining');
+        const result = success('test', 4);
 
-        assertSuccess<string>(result, 'test', 'remaining');
+        assertSuccess<string>(result, 'test', 4);
     });
 });
