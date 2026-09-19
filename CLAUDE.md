@@ -5,12 +5,13 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 ## Commands
 
 ```bash
-npm test                  # run all tests once
+npm test                  # run all tests once (vitest, typecheck enabled)
 npm run test:watch        # watch mode
-npm run coverage          # coverage report
+npm run test:coverage     # coverage report
+npm run test:types        # check the published type resolution (attw)
 
 npm run build             # compile to dist/
-npm run watch             # build in watch mode
+npm run build:watch       # build in watch mode
 
 npm run lint              # oxlint
 npm run lint:fix          # auto-fix lint issues
@@ -33,7 +34,7 @@ ESM-only TypeScript parser combinator library. Five entry points, built together
 
 | Entry                | Path                         | Purpose                                                                                         |
 | -------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
-| `unitas`             | `src/index.ts` → `src/core/` | Core types: `Parser<T>`, `Result<T>`, `success`, `failure`, `run`, `grammar`, `lazy`, `memoize` |
+| `unitas`             | `src/index.ts` → `src/core/` | Core types: `Parser<T>`, `Result<T>`, `success`/`failure`, `run`/`parse`, `grammar`, `lazy`, `memoize` |
 | `unitas/terminals`   | `src/terminals/`             | Factory functions that match input directly (`char`, `regex`, `string`, `satisfy`, …)           |
 | `unitas/primitives`  | `src/primitives/`            | Pre-built parser instances (`digit`, `letters`, `whitespace`, …)                                |
 | `unitas/combinators` | `src/combinators/`           | Higher-order parsers that compose other parsers (`map`, `choice`, `sequence`, `many`, …)        |
@@ -42,13 +43,20 @@ ESM-only TypeScript parser combinator library. Five entry points, built together
 ### Core types (`src/core/`)
 
 ```typescript
-type Parser<T> = (input: string) => Result<T>;
+type Parser<T> = (input: string, index?: number, ctx?: Context) => Result<T>;
 type Result<T> = Success<T> | Failure;
-type Success<T> = { ok: true; value: T; remaining: string };
-type Failure = { ok: false; error?: string };
+type Success<T> = { ok: true; value: T; index: number };
+type Failure = { ok: false; index: number; expected: readonly string[] };
+type Context = { furthest: number; expected: readonly string[] };
 ```
 
-`grammar` enables mutual recursion — rules receive a proxy object `p` so they can reference sibling rules by name without forward declarations. `lazy` defers evaluation for self-referential parsers.
+Parsers read `input` from an offset and never slice it, so a position stays meaningful all the way up to the error message.
+
+`ctx` is the parse context, created per `run`/`parse`. Failures record themselves into it via `failure(ctx, …)`, and because it only moves forward, backtracking cannot lose what a discarded branch expected — that is what lets an error point at the furthest position reached rather than wherever parsing stopped. **Any parser you call must be passed `ctx`**; omitting it still parses correctly but silently degrades the error message. `src/core/propagation.test.ts` checks every call site for this.
+
+`not` and `label` deliberately run their inner parser against an isolated context, since they suppress the failure rather than report it.
+
+`grammar` enables mutual recursion — rules receive a proxy object `p` so they can reference sibling rules by name without forward declarations, and a left-recursive rule is reported by name instead of overflowing the stack. `lazy` defers evaluation for self-referential parsers.
 
 ### File conventions
 
@@ -71,4 +79,4 @@ type Failure = { ok: false; error?: string };
 
 - `src/**/*.test.ts` — unit tests co-located with source (vitest, typecheck enabled)
 - `test/examples.test.ts` — generated from README examples, do not edit by hand
-- `src/combinators/node.test.ts` — newly added, covers `node` (alias for `ast`)
+- `src/core/propagation.test.ts` — guards that every parser call site forwards `ctx`; covers new files automatically
