@@ -51,7 +51,7 @@ run(csv.row, '"a,b",c'); // ['a,b', 'c']
 
 ## Entry points
 
-Nothing is re-exported across entry points, so your bundler only ever sees what you import.
+Nothing is re-exported across entry points, so your bundler only ever sees what you import. Code shared between them ships once, however many you import from.
 
 | Import from          | Contains                                                           |
 | -------------------- | ------------------------------------------------------------------ |

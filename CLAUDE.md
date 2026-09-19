@@ -29,7 +29,7 @@ npx vitest run src/combinators/map.test.ts
 
 ## Architecture
 
-ESM-only TypeScript parser combinator library. Five separate entry points, each compiled to its own `.mjs` bundle:
+ESM-only TypeScript parser combinator library. Five entry points, built together so that code shared between them is emitted once as a common chunk rather than inlined into each:
 
 | Entry                | Path                         | Purpose                                                                                         |
 | -------------------- | ---------------------------- | ----------------------------------------------------------------------------------------------- |
