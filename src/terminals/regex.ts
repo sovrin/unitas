@@ -8,7 +8,8 @@ import { success } from '../core/success';
  * The pattern is matched with the sticky flag at the current offset, so it is
  * anchored by construction and never scans ahead. A leading `^` is redundant
  * and is stripped — unless the pattern is multiline, where it asserts a line
- * start and still carries meaning.
+ * start and still carries meaning. Only the leading `^` is stripped: in
+ * `/^a|^b/` the second `^` still means start of input, so write `/^(?:a|b)/`.
  *
  * @example
  * regex(/^\w+/)('hello world') // { ok: true, value: 'hello', index: 5 }

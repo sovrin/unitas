@@ -106,4 +106,20 @@ describe('grammar', () => {
             'Left recursion detected in grammar rule "expr" at offset 0',
         );
     });
+
+    it('should build each rule only once', () => {
+        let builds = 0;
+        const g = grammar<{ x: string }>({
+            x: () => {
+                builds++;
+
+                return char('x');
+            },
+        });
+
+        g.x('x');
+        g.x('x');
+
+        expect(builds).toBe(1);
+    });
 });

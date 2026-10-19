@@ -21,7 +21,8 @@ export const chainRight1 = <T>(
         }
 
         const opResult = operator(input, leftResult.index, ctx);
-        if (!opResult.ok) {
+        // Recursing at the offset we started from would never end.
+        if (!opResult.ok || opResult.index === index) {
             return success(leftResult.value, leftResult.index);
         }
 

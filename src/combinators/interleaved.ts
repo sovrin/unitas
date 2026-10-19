@@ -25,7 +25,7 @@ export const interleaved = <T, S>(item: Parser<T>, separator: Parser<S>) => {
             if (!sepResult.ok) break;
 
             const nextResult: Result<T> = item(input, sepResult.index, ctx);
-            if (!nextResult.ok) break;
+            if (!nextResult.ok || nextResult.index === at) break;
 
             results.push(sepResult.value);
             results.push(nextResult.value);

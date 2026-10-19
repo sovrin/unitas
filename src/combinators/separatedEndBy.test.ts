@@ -53,4 +53,13 @@ describe('separatedEndBy', () => {
 
         assertSuccess<'A'[]>(result, ['A'], 1);
     });
+
+    it('should not consume a separator without a preceding item', () => {
+        const parser = separatedEndBy(
+            createTestParser(1),
+            createTestParser(','),
+        );
+
+        assertSuccess<number[]>(parser(','), [], 0);
+    });
 });

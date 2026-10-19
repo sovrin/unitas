@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import { digits, operation } from '../../test/helpers';
-import { assertFailure, assertSuccess } from '../../test/utils';
+import { assertSuccess } from '../../test/utils';
 import { chainRight } from './chainRight';
 
 describe('chainRight', () => {
@@ -9,7 +9,7 @@ describe('chainRight', () => {
         const parser = chainRight(digits, operation);
         const result = parser('abc');
 
-        assertFailure(result);
+        assertSuccess<number | null>(result, null, 0);
     });
 
     it('should parse successful chain', () => {
@@ -30,7 +30,7 @@ describe('chainRight', () => {
         const parser = chainRight(digits, operation);
         const result = parser('');
 
-        assertFailure(result);
+        assertSuccess<number | null>(result, null, 0);
     });
 
     it('should demonstrate right associativity', () => {

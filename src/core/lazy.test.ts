@@ -99,4 +99,18 @@ describe('lazy', () => {
 
         assertFailure<unknown>(result);
     });
+
+    it('should create the parser only once', () => {
+        let builds = 0;
+        const parser = lazy(() => {
+            builds++;
+
+            return createTestParser('a');
+        });
+
+        parser('a');
+        parser('a');
+
+        expect(builds).toBe(1);
+    });
 });

@@ -25,6 +25,11 @@ export const manyTill = <T, U>(parser: Parser<T>, terminator: Parser<U>) => {
                 return parseResult;
             }
 
+            // A parser that consumes nothing would never reach the terminator.
+            if (parseResult.index === at) {
+                return termResult;
+            }
+
             results.push(parseResult.value);
             at = parseResult.index;
         }

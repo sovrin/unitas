@@ -13,6 +13,7 @@ const guardLeftRecursion = <T>(
     thunk: () => Parser<T>,
 ): Parser<T> => {
     const active: number[] = [];
+    let parser: Parser<T> | undefined;
 
     return (input, index = 0, ctx) => {
         if (active.includes(index)) {
@@ -25,7 +26,7 @@ const guardLeftRecursion = <T>(
         active.push(index);
 
         try {
-            return thunk()(input, index, ctx);
+            return (parser ??= thunk())(input, index, ctx);
         } finally {
             active.pop();
         }

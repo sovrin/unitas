@@ -1,7 +1,9 @@
 import { describe, it } from 'vitest';
 
-import { operation, digits } from '../../test/helpers';
+import { operation, digits, nothing } from '../../test/helpers';
 import { assertFailure, assertSuccess } from '../../test/utils';
+import { create } from '../core/parser';
+import { success } from '../core/success';
 import { chainRight1 } from './chainRight1';
 
 describe('chainRight1', () => {
@@ -52,5 +54,14 @@ describe('chainRight1', () => {
         const result = parser('2**');
 
         assertSuccess<number>(result, 2, 1); // Stops at incomplete operation
+    });
+
+    it('should stop when neither term nor operator consumes input', () => {
+        const keep = create<(left: null, right: null) => null>(
+            (_input, index = 0) => success((left) => left, index),
+        );
+        const parser = chainRight1(nothing, keep);
+
+        assertSuccess<null>(parser('abc'), null, 0);
     });
 });

@@ -30,7 +30,7 @@ export const separatedBy = <T>(parser: Parser<T>, separator: Parser) => {
             const nextResult: Result<T> = parser(input, sepResult.index, ctx);
             // If separator matched but parser failed, backtrack
             // Don't consume the separator
-            if (!nextResult.ok) break;
+            if (!nextResult.ok || nextResult.index === at) break;
 
             results.push(nextResult.value);
             at = nextResult.index;

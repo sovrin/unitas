@@ -35,9 +35,11 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'hi', index: 4 });
         });
 
-        it('chainLeft: Chain left-associative operations (right-to-left for same precedence).', () => {
+        it('chainLeft: Zero or more terms: succeeds with `null` when there is no term at all.', () => {
             const result0 = chainLeft(digits, operation)('1+2+3');
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
+            const result1 = chainLeft(digits, operation)('');
+            expect(result1).toEqual({ ok: true, value: null, index: 0 });
         });
 
         it('chainLeft1: Chain left-associative operations (fails on empty input).', () => {
@@ -47,9 +49,11 @@ describe('examples from source', () => {
             expect(result1).toEqual({ ok: true, value: 12, index: 5 });
         });
 
-        it('chainRight: Chain right-associative operations.', () => {
+        it('chainRight: Zero or more terms: succeeds with `null` when there is no term at all.', () => {
             const result0 = chainRight(digits, operation)('1+2+3');
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
+            const result1 = chainRight(digits, operation)('');
+            expect(result1).toEqual({ ok: true, value: null, index: 0 });
         });
 
         it('chainRight1: Chain right-associative operations (fails on empty input).', () => {
@@ -281,9 +285,15 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, index: 2 });
         });
 
-        it('optionalSeparatedBy: Parse items separated by a separator, allowing empty slots.', () => {
+        it('optionalSeparatedBy: after the last separator is dropped.', () => {
             const result0 = optionalSeparatedBy(digits, char(','))('1,2');
             expect(result0).toEqual({ ok: true, value: [1, 2], index: 3 });
+            const result1 = optionalSeparatedBy(digits, char(','))('1,,2');
+            expect(result1).toEqual({
+                ok: true,
+                value: [1, null, 2],
+                index: 4,
+            });
         });
 
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
@@ -358,6 +368,8 @@ describe('examples from source', () => {
         it('separatedEndBy: Parse zero or more items separated by a separator, allowing a trailing one.', () => {
             const result0 = separatedEndBy(digits, char(','))('1,2,3,');
             expect(result0).toEqual({ ok: true, value: [1, 2, 3], index: 6 });
+            const result1 = separatedEndBy(digits, char(','))(',');
+            expect(result1).toEqual({ ok: true, value: [], index: 0 });
         });
 
         it('separatedEndBy1: Parse one or more items separated by a separator, allowing a trailing one.', () => {
@@ -817,12 +829,14 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'x', index: 1 });
         });
 
-        it('oneOf: Parse one string from a set of strings (longest match wins).', () => {
+        it('oneOf: string before any of its prefixes.', () => {
             const result0 = oneOf(['hello', 'hell', 'help'])('helpful');
             expect(result0).toEqual({ ok: true, value: 'help', index: 4 });
+            const result1 = oneOf(['+=', '+'])('+=1');
+            expect(result1).toEqual({ ok: true, value: '+=', index: 2 });
         });
 
-        it('regex: start and still carries meaning.', () => {
+        it('regex: `/^a|^b/` the second `^` still means start of input, so write `/^(?:a|b)/`.', () => {
             const result0 = regex(/^\w+/)('hello world');
             expect(result0).toEqual({ ok: true, value: 'hello', index: 5 });
         });

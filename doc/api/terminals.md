@@ -42,15 +42,16 @@ noneOf(['a', 'b', 'c'])('xyz'); // { ok: true, value: 'x', index: 1 }
 
 ### `oneOf`
 
-Parse one string from a set of strings (longest match wins).
+Parse one string from a set of strings. Candidates are tried in order and the first match wins, so list a longer string before any of its prefixes.
 
 ```typescript
 oneOf(['hello', 'hell', 'help'])('helpful'); // { ok: true, value: 'help', index: 4 }
+oneOf(['+=', '+'])('+=1'); // { ok: true, value: '+=', index: 2 }
 ```
 
 ### `regex`
 
-Parse with a regular expression. The pattern is matched with the sticky flag at the current offset, so it is anchored by construction and never scans ahead. A leading `^` is redundant and is stripped — unless the pattern is multiline, where it asserts a line start and still carries meaning.
+Parse with a regular expression. The pattern is matched with the sticky flag at the current offset, so it is anchored by construction and never scans ahead. A leading `^` is redundant and is stripped — unless the pattern is multiline, where it asserts a line start and still carries meaning. Only the leading `^` is stripped: in `/^a|^b/` the second `^` still means start of input, so write `/^(?:a|b)/`.
 
 ```typescript
 regex(/^\w+/)('hello world'); // { ok: true, value: 'hello', index: 5 }

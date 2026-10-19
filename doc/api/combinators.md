@@ -42,10 +42,11 @@ bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', index: 4 }
 
 ### `chainLeft`
 
-Chain left-associative operations (right-to-left for same precedence).
+Chain left-associative operations (right-to-left for same precedence). Zero or more terms: succeeds with `null` when there is no term at all.
 
 ```typescript
 chainLeft(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
+chainLeft(digits, operation)(''); // { ok: true, value: null, index: 0 }
 ```
 
 ### `chainLeft1`
@@ -59,10 +60,11 @@ chainLeft1(digits, operation)('8/2*3'); // { ok: true, value: 12, index: 5 }
 
 ### `chainRight`
 
-Chain right-associative operations.
+Chain right-associative operations: `2^3^2` is evaluated as `2^(3^2)`. Zero or more terms: succeeds with `null` when there is no term at all.
 
 ```typescript
 chainRight(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
+chainRight(digits, operation)(''); // { ok: true, value: null, index: 0 }
 ```
 
 ### `chainRight1`
@@ -329,10 +331,11 @@ optionalConsume(string('hi'))('hi there'); // { ok: true, index: 2 }
 
 ### `optionalSeparatedBy`
 
-Parse items separated by a separator, allowing empty slots.
+Parse items separated by a separator, allowing empty slots. A missing item before or between separators becomes `null`; an empty slot after the last separator is dropped.
 
 ```typescript
 optionalSeparatedBy(digits, char(','))('1,2'); // { ok: true, value: [1, 2], index: 3 }
+optionalSeparatedBy(digits, char(','))('1,,2'); // { ok: true, value: [1, null, 2], index: 4 }
 ```
 
 ### `outer`
@@ -443,6 +446,7 @@ Parse zero or more items separated by a separator, allowing a trailing one.
 
 ```typescript
 separatedEndBy(digits, char(','))('1,2,3,'); // { ok: true, value: [1, 2, 3], index: 6 }
+separatedEndBy(digits, char(','))(','); // { ok: true, value: [], index: 0 }
 ```
 
 ### `separatedEndBy1`

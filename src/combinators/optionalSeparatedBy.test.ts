@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
 
+import { nothing } from '../../test/helpers';
 import { assertSuccess, createTestParser } from '../../test/utils';
 import { optionalSeparatedBy } from './optionalSeparatedBy';
 
@@ -72,5 +73,21 @@ describe('optionalSeparatedBy', () => {
         const result = parser(',');
 
         assertSuccess<(string | null)[]>(result, [null], 1);
+    });
+
+    it('should keep empty slots between separators as null', () => {
+        const parser = optionalSeparatedBy(
+            createTestParser(1),
+            createTestParser(','),
+        );
+
+        assertSuccess<(number | null)[]>(parser('1,,1'), [1, null, 1], 4);
+        assertSuccess<(number | null)[]>(parser(',,1'), [null, null, 1], 3);
+    });
+
+    it('should stop when neither item nor separator consumes input', () => {
+        const parser = optionalSeparatedBy(nothing, nothing);
+
+        assertSuccess<null[]>(parser('abc'), [null], 0);
     });
 });
