@@ -61,7 +61,7 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
         });
 
-        it('choice: in the input is already in the parse context.', () => {
+        it('choice: parse context.', () => {
             const result0 = choice(string('hello'), string('world'))('hello');
             expect(result0).toEqual({ ok: true, value: 'hello', index: 5 });
         });
@@ -162,7 +162,7 @@ describe('examples from source', () => {
             expect(result1).toEqual({ ok: false, index: 0, expected: [] });
         });
 
-        it('inner: Extract inner value from surrounded content (like inner of braced).', () => {
+        it('inner: Parse three parsers in sequence and keep only the middle result.', () => {
             const result0 = inner(char('('), string('hi'), char(')'))('(hi)');
             expect(result0).toEqual({ ok: true, value: 'hi', index: 4 });
         });
@@ -190,7 +190,7 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'hello', index: 8 });
         });
 
-        it('many: still report what the repetition was expecting next.', () => {
+        it('many: continued the repetition.', () => {
             const result0 = many(char('a'))('aaa');
             expect(result0).toEqual({
                 ok: true,
@@ -550,7 +550,7 @@ describe('examples from source', () => {
             expect(result2).toEqual(3);
         });
 
-        it('label: be suppressed rather than leaking into the message.', () => {
+        it('label: the parsers inside it do not leak into the message.', () => {
             const result0 = label(char('x'), 'letter x')('');
             expect(result0).toEqual({
                 ok: false,
@@ -577,7 +577,7 @@ describe('examples from source', () => {
             expect(result0).toEqual('hello');
         });
 
-        it('memoize: error message rather than silently weakening it.', () => {
+        it('memoize: parse would.', () => {
             const memoDigits = memoize(digits);
             const result0 = memoDigits('123');
             expect(result0).toEqual({ ok: true, value: 123, index: 3 });
@@ -588,7 +588,7 @@ describe('examples from source', () => {
             expect(result0).toEqual(false);
         });
 
-        it('parser: recorded inside your parser reach the final error message.', () => {
+        it('parser: inside your parser reach the final error message.', () => {
             const result0 = create((input, index = 0) =>
                 success('parsed', index + 6),
             )('hello world');

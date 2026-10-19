@@ -5,8 +5,9 @@ import { success, type Success } from '../core/success';
 /**
  * Zero or more occurrences (never fails).
  *
- * The failure that stopped the loop is kept as a trace, so a later error can
- * still report what the repetition was expecting next.
+ * The failure that ends the repetition is still recorded in the parse context,
+ * so if parsing fails later, the error message can list what would have
+ * continued the repetition.
  *
  * @example
  * many(char('a'))('aaa') // { ok: true, value: ['a', 'a', 'a'], index: 3 }

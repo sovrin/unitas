@@ -474,7 +474,7 @@ Take parsers, return a new parser. **64** exports — [full reference →][api-c
 | [`bind`][combinators-bind]                               | Chain parsers where the second parser depends on the first result.              |
 | [`braced`][combinators-braced]                           | Parse content surrounded by braces.                                             |
 | [`bracketed`][combinators-bracketed]                     | Parse content surrounded by brackets.                                           |
-| [`chainLeft`][combinators-chainleft]                     | Chain left-associative operations (right-to-left for same precedence).          |
+| [`chainLeft`][combinators-chainleft]                     | Chain left-associative operations: `1-2-3` is evaluated as `(1-2)-3`.           |
 | [`chainLeft1`][combinators-chainleft1]                   | Chain left-associative operations (fails on empty input).                       |
 | [`chainRight`][combinators-chainright]                   | Chain right-associative operations: `2^3^2` is evaluated as `2^(3^2)`.          |
 | [`chainRight1`][combinators-chainright1]                 | Chain right-associative operations (fails on empty input).                      |
@@ -492,7 +492,7 @@ Take parsers, return a new parser. **64** exports — [full reference →][api-c
 | [`foldRight1`][combinators-foldright1]                   | Fold one or more occurrences from the right into a single value.                |
 | [`fuse`][combinators-fuse]                               | Fuse multiple string parsers into a single one.                                 |
 | [`guard`][combinators-guard]                             | Conditionally apply parser based on a condition.                                |
-| [`inner`][combinators-inner]                             | Extract inner value from surrounded content (like inner of braced).             |
+| [`inner`][combinators-inner]                             | Parse three parsers in sequence and keep only the middle result.                |
 | [`interleaved`][combinators-interleaved]                 | Parse items separated by separators, keeping both in the result.                |
 | [`last`][combinators-last]                               | Extract the last element from a parser result array.                            |
 | [`left`][combinators-left]                               | Keep only the left result from a sequence.                                      |

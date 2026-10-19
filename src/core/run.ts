@@ -22,10 +22,10 @@ const merge = (
  * A parser can succeed without consuming everything — the interesting position
  * is then the furthest offset any branch reached, not where the parse stopped.
  *
- * A result reaching the same offset as the context carries no more authority
- * than the context does, so the two expectation sets are merged. Combinators
- * that fail without an expectation of their own — `separatedBy1`, `guard`, a
- * hand-written `failure(ctx, index)` — would otherwise report nothing at all.
+ * When the result and the context point at the same offset, their expectations
+ * are merged. Otherwise combinators that fail without an expectation of their
+ * own — `separatedBy1`, `guard`, a hand-written `failure(ctx, index)` — would
+ * report nothing at all.
  */
 export const diagnose = <T>(
     input: string,

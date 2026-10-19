@@ -5,7 +5,7 @@ import { chainLeft1 } from './chainLeft1';
 import { optional } from './optional';
 
 /**
- * Chain left-associative operations (right-to-left for same precedence).
+ * Chain left-associative operations: `1-2-3` is evaluated as `(1-2)-3`.
  *
  * Zero or more terms: succeeds with `null` when there is no term at all.
  *
