@@ -6,7 +6,7 @@ import { chainLeft1 } from './chainLeft1';
 import { optional } from './optional';
 
 /**
- * Chain left-associative operations (right-to-left for same precedence).
+ * Chain left-associative operations: `1-2-3` is evaluated as `(1-2)-3`.
  *
  * @example
  * chainLeft(digits, operation)('1+2+3') // { ok: true, value: 6, index: 5 }

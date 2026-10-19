@@ -35,8 +35,9 @@ const guardLeftRecursion = <T>(
 /**
  * Creates a recursive grammar where rules can reference each other.
  *
- * Rules are resolved lazily through a shared record, so they may refer to one
- * another by name without forward declarations. Left-recursive rules are
+ * Each rule receives an object holding all rules of the grammar and looks them
+ * up only when it runs, so rules may refer to one another by name without
+ * forward declarations. Left-recursive rules are
  * reported by name rather than overflowing the stack.
  *
  * @example

@@ -11,9 +11,9 @@ const NONE: readonly string[] = [];
 /**
  * Try each parser in order, return first success.
  *
- * Alternatives all start from the same offset, so the expectations of those
- * that failed there are unioned into the result. Anything they recorded deeper
- * in the input is already in the parse context.
+ * If all alternatives fail, the failure lists what each one expected at the
+ * starting offset. Failures further into the input are already recorded in the
+ * parse context.
  *
  * @example
  * choice(string('hello'), string('world'))('hello') // { ok: true, value: 'hello', index: 5 }

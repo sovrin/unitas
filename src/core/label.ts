@@ -6,10 +6,10 @@ import { create } from './parser';
 /**
  * Replaces the expectations of a parser with a single description.
  *
- * Only applies when the parser failed without consuming input: once a branch
- * has committed, its own deeper error is more useful than the label. The
- * labelled parser runs against an isolated context so that its internals can
- * be suppressed rather than leaking into the message.
+ * Only applies when the parser failed without consuming input: once it has
+ * consumed input, its own error further along is more useful than the label.
+ * The labelled parser runs against a separate context, so the expectations of
+ * the parsers inside it do not leak into the message.
  *
  * @example
  * label(char('x'), 'letter x')('') // { ok: false, index: 0, expected: ['letter x'] }

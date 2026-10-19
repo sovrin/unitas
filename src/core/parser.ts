@@ -10,9 +10,10 @@ export type Parser<T = unknown> = (
 /**
  * Creates a parser from a parser function.
  *
- * A parser reads `input` from `index` and never slices it. The third argument
- * is the parse context — pass it on to any parser you call, so expectations
- * recorded inside your parser reach the final error message.
+ * A parser receives the full `input` and the `index` to start reading at, and
+ * returns the index where it stopped. The third argument is the parse
+ * context — pass it on to any parser you call, so expectations recorded
+ * inside your parser reach the final error message.
  *
  * @example
  * create((input, index = 0) => success('parsed', index + 6))('hello world') // { ok: true, value: 'parsed', index: 6 }

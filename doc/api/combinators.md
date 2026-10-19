@@ -42,7 +42,7 @@ bracketed(string('hi'))('[hi]'); // { ok: true, value: 'hi', index: 4 }
 
 ### `chainLeft`
 
-Chain left-associative operations (right-to-left for same precedence).
+Chain left-associative operations: `1-2-3` is evaluated as `(1-2)-3`.
 
 ```typescript
 chainLeft(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
@@ -75,7 +75,7 @@ chainRight1(digits, operation)('1+2+3'); // { ok: true, value: 6, index: 5 }
 
 ### `choice`
 
-Try each parser in order, return first success. Alternatives all start from the same offset, so the expectations of those that failed there are unioned into the result. Anything they recorded deeper in the input is already in the parse context.
+Try each parser in order, return first success. If all alternatives fail, the failure lists what each one expected at the starting offset. Failures further into the input are already recorded in the parse context.
 
 ```typescript
 choice(string('hello'), string('world'))('hello'); // { ok: true, value: 'hello', index: 5 }
@@ -191,7 +191,7 @@ guard(false, string('hello'))('hello'); // { ok: false, index: 0, expected: [] }
 
 ### `inner`
 
-Extract inner value from surrounded content (like inner of braced).
+Parse three parsers in sequence and keep only the middle result.
 
 ```typescript
 inner(char('('), string('hi'), char(')'))('(hi)'); // { ok: true, value: 'hi', index: 4 }
@@ -231,7 +231,7 @@ lexeme(string('hello'))('hello   world'); // { ok: true, value: 'hello', index: 
 
 ### `many`
 
-Zero or more occurrences (never fails). The failure that stopped the loop is kept as a trace, so a later error can still report what the repetition was expecting next.
+Zero or more occurrences (never fails). The failure that ends the repetition is still recorded in the parse context, so if parsing fails later, the error message can list what would have continued the repetition.
 
 ```typescript
 many(char('a'))('aaa'); // { ok: true, value: ['a', 'a', 'a'], index: 3 }

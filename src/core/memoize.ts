@@ -11,10 +11,10 @@ type Entry<T> = {
 /**
  * Memoizes a parser so each offset is parsed at most once (packrat caching).
  *
- * Keyed by offset rather than by the remaining input, so entries are cheap and
- * the cache is dropped as soon as a different input is parsed. Each entry also
- * remembers what the parse expected, so a cache hit still contributes to the
- * error message rather than silently weakening it.
+ * The cache is keyed by offset and cleared whenever the parser is called with a
+ * different input string. Each entry also stores what the parse expected, so a
+ * cache hit contributes the same expectations to the error message as a fresh
+ * parse would.
  *
  * @example
  * const memoDigits = memoize(digits);

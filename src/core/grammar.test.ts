@@ -88,7 +88,7 @@ describe('grammar', () => {
         }
 
         {
-            const result = expr('1+(2+3)'); // [6, '']
+            const result = expr('1+(2+3)');
             assertSuccess<unknown>(result, 6, 7);
         }
     });

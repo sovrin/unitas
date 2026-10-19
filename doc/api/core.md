@@ -26,7 +26,7 @@ context(); // { furthest: -1, expected: [] }
 
 ### `create`
 
-Creates a parser from a parser function. A parser reads `input` from `index` and never slices it. The third argument is the parse context — pass it on to any parser you call, so expectations recorded inside your parser reach the final error message.
+Creates a parser from a parser function. A parser receives the full `input` and the `index` to start reading at, and returns the index where it stopped. The third argument is the parse context — pass it on to any parser you call, so expectations recorded inside your parser reach the final error message.
 
 ```typescript
 create((input, index = 0) => success('parsed', index + 6))('hello world'); // { ok: true, value: 'parsed', index: 6 }
@@ -50,7 +50,7 @@ format('a=1,b=x', 6, ['digit']); // "1:7 expected digit, found 'x'\n  1 | a=1,b=
 
 ### `grammar`
 
-Creates a recursive grammar where rules can reference each other. Rules are resolved lazily through a shared record, so they may refer to one another by name without forward declarations. Left-recursive rules are reported by name rather than overflowing the stack.
+Creates a recursive grammar where rules can reference each other. Each rule receives an object holding all rules of the grammar and looks them up only when it runs, so rules may refer to one another by name without forward declarations. Left-recursive rules are reported by name rather than overflowing the stack.
 
 ```typescript
 type Math = {
@@ -78,7 +78,7 @@ run(g.expr, '(1+2)'); // 3
 
 ### `label`
 
-Replaces the expectations of a parser with a single description. Only applies when the parser failed without consuming input: once a branch has committed, its own deeper error is more useful than the label. The labelled parser runs against an isolated context so that its internals can be suppressed rather than leaking into the message.
+Replaces the expectations of a parser with a single description. Only applies when the parser failed without consuming input: once it has consumed input, its own error further along is more useful than the label. The labelled parser runs against a separate context, so the expectations of the parsers inside it do not leak into the message.
 
 ```typescript
 label(char('x'), 'letter x')(''); // { ok: false, index: 0, expected: ['letter x'] }
@@ -110,7 +110,7 @@ match(success('hello', 5), { success: (v) => v, failure: () => 'failed' }); // '
 
 ### `memoize`
 
-Memoizes a parser so each offset is parsed at most once (packrat caching). Keyed by offset rather than by the remaining input, so entries are cheap and the cache is dropped as soon as a different input is parsed. Each entry also remembers what the parse expected, so a cache hit still contributes to the error message rather than silently weakening it.
+Memoizes a parser so each offset is parsed at most once (packrat caching). The cache is keyed by offset and cleared whenever the parser is called with a different input string. Each entry also stores what the parse expected, so a cache hit contributes the same expectations to the error message as a fresh parse would.
 
 ```typescript
 const memoDigits = memoize(digits);

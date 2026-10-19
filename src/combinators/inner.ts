@@ -5,7 +5,7 @@ import { map } from './map';
 import { sequence } from './sequence';
 
 /**
- * Extract inner value from surrounded content (like inner of braced).
+ * Parse three parsers in sequence and keep only the middle result.
  *
  * @example
  * inner(char('('), string('hi'), char(')'))('(hi)') // { ok: true, value: 'hi', index: 4 }
