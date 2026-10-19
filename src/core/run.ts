@@ -24,7 +24,7 @@ const merge = (
  *
  * A result reaching the same offset as the context carries no more authority
  * than the context does, so the two expectation sets are merged. Combinators
- * that fail without an expectation of their own — `chainLeft`, `guard`, a
+ * that fail without an expectation of their own — `separatedBy1`, `guard`, a
  * hand-written `failure(ctx, index)` — would otherwise report nothing at all.
  */
 export const diagnose = <T>(

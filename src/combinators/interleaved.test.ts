@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
 
+import { nothing } from '../../test/helpers';
 import {
     assertFailure,
     assertSuccess,
@@ -42,5 +43,11 @@ describe('interleaved', () => {
         const result = parser('ABABC');
 
         assertSuccess<('A' | 'B')[]>(result, ['A', 'B', 'A'], 3);
+    });
+
+    it('should stop when neither item nor separator consumes input', () => {
+        const parser = interleaved(nothing, nothing);
+
+        assertSuccess<null[]>(parser('abc'), [null], 0);
     });
 });

@@ -77,4 +77,14 @@ describe('postfix', () => {
 
         assertSuccess<number>(result, 6, 2); // 3! = 6, stops at +
     });
+
+    it('should stop at an operator that consumes nothing', () => {
+        const increment: Parser<(value: number) => number> = (
+            _input,
+            index = 0,
+        ) => success((n) => n + 1, index);
+        const parser = postfix(digits, increment);
+
+        assertSuccess<number>(parser('5'), 5, 1);
+    });
 });

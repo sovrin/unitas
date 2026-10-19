@@ -25,7 +25,7 @@ export const postfix = <T>(
 
         while (true) {
             const opResult: Result<(value: T) => T> = operator(input, at, ctx);
-            if (!opResult.ok) break;
+            if (!opResult.ok || opResult.index === at) break;
 
             value = opResult.value(value);
             at = opResult.index;

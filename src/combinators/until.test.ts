@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
 
+import { nothing } from '../../test/helpers';
 import {
     assertFailure,
     assertSuccess,
@@ -35,5 +36,11 @@ describe('until', () => {
         const result = parser('AAAA');
 
         assertFailure<'A'[]>(result);
+    });
+
+    it('should fail instead of looping when the parser consumes nothing', () => {
+        const parser = until(nothing, createTestParser('x'));
+
+        assertFailure(parser('abc'));
     });
 });

@@ -74,4 +74,14 @@ describe('prefix', () => {
 
         assertSuccess<number>(result, 123, 3);
     });
+
+    it('should stop at an operator that consumes nothing', () => {
+        const increment: Parser<(value: number) => number> = (
+            _input,
+            index = 0,
+        ) => success((n) => n + 1, index);
+        const parser = prefix(increment, digits);
+
+        assertSuccess<number>(parser('5'), 5, 1);
+    });
 });
