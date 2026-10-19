@@ -35,9 +35,11 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'hi', index: 4 });
         });
 
-        it('chainLeft: Chain left-associative operations (right-to-left for same precedence).', () => {
+        it('chainLeft: Zero or more terms: succeeds with `null` when there is no term at all.', () => {
             const result0 = chainLeft(digits, operation)('1+2+3');
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
+            const result1 = chainLeft(digits, operation)('');
+            expect(result1).toEqual({ ok: true, value: null, index: 0 });
         });
 
         it('chainLeft1: Chain left-associative operations (fails on empty input).', () => {
@@ -47,9 +49,11 @@ describe('examples from source', () => {
             expect(result1).toEqual({ ok: true, value: 12, index: 5 });
         });
 
-        it('chainRight: Chain right-associative operations.', () => {
+        it('chainRight: Zero or more terms: succeeds with `null` when there is no term at all.', () => {
             const result0 = chainRight(digits, operation)('1+2+3');
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
+            const result1 = chainRight(digits, operation)('');
+            expect(result1).toEqual({ ok: true, value: null, index: 0 });
         });
 
         it('chainRight1: Chain right-associative operations (fails on empty input).', () => {
@@ -57,7 +61,7 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 6, index: 5 });
         });
 
-        it('choice: in the input is already in the parse context.', () => {
+        it('choice: parse context.', () => {
             const result0 = choice(string('hello'), string('world'))('hello');
             expect(result0).toEqual({ ok: true, value: 'hello', index: 5 });
         });
@@ -158,7 +162,7 @@ describe('examples from source', () => {
             expect(result1).toEqual({ ok: false, index: 0, expected: [] });
         });
 
-        it('inner: Extract inner value from surrounded content (like inner of braced).', () => {
+        it('inner: Parse three parsers in sequence and keep only the middle result.', () => {
             const result0 = inner(char('('), string('hi'), char(')'))('(hi)');
             expect(result0).toEqual({ ok: true, value: 'hi', index: 4 });
         });
@@ -186,7 +190,7 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'hello', index: 8 });
         });
 
-        it('many: still report what the repetition was expecting next.', () => {
+        it('many: continued the repetition.', () => {
             const result0 = many(char('a'))('aaa');
             expect(result0).toEqual({
                 ok: true,
@@ -281,9 +285,15 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, index: 2 });
         });
 
-        it('optionalSeparatedBy: Parse items separated by a separator, allowing empty slots.', () => {
+        it('optionalSeparatedBy: after the last separator is dropped.', () => {
             const result0 = optionalSeparatedBy(digits, char(','))('1,2');
             expect(result0).toEqual({ ok: true, value: [1, 2], index: 3 });
+            const result1 = optionalSeparatedBy(digits, char(','))('1,,2');
+            expect(result1).toEqual({
+                ok: true,
+                value: [1, null, 2],
+                index: 4,
+            });
         });
 
         it('outer: Extract outer values from a sequence of 3 parsers (skip middle).', () => {
@@ -358,6 +368,8 @@ describe('examples from source', () => {
         it('separatedEndBy: Parse zero or more items separated by a separator, allowing a trailing one.', () => {
             const result0 = separatedEndBy(digits, char(','))('1,2,3,');
             expect(result0).toEqual({ ok: true, value: [1, 2, 3], index: 6 });
+            const result1 = separatedEndBy(digits, char(','))(',');
+            expect(result1).toEqual({ ok: true, value: [], index: 0 });
         });
 
         it('separatedEndBy1: Parse one or more items separated by a separator, allowing a trailing one.', () => {
@@ -538,7 +550,7 @@ describe('examples from source', () => {
             expect(result2).toEqual(3);
         });
 
-        it('label: be suppressed rather than leaking into the message.', () => {
+        it('label: the parsers inside it do not leak into the message.', () => {
             const result0 = label(char('x'), 'letter x')('');
             expect(result0).toEqual({
                 ok: false,
@@ -565,7 +577,7 @@ describe('examples from source', () => {
             expect(result0).toEqual('hello');
         });
 
-        it('memoize: error message rather than silently weakening it.', () => {
+        it('memoize: parse would.', () => {
             const memoDigits = memoize(digits);
             const result0 = memoDigits('123');
             expect(result0).toEqual({ ok: true, value: 123, index: 3 });
@@ -576,7 +588,7 @@ describe('examples from source', () => {
             expect(result0).toEqual(false);
         });
 
-        it('parser: recorded inside your parser reach the final error message.', () => {
+        it('parser: inside your parser reach the final error message.', () => {
             const result0 = create((input, index = 0) =>
                 success('parsed', index + 6),
             )('hello world');
@@ -817,12 +829,14 @@ describe('examples from source', () => {
             expect(result0).toEqual({ ok: true, value: 'x', index: 1 });
         });
 
-        it('oneOf: Parse one string from a set of strings (longest match wins).', () => {
+        it('oneOf: string before any of its prefixes.', () => {
             const result0 = oneOf(['hello', 'hell', 'help'])('helpful');
             expect(result0).toEqual({ ok: true, value: 'help', index: 4 });
+            const result1 = oneOf(['+=', '+'])('+=1');
+            expect(result1).toEqual({ ok: true, value: '+=', index: 2 });
         });
 
-        it('regex: start and still carries meaning.', () => {
+        it('regex: `/^a|^b/` the second `^` still means start of input, so write `/^(?:a|b)/`.', () => {
             const result0 = regex(/^\w+/)('hello world');
             expect(result0).toEqual({ ok: true, value: 'hello', index: 5 });
         });

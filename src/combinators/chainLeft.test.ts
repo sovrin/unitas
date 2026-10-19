@@ -1,7 +1,7 @@
 import { describe, it } from 'vitest';
 
 import { operation, digits } from '../../test/helpers';
-import { assertFailure, assertSuccess } from '../../test/utils';
+import { assertSuccess } from '../../test/utils';
 import { chainLeft } from './chainLeft';
 
 describe('chainLeft', () => {
@@ -9,7 +9,7 @@ describe('chainLeft', () => {
         const parser = chainLeft(digits, operation);
         const result = parser('abc');
 
-        assertFailure(result);
+        assertSuccess<number | null>(result, null, 0);
     });
 
     it('should parse successful chain', () => {
@@ -30,6 +30,6 @@ describe('chainLeft', () => {
         const parser = chainLeft(digits, operation);
         const result = parser('');
 
-        assertFailure(result);
+        assertSuccess<number | null>(result, null, 0);
     });
 });

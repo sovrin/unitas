@@ -27,3 +27,8 @@ export const digits = create<number>((input, index = 0) => {
 
     return success<number>(parseInt(match), index + match.length);
 });
+
+/** Always succeeds without consuming input, to check that loops terminate. */
+export const nothing = create<null>((_input, index = 0) =>
+    success(null, index),
+);

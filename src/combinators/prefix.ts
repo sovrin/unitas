@@ -20,7 +20,7 @@ export const prefix = <T>(
 
         while (true) {
             const opResult: Result<(value: T) => T> = operator(input, at, ctx);
-            if (!opResult.ok) break;
+            if (!opResult.ok || opResult.index === at) break;
 
             operators.push(opResult.value);
             at = opResult.index;

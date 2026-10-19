@@ -9,6 +9,7 @@ import { separatedBy } from './separatedBy';
  *
  * @example
  * separatedEndBy(digits, char(','))('1,2,3,') // { ok: true, value: [1, 2, 3], index: 6 }
+ * separatedEndBy(digits, char(','))(',') // { ok: true, value: [], index: 0 }
  */
 export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {
     return create<T[]>((input, index = 0, ctx) => {
@@ -17,6 +18,10 @@ export const separatedEndBy = <T>(parser: Parser<T>, separator: Parser) => {
             index,
             ctx,
         ) as Success<T[]>;
+        if (result.value.length === 0) {
+            return result;
+        }
+
         const sepResult = separator(input, result.index, ctx);
 
         return success(

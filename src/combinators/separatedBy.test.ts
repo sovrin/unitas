@@ -1,5 +1,6 @@
 import { describe, it } from 'vitest';
 
+import { nothing } from '../../test/helpers';
 import { assertSuccess, createTestParser } from '../../test/utils';
 import { separatedBy } from './separatedBy';
 
@@ -52,5 +53,11 @@ describe('separatedBy', () => {
         const result = parser('A,A,C');
 
         assertSuccess<'A'[]>(result, ['A', 'A'], 3);
+    });
+
+    it('should stop when neither item nor separator consumes input', () => {
+        const parser = separatedBy(nothing, nothing);
+
+        assertSuccess<null[]>(parser('abc'), [null], 0);
     });
 });

@@ -33,7 +33,7 @@ export const chainLeft1 = <T>(
             if (!opResult.ok) break;
 
             const nextResult: Result<T> = term(input, opResult.index, ctx);
-            if (!nextResult.ok) break;
+            if (!nextResult.ok || nextResult.index === at) break;
 
             accumulator = opResult.value(accumulator, nextResult.value);
             at = nextResult.index;

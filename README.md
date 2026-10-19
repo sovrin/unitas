@@ -415,7 +415,7 @@ Factories that match the input string directly. **12** exports — [full referen
 | [`char`][terminals-char]           | Parse a specific character.                                                 |
 | [`charOf`][terminals-charof]       | Parse any character from a set.                                             |
 | [`noneOf`][terminals-noneof]       | Parse any character not in the set.                                         |
-| [`oneOf`][terminals-oneof]         | Parse one string from a set of strings (longest match wins).                |
+| [`oneOf`][terminals-oneof]         | Parse one string from a set of strings.                                     |
 | [`regex`][terminals-regex]         | Parse with a regular expression.                                            |
 | [`satisfy`][terminals-satisfy]     | Parse a character satisfying a predicate.                                   |
 | [`string`][terminals-string]       | Parse a specific string.                                                    |
@@ -476,7 +476,7 @@ Take parsers, return a new parser. **64** exports — [full reference →][api-c
 | [`bracketed`][combinators-bracketed]                     | Parse content surrounded by brackets.                                           |
 | [`chainLeft`][combinators-chainleft]                     | Chain left-associative operations: `1-2-3` is evaluated as `(1-2)-3`.           |
 | [`chainLeft1`][combinators-chainleft1]                   | Chain left-associative operations (fails on empty input).                       |
-| [`chainRight`][combinators-chainright]                   | Chain right-associative operations.                                             |
+| [`chainRight`][combinators-chainright]                   | Chain right-associative operations: `2^3^2` is evaluated as `2^(3^2)`.          |
 | [`chainRight1`][combinators-chainright1]                 | Chain right-associative operations (fails on empty input).                      |
 | [`choice`][combinators-choice]                           | Try each parser in order, return first success.                                 |
 | [`concat`][combinators-concat]                           | Join string array parser result into a single string.                           |
